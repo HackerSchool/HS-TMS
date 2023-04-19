@@ -1,0 +1,1 @@
+Esta versão do projeto foi posta de lado em prol para uma versão mais completa da mesma, com backend e frontend mais robustos e diversos.
