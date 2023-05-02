@@ -9,7 +9,7 @@ async function createProject(client, name, active) {
 	await client.connect();
 
 	await client.query(
-		`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean);`,
+		`INSERT INTO projects (project_name, active) VALUES($1::text, $2::boolean);`,
 		[name, active]
 	);
 
@@ -46,7 +46,7 @@ async function updateProject(client, id, name, active) {
 	await client.query(
 		`
 		UPDATE projects
-		SET name = $2::text,
+		SET project_name = $2::text,
 			active = $3::boolean
 		WHERE id = $1::integer;
 	`,

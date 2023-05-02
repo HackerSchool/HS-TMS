@@ -22,9 +22,9 @@ async function createTransaction(
 
 	await client.query(
 		`INSERT INTO transactions (
-            date,
-            description,
-            value,
+            transaction_date,
+            transaction_description,
+            amount,
             file_path,
             has_nif
         )
@@ -85,12 +85,12 @@ async function readTransaction(client, id) {
 		`
         SELECT
             transactions.id,
-            transactions.date,
-            transactions.description,
-            transactions.value,
+            transactions.transaction_date,
+            transactions.transaction_description,
+            transactions.amount,
             transactions.file_path,
             transactions.has_nif,
-            string_agg(projects.name, ' / ') AS projects
+            string_agg(projects.project_name, ' / ') AS projects
         FROM
             transactions
         LEFT JOIN transaction_project
@@ -137,9 +137,9 @@ async function updateTransaction(
 		`
         UPDATE transactions 
         SET 
-            date = $2::date,
-            description = $3::text,
-            value = $4::numeric,
+            transaction_date = $2::date,
+            transaction_description = $3::text,
+            amount = $4::numeric,
             file_path = $5::text,
             has_nif = $6::boolean
         WHERE

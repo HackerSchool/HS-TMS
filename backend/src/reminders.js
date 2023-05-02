@@ -10,7 +10,7 @@ async function createReminder(client, title, description, date) {
 	await client.connect();
 
 	await client.query(
-		`INSERT INTO reminders (title, description, date) VALUES($1::text, $2::text, $3::date);`,
+		`INSERT INTO reminders (title, reminder_description, reminder_date) VALUES($1::text, $2::text, $3::date);`,
 		[title, description, date]
 	);
 
@@ -52,8 +52,8 @@ async function updateReminder(client, id, title, description, date) {
 		`
 		UPDATE reminders
 		SET title = $2::text,
-			description = $3::text,
-			date = $4::date
+			reminder_description = $3::text,
+			reminder_date = $4::date
 		WHERE id = $1::integer;
 	`,
 		[id, title, description, date]

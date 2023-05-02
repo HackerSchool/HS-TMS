@@ -9,7 +9,7 @@ async function createVariable(client, name, value) {
 	await client.connect();
 
 	await client.query(
-		`INSERT INTO variables (name, value) VALUES($1::text, $2::text);`,
+		`INSERT INTO variables (variable_name, variable_value) VALUES($1::text, $2::text);`,
 		[name, value]
 	);
 
@@ -25,7 +25,7 @@ async function createVariable(client, name, value) {
 async function readVariable(client, name) {
 	await client.connect();
 
-	const res = await client.query(`SELECT * FROM variables WHERE name = $1::text`, [
+	const res = await client.query(`SELECT * FROM variables WHERE variable_name = $1::text`, [
 		name
 	]);
 
@@ -47,8 +47,8 @@ async function updateVariable(client, name, value) {
 	await client.query(
 		`
 		UPDATE variables
-		SET value = $2::text
-		WHERE name = $1::text;
+		SET variable_value = $2::text
+		WHERE variable_name = $1::text;
 	`,
 		[name, value]
 	);
@@ -68,7 +68,7 @@ async function deleteVariable(client, name) {
 	await client.query(
 		`
 		DELETE FROM variables
-		WHERE name = $1::text;
+		WHERE variable_name = $1::text;
 	`,
 		[name]
 	);
