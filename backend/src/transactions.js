@@ -106,6 +106,7 @@ async function readTransaction(client, id) {
 	await client.end();
 
 	res.rows[0].date = res.rows[0].date.toISOString().substring(0, 10);
+	res.rows[0].value = parseFloat(res.rows[0].value);
 	return res.rows[0];
 }
 
@@ -252,7 +253,8 @@ async function listTransactions(
 	return res.rows.map((row) => {
 		return {
 			...row,
-			date: row.date.toISOString().substring(0, 10)
+			date: row.date.toISOString().substring(0, 10),
+			value: parseFloat(row.value)
 		};
 	});
 }
