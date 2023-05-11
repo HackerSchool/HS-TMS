@@ -4,6 +4,7 @@
  * @param {date} date
  * @param {string} description
  * @param {float} value
+ * @param {float} balance
  * @param {string} file_path
  * @param {boolean} has_nif
  * @param {Array<integer>} projects
@@ -14,6 +15,7 @@ async function createTransaction(
 	date,
 	description,
 	value,
+	balance,
 	file_path,
 	has_nif,
 	projects
@@ -25,6 +27,7 @@ async function createTransaction(
             date,
             description,
             value,
+			balance,
             file_path,
             has_nif
         )
@@ -33,19 +36,20 @@ async function createTransaction(
                 $1::date,
                 $2::text,
                 $3::numeric,
-                $4::text,
-                $5::boolean
+                $4::numeric,
+                $5::text,
+                $6::boolean
             );`,
-		[date, description, value, file_path, has_nif]
+		[date, description, value, balance, file_path, has_nif]
 	);
 
 	const transaction_id = (
 		await client.query(
 			`SELECT
-	        *
-	    FROM transactions
-	    ORDER BY id DESC
-	    LIMIT 1`
+	        	*
+			FROM transactions
+			ORDER BY id DESC
+			LIMIT 1`
 		)
 	).rows[0].id;
 
@@ -88,6 +92,7 @@ async function readTransaction(client, id) {
             transactions.date,
             transactions.description,
             transactions.value,
+            transactions.balance,
             transactions.file_path,
             transactions.has_nif,
             string_agg(projects.name, ' / ') AS projects
@@ -107,6 +112,7 @@ async function readTransaction(client, id) {
 
 	res.rows[0].date = res.rows[0].date.toISOString().substring(0, 10);
 	res.rows[0].value = parseFloat(res.rows[0].value);
+	res.rows[0].balance = parseFloat(res.rows[0].balance);
 	return res.rows[0];
 }
 
@@ -117,6 +123,7 @@ async function readTransaction(client, id) {
  * @param {date} date
  * @param {string} description
  * @param {float} value
+ * @param {float} balance
  * @param {string} file_path
  * @param {boolean} has_nif
  * @param {Array<integer>} projects
@@ -128,6 +135,7 @@ async function updateTransaction(
 	date,
 	description,
 	value,
+	balance,
 	file_path,
 	has_nif,
 	projects
@@ -141,12 +149,13 @@ async function updateTransaction(
             date = $2::date,
             description = $3::text,
             value = $4::numeric,
-            file_path = $5::text,
-            has_nif = $6::boolean
+            balance = $5::numeric,
+            file_path = $6::text,
+            has_nif = $7::boolean
         WHERE
             id = $1::integer;
         `,
-		[id, date, description, value, file_path, has_nif]
+		[id, date, description, value, balance, file_path, has_nif]
 	);
 
 	await client.query(
@@ -224,24 +233,25 @@ async function listTransactions(
 
 	const res = await client.query(
 		`
-        SELECT
-            transactions.id,
-            transactions.date,
-            transactions.description,
-            transactions.value,
-            transactions.file_path,
-            transactions.has_nif,
-            string_agg(projects.name, ' / ') AS projects
-        FROM
-            transactions
-        LEFT JOIN transaction_project
-            ON transactions.id = transaction_project.transaction_id
-        LEFT JOIN projects
-            ON projects.id = transaction_project.project_id
-        WHERE transactions.date >= $1::date
-            AND transactions.date <= $2::date
-            ${projects.length !== 0 ? "AND projects.id = ANY ($3::integer[])" : ""}
-        GROUP BY transactions.id
+		SELECT
+			transactions.id,
+			transactions.date,
+			transactions.description,
+			transactions.value,
+			transactions.balance,
+			transactions.file_path,
+			transactions.has_nif,
+			string_agg(projects.name, ' / ') AS projects
+		FROM
+			transactions
+		LEFT JOIN transaction_project
+			ON transactions.id = transaction_project.transaction_id
+		LEFT JOIN projects
+			ON projects.id = transaction_project.project_id
+		WHERE transactions.date >= $1::date
+			AND transactions.date <= $2::date
+		GROUP BY transactions.id
+		${projects.length !== 0 ? "HAVING bool_or(projects.id = ANY($3::int[]))" : ""}
         `,
 		projects.length !== 0
 			? [initialMonthDate, finalMonthDate, projects]
@@ -254,7 +264,8 @@ async function listTransactions(
 		return {
 			...row,
 			date: row.date.toISOString().substring(0, 10),
-			value: parseFloat(row.value)
+			value: parseFloat(row.value),
+			balance: parseFloat(row.balance)
 		};
 	});
 }

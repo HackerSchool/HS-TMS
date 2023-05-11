@@ -9,11 +9,6 @@ CREATE TABLE users (
     username TEXT PRIMARY KEY CHECK (username LIKE 'ist%')
 );
 
-CREATE TABLE variables (
-    "name" TEXT PRIMARY KEY,
-    "value" TEXT NOT NULL
-);
-
 CREATE TABLE projects (
     id SERIAL PRIMARY KEY,
     "name" TEXT UNIQUE NOT NULL,
@@ -25,6 +20,7 @@ CREATE TABLE transactions (
     "date" DATE NOT NULL,
     "description" TEXT NOT NULL,
     "value" NUMERIC NOT NULL,
+    balance NUMERIC NOT NULL,
     file_path TEXT UNIQUE,
     has_nif BOOLEAN NOT NULL
 );
