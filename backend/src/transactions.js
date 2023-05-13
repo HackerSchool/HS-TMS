@@ -5,8 +5,8 @@
  * @param {string} description
  * @param {float} value
  * @param {float} balance
- * @param {string} file_path
- * @param {boolean} has_nif
+ * @param {string} filePath
+ * @param {boolean} hasNif
  * @param {Array<integer>} projects
  * @returns {void}
  */
@@ -16,8 +16,8 @@ async function createTransaction(
 	description,
 	value,
 	balance,
-	file_path,
-	has_nif,
+	filePath,
+	hasNif,
 	projects
 ) {
 	await client.connect();
@@ -40,10 +40,10 @@ async function createTransaction(
                 $5::text,
                 $6::boolean
             );`,
-		[date, description, value, balance, file_path, has_nif]
+		[date, description, value, balance, filePath, hasNif]
 	);
 
-	const transaction_id = (
+	const transactionId = (
 		await client.query(
 			`SELECT
 	        	*
@@ -54,7 +54,7 @@ async function createTransaction(
 	).rows[0].id;
 
 	await Promise.all(
-		projects.map(async (project_id) => {
+		projects.map(async (projectId) => {
 			await client.query(
 				`INSERT INTO transaction_project (
                     transaction_id,
@@ -68,7 +68,7 @@ async function createTransaction(
                     )
                 ON CONFLICT DO NOTHING;
                 `,
-				[transaction_id, project_id]
+				[transactionId, projectId]
 			);
 		})
 	);
@@ -124,8 +124,8 @@ async function readTransaction(client, id) {
  * @param {string} description
  * @param {float} value
  * @param {float} balance
- * @param {string} file_path
- * @param {boolean} has_nif
+ * @param {string} filePath
+ * @param {boolean} hasNif
  * @param {Array<integer>} projects
  * @returns {void}
  */
@@ -136,8 +136,8 @@ async function updateTransaction(
 	description,
 	value,
 	balance,
-	file_path,
-	has_nif,
+	filePath,
+	hasNif,
 	projects
 ) {
 	await client.connect();
@@ -155,7 +155,7 @@ async function updateTransaction(
         WHERE
             id = $1::integer;
         `,
-		[id, date, description, value, balance, file_path, has_nif]
+		[id, date, description, value, balance, filePath, hasNif]
 	);
 
 	await client.query(
@@ -168,7 +168,7 @@ async function updateTransaction(
 	);
 
 	await Promise.all(
-		projects.map(async (project_id) => {
+		projects.map(async (projectId) => {
 			await client.query(
 				`
                 INSERT INTO transaction_project (
@@ -181,7 +181,7 @@ async function updateTransaction(
                         $2::integer
                     )
                 ON CONFLICT DO NOTHING;`,
-				[id, project_id]
+				[id, projectId]
 			);
 		})
 	);
@@ -212,27 +212,32 @@ async function deleteTransaction(client, id) {
 /**
  * @async
  * @param {Client} client
- * @param {date} [initial_month="2000-01"]
- * @param {date} [final_month="3000-01"]
+ * @param {date} [initialMonth="2000-01"]
+ * @param {date} [finalMonth="3000-01"]
+ * @param {float} [initialValue=Number.NEGATIVE_INFINITY]
+ * @param {float} [finalValue=Number.POSITIVE_INFINITY]
+ * @param {boolean} [hasNif=null]
  * @param {Array<integer>} [projects=[]]
  * @returns {Array<Object>}
  */
 async function listTransactions(
 	client,
-	initial_month = "2000-01",
-	final_month = "3000-01",
+	initialMonth = "2000-01",
+	finalMonth = "3000-01",
+	initialValue = Number.NEGATIVE_INFINITY,
+	finalValue = Number.POSITIVE_INFINITY,
+	hasNif = null,
 	projects = []
 ) {
 	await client.connect();
 
-	const initialMonthDate = new Date(initial_month + "-01");
+	const initialMonthDate = new Date(initialMonth + "-01");
 
-	const finalMonthDate = new Date(final_month + "-01");
+	const finalMonthDate = new Date(finalMonth + "-01");
 	finalMonthDate.setMonth(finalMonthDate.getMonth() + 1);
 	finalMonthDate.setDate(0);
 
-	const res = await client.query(
-		`
+	let query = `
 		SELECT
 			transactions.id,
 			transactions.date,
@@ -250,13 +255,24 @@ async function listTransactions(
 			ON projects.id = transaction_project.project_id
 		WHERE transactions.date >= $1::date
 			AND transactions.date <= $2::date
-		GROUP BY transactions.id
-		${projects.length !== 0 ? "HAVING bool_or(projects.id = ANY($3::int[]))" : ""}
-        `,
-		projects.length !== 0
-			? [initialMonthDate, finalMonthDate, projects]
-			: [initialMonthDate, finalMonthDate]
-	);
+			AND transactions.value BETWEEN $3::numeric AND $4::numeric
+		`;
+
+	let queryParams = [initialMonthDate, finalMonthDate, initialValue, finalValue];
+
+	if (hasNif !== null) {
+		query += ` AND transactions.has_nif = $${queryParams.length + 1}::boolean`;
+		queryParams.push(hasNif);
+	}
+
+	query += " GROUP BY transactions.id";
+
+	if (projects.length !== 0) {
+		query += ` HAVING bool_or(projects.id = ANY($${queryParams.length + 1}::int[]))`;
+		queryParams.push(projects);
+	}
+
+	const res = await client.query(query, queryParams);
 
 	await client.end();
 
