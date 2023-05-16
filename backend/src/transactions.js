@@ -4,7 +4,6 @@
  * @param {date} date
  * @param {string} description
  * @param {float} value
- * @param {float} balance
  * @param {string} filePath
  * @param {boolean} hasNif
  * @param {Array<integer>} projects
@@ -15,7 +14,6 @@ async function createTransaction(
 	date,
 	description,
 	value,
-	balance,
 	filePath,
 	hasNif,
 	projects
@@ -27,7 +25,6 @@ async function createTransaction(
             date,
             description,
             value,
-			balance,
             file_path,
             has_nif
         )
@@ -36,11 +33,10 @@ async function createTransaction(
                 $1::date,
                 $2::text,
                 $3::numeric,
-                $4::numeric,
-                $5::text,
-                $6::boolean
+                $4::text,
+                $5::boolean
             );`,
-		[date, description, value, balance, filePath, hasNif]
+		[date, description, value, filePath, hasNif]
 	);
 
 	const transactionId = (
@@ -72,6 +68,8 @@ async function createTransaction(
 			);
 		})
 	);
+
+	await trigger_update_balance(client);
 
 	await client.end();
 }
@@ -123,7 +121,6 @@ async function readTransaction(client, id) {
  * @param {date} date
  * @param {string} description
  * @param {float} value
- * @param {float} balance
  * @param {string} filePath
  * @param {boolean} hasNif
  * @param {Array<integer>} projects
@@ -135,7 +132,6 @@ async function updateTransaction(
 	date,
 	description,
 	value,
-	balance,
 	filePath,
 	hasNif,
 	projects
@@ -149,13 +145,12 @@ async function updateTransaction(
             date = $2::date,
             description = $3::text,
             value = $4::numeric,
-            balance = $5::numeric,
-            file_path = $6::text,
-            has_nif = $7::boolean
+            file_path = $5::text,
+            has_nif = $6::boolean
         WHERE
             id = $1::integer;
         `,
-		[id, date, description, value, balance, filePath, hasNif]
+		[id, date, description, value, filePath, hasNif]
 	);
 
 	await client.query(
@@ -186,6 +181,8 @@ async function updateTransaction(
 		})
 	);
 
+	await trigger_update_balance(client);
+
 	await client.end();
 }
 
@@ -205,6 +202,8 @@ async function deleteTransaction(client, id) {
 	`,
 		[id]
 	);
+
+	await trigger_update_balance(client);
 
 	await client.end();
 }
@@ -284,6 +283,20 @@ async function listTransactions(
 			balance: parseFloat(row.balance)
 		};
 	});
+}
+
+/**
+ * @async
+ * @param {Client} client
+ * @returns {void}
+ */
+async function trigger_update_balance(client) {
+	await client.query(
+		`
+		UPDATE transactions
+		SET id = id
+	`
+	);
 }
 
 module.exports = {
