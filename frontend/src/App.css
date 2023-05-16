@@ -1,1 +1,25 @@
 /* common css */
+
+html {
+    --hs-logo: #6BBA75;
+    --green: #0E9553;
+    --dark-green: #075531;
+    --red: #F21313;
+    --cinza-1: #212121;
+    --cinza-2: #252525;
+    --cinza-3: #2C2C2C;
+    --cinza-4: #333333;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: black;
+    color: white;
+}
