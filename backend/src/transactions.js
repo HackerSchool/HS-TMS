@@ -217,6 +217,8 @@ async function deleteTransaction(client, id) {
  * @param {float} [finalValue=Number.POSITIVE_INFINITY]
  * @param {boolean} [hasNif=null]
  * @param {Array<integer>} [projects=[]]
+ * @param {string} [orderBy="date"]
+ * @param {string} [order="DESC"]
  * @returns {Array<Object>}
  */
 async function listTransactions(
@@ -226,7 +228,9 @@ async function listTransactions(
 	initialValue = Number.NEGATIVE_INFINITY,
 	finalValue = Number.POSITIVE_INFINITY,
 	hasNif = null,
-	projects = []
+	projects = [],
+	orderBy = "date",
+	order = "DESC"
 ) {
 	await client.connect();
 
@@ -271,7 +275,13 @@ async function listTransactions(
 		queryParams.push(projects);
 	}
 
-	query += " ORDER BY date DESC, id DESC";
+	if (orderBy === "date" && (order === "ASC" || order === "DESC")) {
+		query += ` ORDER BY date ${order}, id ${order}`;
+	} else if (orderBy === "value" && (order === "ASC" || order === "DESC")) {
+		query += ` ORDER BY value ${order}, date DESC`;
+	} else {
+		query += ` ORDER BY date DESC, id DESC`;
+	}
 
 	const res = await client.query(query, queryParams);
 
