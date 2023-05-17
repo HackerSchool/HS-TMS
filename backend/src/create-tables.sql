@@ -43,7 +43,8 @@ BEGIN
         FROM 
             transactions 
         WHERE 
-            "date" <= NEW."date" AND id < NEW.id
+            "date" < NEW."date"
+            OR ("date" = NEW."date" AND id < NEW.id)
         ), 
         0
     ) + NEW.value;

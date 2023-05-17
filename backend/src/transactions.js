@@ -271,6 +271,8 @@ async function listTransactions(
 		queryParams.push(projects);
 	}
 
+	query += " ORDER BY date DESC, id DESC";
+
 	const res = await client.query(query, queryParams);
 
 	await client.end();
