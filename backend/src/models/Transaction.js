@@ -8,10 +8,10 @@ class Transaction {
 	 * @param {string} filePath
 	 * @param {boolean} hasNif
 	 * @param {Array<integer>} projects
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async createOne(pool, date, description, value, filePath, hasNif, projects) {
-		await pool.query(
+		const res = await pool.query(
 			`INSERT INTO transactions (
             date,
             description,
@@ -26,19 +26,12 @@ class Transaction {
                 $3::numeric,
                 $4::text,
                 $5::boolean
-            );`,
+            )
+		RETURNING *;`,
 			[date, description, value, filePath, hasNif]
 		);
 
-		const transactionId = (
-			await pool.query(
-				`SELECT
-	        	*
-			FROM transactions
-			ORDER BY id DESC
-			LIMIT 1`
-			)
-		).rows[0].id;
+		const transactionId = res.rows[0].id;
 
 		await Promise.all(
 			projects.map(async (projectId) => {
@@ -61,6 +54,8 @@ class Transaction {
 		);
 
 		await this.#triggerUpdateBalance(pool);
+
+		return await this.getOne(pool, transactionId);
 	}
 
 	/**
@@ -109,7 +104,7 @@ class Transaction {
 	 * @param {string} filePath
 	 * @param {boolean} hasNif
 	 * @param {Array<integer>} projects
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async updateOne(pool, id, date, description, value, filePath, hasNif, projects) {
 		await pool.query(
@@ -156,6 +151,8 @@ class Transaction {
 		);
 
 		await this.#triggerUpdateBalance(pool);
+
+		return await this.getOne(pool, id);
 	}
 
 	/**

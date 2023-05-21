@@ -1,19 +1,18 @@
 const express = require("express");
-const { Pool } = require("pg");
 require("dotenv").config();
-
-const pool = new Pool({
-	user: process.env.DB_USER,
-	host: process.env.DB_HOST,
-	database: process.env.DB_NAME,
-	password: process.env.DB_PASSWORD,
-	port: process.env.DB_PORT
-});
 
 const app = express();
 
-app.get("/", async (req, res) => {
-	res.send("Hello World!");
+app.use(express.json());
+app.use(require("./middleware/selectPool"));
+
+app.use("/projects", require("./routes/projectRoutes"));
+app.use("/reminders", require("./routes/reminderRoutes"));
+app.use("/transactions", require("./routes/transactionRoutes"));
+app.use("/users", require("./routes/userRoutes"));
+
+app.get("/health", async (req, res) => {
+	res.status(200).send("OK");
 });
 
 app.listen(process.env.PORT, () => {

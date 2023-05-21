@@ -5,13 +5,15 @@ class Reminder {
 	 * @param {string} title
 	 * @param {string} description
 	 * @param {date} date
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async createOne(pool, title, description, date) {
-		await pool.query(
-			`INSERT INTO reminders (title, description, date) VALUES($1::text, $2::text, $3::date);`,
+		const res = await pool.query(
+			`INSERT INTO reminders (title, description, date) VALUES($1::text, $2::text, $3::date) RETURNING *;`,
 			[title, description, date]
 		);
+
+		return await this.getOne(pool, res.rows[0].id);
 	}
 
 	/**
@@ -36,7 +38,7 @@ class Reminder {
 	 * @param {string} title
 	 * @param {string} description
 	 * @param {date} date
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async updateOne(pool, id, title, description, date) {
 		await pool.query(
@@ -45,10 +47,13 @@ class Reminder {
 		SET title = $2::text,
 			description = $3::text,
 			date = $4::date
-		WHERE id = $1::integer;
+		WHERE id = $1::integer
+		RETURNING *;
 	`,
 			[id, title, description, date]
 		);
+
+		return await this.getOne(pool, id);
 	}
 
 	/**
@@ -73,7 +78,7 @@ class Reminder {
 	 * @returns {Array<Object>}
 	 */
 	async getAll(pool) {
-		const res = await pool.query(`SELECT * FROM reminders`);
+		const res = await pool.query(`SELECT * FROM reminders ORDER BY id`);
 
 		return res.rows.map((row) => {
 			return {

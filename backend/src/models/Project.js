@@ -4,13 +4,15 @@ class Project {
 	 * @param {pg.Pool} pool
 	 * @param {string} name
 	 * @param {boolean} active
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async createOne(pool, name, active) {
-		await pool.query(
-			`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean);`,
+		const res = await pool.query(
+			`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean) RETURNING *;`,
 			[name, active]
 		);
+
+		return await this.getOne(pool, res.rows[0].id);
 	}
 
 	/**
@@ -33,7 +35,7 @@ class Project {
 	 * @param {integer} id
 	 * @param {string} name
 	 * @param {boolean} active
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async updateOne(pool, id, name, active) {
 		await pool.query(
@@ -41,10 +43,13 @@ class Project {
 		UPDATE projects
 		SET name = $2::text,
 			active = $3::boolean
-		WHERE id = $1::integer;
+		WHERE id = $1::integer
+		RETURNING *;
 	`,
 			[id, name, active]
 		);
+
+		return await this.getOne(pool, id);
 	}
 
 	/**
@@ -69,7 +74,7 @@ class Project {
 	 * @returns {Array<Object>}
 	 */
 	async getAll(pool) {
-		const res = await pool.query(`SELECT * FROM projects`);
+		const res = await pool.query(`SELECT * FROM projects ORDER BY id`);
 
 		return res.rows;
 	}

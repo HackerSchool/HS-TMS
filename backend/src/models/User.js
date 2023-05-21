@@ -3,10 +3,15 @@ class User {
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {string} username
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async createOne(pool, username) {
-		await pool.query(`INSERT INTO users (username) VALUES($1::text);`, [username]);
+		const res = await pool.query(
+			`INSERT INTO users (username) VALUES($1::text) RETURNING *;`,
+			[username]
+		);
+
+		return res.rows[0];
 	}
 
 	/**
