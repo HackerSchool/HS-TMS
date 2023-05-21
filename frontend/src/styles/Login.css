@@ -1,7 +1,7 @@
 
 
 .LoginPage {
-    height: 100vh;
+    height: 100svh;
     background-color: var(--cinza-2);
     display: flex;
     justify-content: center;
@@ -10,14 +10,14 @@
 
 .login-container {
     inset: 0;
-    margin: auto;
+    margin: auto 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
     height: 32rem;
-    min-height: fit-content;
-    
+    min-width: 90%;
+    max-width: 100%;
 }
 
 h1 {
@@ -28,14 +28,15 @@ h1 {
 .logo {
     border-radius: 20px;
     width: 10rem;
+    max-width: 30%;
     box-shadow: 0px 4px 10px 0px #00000046;
-
 }
 
 .button {
     padding: 1.2rem 2.7rem;
     margin: 0 5rem;
-    min-width: 20rem;
+    width: 20rem;
+    max-width: 70%;
     border-radius: 20px;
     background-color: var(--cinza-4);
     display: flex;
@@ -48,12 +49,32 @@ h1 {
     cursor: pointer;
 }
 
-#demo-account {
+#fenix-login {
     background-color: var(--hs-logo);
 }
 
 a {
-    color: var(--dark-green);
-    font-weight: bold;
     text-decoration: none;
+    color: white;
+}
+
+i {
+    padding-right: 0.2rem;
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .button {
+        padding: 1rem 2rem;
+    }
 }

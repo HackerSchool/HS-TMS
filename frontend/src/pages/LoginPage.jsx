@@ -12,9 +12,19 @@ export default function LoginPage() {
 
                 <img src={hs_logo} alt="HS-logo" className="logo" />
 
-                <div className="button" id="fenix-login">Login with FenixEdu@IST</div>
                 <div className="button" id="demo-account">Demo account</div>
-                <a href="">Github</a>
+                <div className="button" id="fenix-login">Login with FenixEdu@IST</div>
+
+                <footer>
+                    <a href="https://hackerschool.io" target="_blank"><div className="website">
+                        <i class="bi bi-link-45deg"></i>
+                        Website
+                    </div></a>
+                    <a href="https://github.com/HackerSchool/HS-TMS" target="_blank"><div className="github">
+                        <i class="bi bi-github"></i>
+                        Github
+                    </div></a>
+                </footer>
             </div>
         </div>
     )
