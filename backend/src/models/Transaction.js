@@ -1,3 +1,5 @@
+const dateUtils = require("../utils/dateUtils");
+
 class Transaction {
 	/**
 	 * @async
@@ -88,7 +90,7 @@ class Transaction {
 			[id]
 		);
 
-		res.rows[0].date = res.rows[0].date.toISOString().substring(0, 10);
+		res.rows[0].date = dateUtils.convertToLocalTimezone(res.rows[0].date);
 		res.rows[0].value = parseFloat(res.rows[0].value);
 		res.rows[0].balance = parseFloat(res.rows[0].balance);
 		return res.rows[0];
@@ -253,7 +255,7 @@ class Transaction {
 		return res.rows.map((row) => {
 			return {
 				...row,
-				date: row.date.toISOString().substring(0, 10),
+				date: dateUtils.convertToLocalTimezone(row.date),
 				value: parseFloat(row.value),
 				balance: parseFloat(row.balance)
 			};

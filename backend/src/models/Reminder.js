@@ -1,3 +1,5 @@
+const dateUtils = require("../utils/dateUtils");
+
 class Reminder {
 	/**
 	 * @async
@@ -27,7 +29,7 @@ class Reminder {
 			id
 		]);
 
-		res.rows[0].date = res.rows[0].date.toISOString().substring(0, 10);
+		res.rows[0].date = dateUtils.convertToLocalTimezone(res.rows[0].date);
 		return res.rows[0];
 	}
 
@@ -78,12 +80,12 @@ class Reminder {
 	 * @returns {Array<Object>}
 	 */
 	async getAll(pool) {
-		const res = await pool.query(`SELECT * FROM reminders ORDER BY id`);
+		const res = await pool.query(`SELECT * FROM reminders ORDER BY date`);
 
 		return res.rows.map((row) => {
 			return {
 				...row,
-				date: row.date.toISOString().substring(0, 10)
+				date: dateUtils.convertToLocalTimezone(row.date)
 			};
 		});
 	}
