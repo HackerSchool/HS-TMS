@@ -23,3 +23,63 @@ body {
     background-color: black;
     color: white;
 }
+
+
+/* Sidebar CSS */
+
+aside {
+    float: left;
+}
+
+.Sidebar {
+    color: var(--green);
+    background-color: var(--cinza-1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 10px;
+    gap: 50px;
+    height: 100svh;
+    max-width: 250px;
+    padding: 3.5rem 1.5rem;
+    border-radius: 0 1rem 1rem 0;
+    box-shadow: 2px 4px 10px 0px #000000B2;
+}
+
+.nav-item {
+    border: 0 solid transparent;
+    border-radius: 2rem;
+    padding: 0.8rem 0 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    min-width: 13rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    color: var(--green);
+}
+
+.nav-item.active {
+    background-color: var(--hs-logo);
+    color: white;
+    box-shadow: 0px 5px 7px rgba(0, 0, 0, .5);
+}
+
+#logo-img {
+    max-width: 3rem;
+    border-radius: 0.8rem;
+}
+
+#hstms-logo {
+    color: var(--hs-logo);
+    font-size: 2rem;
+    padding: 0;
+    justify-content: center;
+}
+
+#logout {
+    justify-content: center;
+    padding: 0;
+}

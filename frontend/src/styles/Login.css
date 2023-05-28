@@ -59,13 +59,20 @@ a {
 }
 
 i {
-    padding-right: 0.2rem;
+    padding-right: 0.3rem;
 }
 
 footer {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 1rem;
+    max-height: 1rem;
+}
+
+.footer-item {
+    display: flex;
+    align-items: center;
 }
 
 
