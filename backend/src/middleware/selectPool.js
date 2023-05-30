@@ -13,4 +13,4 @@ function selectPool(req, res, next) {
 	next();
 }
 
-module.exports = selectPool;
+module.exports = { pool, selectPool };
