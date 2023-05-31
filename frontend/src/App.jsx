@@ -6,14 +6,14 @@ import './App.css'
 
 function App() {
 
-    const [loginToken, setLoginToken] = useState("");
+    const [user, setuser] = useState(true);
 
 
     return (
         <div className="App">
             <Routes>
-                {!loginToken && <Route path="/login" element={<LoginPage />} />}
-                {loginToken && <Route path='*' element={<Home />} />}
+                {!user && <Route path="/login" element={<LoginPage />} />}
+                {user && <Route path='*' element={<Home />} />}
                 <Route path='*' element={<Navigate to='/login'/>}/>
             </Routes>
         </div>

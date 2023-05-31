@@ -20,8 +20,15 @@ html {
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: black;
+    background-color: var(--cinza-4);
     color: white;
+}
+
+.page {
+    background-color: var(--cinza-4);
+    min-height: 100vh;
+    padding: 3rem;
+    display: inline-block;
 }
 
 

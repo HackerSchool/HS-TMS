@@ -1,11 +1,10 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar';
 
 function TransactionsPage() {
     return (
-        <div className="TransactionsPage">
-            Transactions
-        </div>
+        <section className="page" id='TransactionsPage'>
+                Transactions
+        </section>
     );
 }
 

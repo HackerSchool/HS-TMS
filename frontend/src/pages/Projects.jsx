@@ -2,9 +2,9 @@ import React from 'react';
 
 function ProjectsPage() {
     return (
-        <div className="ProjectsPage">
+        <section className="page" id='ProjectsPage'>
             Projects
-        </div>
+        </section>
     );
 }
 

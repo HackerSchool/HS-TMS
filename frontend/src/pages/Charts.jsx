@@ -2,9 +2,9 @@ import React from 'react';
 
 function ChartsPage() {
     return (
-        <div className="ChartsPage">
+        <section className="page" id='ChartsPage'>
             Charts
-        </div>
+        </section>
     );
 }
 
