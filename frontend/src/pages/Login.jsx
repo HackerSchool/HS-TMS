@@ -13,8 +13,10 @@ export default function LoginPage() {
 
                 <img src={hs_logo} alt="HS-logo" className="logo" />
 
+                <div className="button" id="fenix-login">
+                    Login with FenixEdu@IST
+                </div>
                 <div className="button" id="demo-account">Demo account</div>
-                <div className="button" id="fenix-login">Login with FenixEdu@IST</div>
 
                 <footer>
                     <a href="https://hackerschool.io" target="_blank">

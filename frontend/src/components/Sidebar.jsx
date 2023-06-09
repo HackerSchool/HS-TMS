@@ -15,20 +15,20 @@ function Sidebar() {
                     <img src={hslogo} alt="HS-logo" id='logo-img' />
                     HS-TMS
                 </div>
-                <NavLink to='/dashboard' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                <NavLink to='dashboard' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
                         <DashboardIcon />
                         Dashboard
                 </NavLink>
 
-                <NavLink to='/transactions' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                <NavLink to='transactions' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
                         <AttachMoneyIcon />
                         Transactions
                 </NavLink>
-                <NavLink to='/projects' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                <NavLink to='projects' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
                         <HandymanIcon />
                         Projects
                 </NavLink>
-                <NavLink to='/charts' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                <NavLink to='charts' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
                         <BarChartIcon />
                         Charts
                 </NavLink>
@@ -38,7 +38,6 @@ function Sidebar() {
                 </div>
             </div>
         </aside>
-        
     );
 }
 

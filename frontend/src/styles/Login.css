@@ -53,6 +53,10 @@ h1 {
     background-color: var(--hs-logo);
 }
 
+#demo-account {
+    width: 18rem;
+}
+
 a {
     text-decoration: none;
     color: white;
