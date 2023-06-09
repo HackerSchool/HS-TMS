@@ -1,16 +1,20 @@
 const express = require("express");
 const passport = require("passport");
+const { asyncHandler } = require("../middleware/error");
+const isLoggedIn = require("../middleware/isLoggedIn");
 
 const router = express.Router();
 
-router.get("/fenix", passport.authenticate("fenix"));
+router.get("/fenix", asyncHandler(passport.authenticate("fenix")));
 
 router.get(
 	"/fenix/callback",
-	passport.authenticate("fenix", {
-		successRedirect: "/auth/fenix/success",
-		failureRedirect: "/auth/fenix/failure"
-	})
+	asyncHandler(
+		passport.authenticate("fenix", {
+			successRedirect: "/auth/fenix/success",
+			failureRedirect: "/auth/fenix/failure"
+		})
+	)
 );
 
 router.get("/fenix/success", (req, res) => {
@@ -21,7 +25,7 @@ router.get("/fenix/failure", (req, res) => {
 	res.send("Failed to authenticate");
 });
 
-router.get("/user", (req, res) => {
+router.get("/user", isLoggedIn, (req, res) => {
 	res.send(req.user);
 });
 
