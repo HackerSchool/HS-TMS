@@ -7,11 +7,21 @@ import DashboardPage from './pages/Dashboard';
 import TransactionsPage from './pages/Transactions';
 import ProjectsPage from './pages/Projects';
 import ChartsPage from './pages/Charts';
-import Axios from "./Axios"
+import axios_instance from "./Axios"
 
 function App() {
 
     const [user, setUser] = useState();
+
+    useEffect(() => {
+        axios_instance.get("auth/user")
+            .then(res => {
+                if (res.status == 200) return res.data
+                throw new Error("Authentication failed!");
+            })
+            .then(data => console.log(data))
+            .catch(err => console.log(err));
+    }, [])
 
     return (
         <div className="App">

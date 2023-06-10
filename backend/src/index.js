@@ -1,6 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
+const cors = require("cors")
 require("./auth/OAuth2Strategy");
 require("dotenv").config();
 const isLoggedIn = require("./middleware/isLoggedIn");
@@ -8,6 +9,12 @@ const isLoggedIn = require("./middleware/isLoggedIn");
 const app = express();
 
 app.use(express.json());
+app.use(
+    cors({
+        origin: process.env.CLIENT_ADDRESS,
+        credentials: true
+    })
+)
 app.use(
 	session({
 		secret: process.env.SESSION_SECRET,

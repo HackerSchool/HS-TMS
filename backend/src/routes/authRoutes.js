@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+require("dotenv").config()
 const { asyncHandler } = require("../middleware/error");
 const isLoggedIn = require("../middleware/isLoggedIn");
 
@@ -18,11 +19,11 @@ router.get(
 );
 
 router.get("/fenix/success", (req, res) => {
-	res.send("Authenticated");
+	res.redirect(`${process.env.CLIENT_ADDRESS}/home`);
 });
 
 router.get("/fenix/failure", (req, res) => {
-	res.send("Failed to authenticate");
+	res.redirect(`${process.env.CLIENT_ADDRESS}/login`);
 });
 
 router.get("/user", isLoggedIn, (req, res) => {
