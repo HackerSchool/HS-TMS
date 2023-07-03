@@ -43,7 +43,12 @@ passport.use(
 );
 
 passport.serializeUser(function (user, done) {
-	done(null, user);
+	const fullName = user.name.split(" ");
+	done(null, {
+		username: user.username,
+		name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
+		photo: user.photo.data
+	});
 });
 
 passport.deserializeUser(function (user, done) {
