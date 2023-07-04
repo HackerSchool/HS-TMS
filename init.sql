@@ -21,7 +21,7 @@ CREATE TABLE transactions (
     "description" TEXT NOT NULL,
     "value" NUMERIC NOT NULL,
     balance NUMERIC NOT NULL,
-    file_path TEXT UNIQUE,
+    has_file BOOLEAN NOT NULL,
     has_nif BOOLEAN NOT NULL
 );
 
