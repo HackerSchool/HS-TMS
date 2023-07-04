@@ -33,7 +33,7 @@ router.get("/user", isLoggedIn, (req, res) => {
 router.post("/logout", (req, res) => {
 	req.logout(function (err) {
 		req.session.destroy();
-		res.redirect("/");
+        res.status(200).send("Successfully logged out");
 	});
 });
 

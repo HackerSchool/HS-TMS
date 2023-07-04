@@ -28,3 +28,5 @@ services:
       - backend
     ports:
       - 5173:5173
+    volumes:
+      - ./frontend/src:/usr/src/app/frontend/src

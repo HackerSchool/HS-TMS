@@ -8,27 +8,37 @@ import TransactionsPage from './pages/Transactions';
 import ProjectsPage from './pages/Projects';
 import ChartsPage from './pages/Charts';
 import axios_instance from "./Axios"
+import Alert from '@mui/material/Alert';
 
 function App() {
 
     const [user, setUser] = useState();
+    const [errorMsg, setErrorMsg] = useState("");
 
     useEffect(() => {
         axios_instance.get("auth/user")
             .then(res => {
-                if (res.status == 200) return res.data
+                if (res.status == 200) return res.data;
                 throw new Error("Authentication failed!");
             })
-            .then(data => console.log(data))
-            .catch(err => console.log(err));
+            .then(data => {
+                console.log(data);
+                setUser(data);
+            })
+            .catch(err => {
+                console.log(err);
+                setUser(false);
+                setErrorMsg("Session either invalid or expired")
+            });
     }, [])
 
     return (
         <div className="App">
-            {/* <AppContext.Provider value={value}> */}
-                <Routes>
+            {errorMsg && <Alert onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
+
+                {user != undefined && <Routes>
                     {!user && <Route path="/login" element={<LoginPage />} />}
-                    {user && <Route path="/home" element={<Home />} >
+                    {user && <Route path="/home" element={<Home user={user} />} >
                         <Route index element={<Navigate to='dashboard' />}/>
                         <Route path='dashboard' element={<DashboardPage />}/>
                         <Route path='transactions' element={<TransactionsPage />}/>
@@ -37,8 +47,7 @@ function App() {
                         <Route path='*' element={<Navigate to='dashboard'/>}/>
                     </Route>}
                     <Route path='*' element={user ? <Navigate to='/home' /> : <Navigate to='/login' />} />
-                </Routes>
-            {/* </AppContext.Provider> */}
+                </Routes>}
         </div>
     )
 }

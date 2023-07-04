@@ -9,6 +9,7 @@ html {
     --cinza-2: #252525;
     --cinza-3: #2C2C2C;
     --cinza-4: #333333;
+    --light-gray: #aeaeae;
 }
 
 
@@ -29,6 +30,27 @@ body {
     min-height: 100vh;
     padding: 3rem;
     display: inline-block;
+    position: fixed;
+    z-index: -1;
+}
+
+.loading {
+    background-color: rgba(255, 255, 255, 0.2);
+    animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: rgba(255, 255, 255, 0);
+    }
+
+    50% {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    100% {
+        background-color: rgba(255, 255, 255, 0);
+    }
 }
 
 
@@ -41,6 +63,9 @@ aside {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.7);
+    border-radius: 0 1rem 1rem 0;
+    z-index: 3;
 }
 
 .Sidebar {
@@ -55,8 +80,6 @@ aside {
     max-width: 250px;
     max-height: 900px;
     padding: 3.5rem 1.5rem;
-    border-radius: 0 1rem 1rem 0;
-    box-shadow: 2px 4px 10px 0px #000000B2;
 }
 
 .nav-item {
@@ -71,12 +94,16 @@ aside {
     justify-content: flex-start;
     gap: 12px;
     color: var(--green);
+    transition: none 0.4s ease-in-out 0s;
+    transition-property: color, background-color;
 }
 
 .nav-item.active {
     background-color: var(--hs-logo);
     color: white;
     box-shadow: 0px 5px 7px rgba(0, 0, 0, .5);
+    transition: none 0.7s ease-out 0s;
+    transition-property: color, background-color, box-shadow;
 }
 
 #logo-img {
@@ -92,6 +119,34 @@ aside {
 }
 
 #logout {
+    display: flex;
     justify-content: center;
+    align-items: center;
     padding: 0;
+    gap: 12px;
+    cursor: pointer;
+}
+
+#user {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    gap: 30px;
+}
+
+#user-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    color: var(--light-gray);
+    font-size: 1.2rem;
+}
+
+.profile-pic {
+    border-radius: 5rem;
+    border: 2px solid var(--hs-logo) ;
+    max-height: 2.5rem;
 }

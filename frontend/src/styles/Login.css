@@ -28,7 +28,9 @@ h1 {
 .logo {
     border-radius: 20px;
     width: 10rem;
+    height: 10rem;
     max-width: 30%;
+    max-height: 30%;
     box-shadow: 0px 4px 10px 0px #00000046;
 }
 
@@ -79,6 +81,12 @@ footer {
     align-items: center;
 }
 
+.MuiAlert-root {
+    max-width: 400px;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}
 
 @media (max-width: 600px) {
     h1 {

@@ -1,5 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import ImageRenderer from './ImageRenderer';
+import axios_instance from '../Axios';
 import hslogo from '../assets/hs-logo.png'
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -7,7 +9,21 @@ import HandymanIcon from '@mui/icons-material/Handyman';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 
-function Sidebar() {
+function Sidebar({user}) {
+    const userNames = user.displayName.split(" ");
+    const userName = userNames[0] + (userNames.length > 1 ? ` ${userNames[userNames.length - 1]}` : "");
+
+    function logout() {
+        axios_instance.post("auth/logout")
+            .then(res => {
+                if (res.status == 200)
+                    window.open('/login', "_self")
+                else throw new Error(`Logout failed. Response status code: ${res.status}`)
+                
+            })
+            .catch(err => console.log(err));
+    }
+
     return (
         <aside>
             <div className="Sidebar">
@@ -32,9 +48,20 @@ function Sidebar() {
                         <BarChartIcon />
                         Charts
                 </NavLink>
-                <div className="nav-item" id='logout'>
-                    <PowerSettingsNewIcon />
-                    Logout
+
+                <div className="nav-item" id='user'>
+                    <div className="nav-item" id="user-info" >
+                            <ImageRenderer 
+                                imageData={[user.photo.data]}
+                                altText='Profile pic'
+                                className="profile-pic"
+                            />
+                            {userName}
+                    </div>
+                    <a className="nav-item" id='logout' onClick={logout} >
+                        <PowerSettingsNewIcon />
+                        Logout
+                    </a>
                 </div>
             </div>
         </aside>
