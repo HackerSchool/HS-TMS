@@ -10,8 +10,6 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 
 function Sidebar({user}) {
-    const userNames = user.displayName.split(" ");
-    const userName = userNames[0] + (userNames.length > 1 ? ` ${userNames[userNames.length - 1]}` : "");
 
     function logout() {
         axios_instance.post("auth/logout")
@@ -52,11 +50,11 @@ function Sidebar({user}) {
                 <div className="nav-item" id='user'>
                     <div className="nav-item" id="user-info" >
                             <ImageRenderer 
-                                imageData={[user.photo.data]}
+                                imageData={[user.photo]}
                                 altText='Profile pic'
                                 className="profile-pic"
                             />
-                            {userName}
+                            {user.name}
                     </div>
                     <a className="nav-item" id='logout' onClick={logout} >
                         <PowerSettingsNewIcon />

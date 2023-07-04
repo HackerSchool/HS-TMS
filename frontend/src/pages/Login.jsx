@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios_instance from "../Axios"
 import '../styles/Login.css'
 import '../App.css'
 import hs_logo from '../assets/hs-logo.png'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
+import Alert from '@mui/material/Alert';
 
-export default function LoginPage() {
+export default function LoginPage({user, setUser}) {
     const [imageReady, setImageReady] = useState(false)
+    const [errorMsg, setErrorMsg] = useState("");
 
     const image = new Image();
     image.onload = () => setImageReady(true)
@@ -16,9 +19,28 @@ export default function LoginPage() {
         window.open("http://localhost:3000/auth/fenix", "_self");
     }
 
+    useEffect(() => {
+        axios_instance.get("auth/user")
+            .then(res => {
+                if (res.status == 200) return res.data;
+                throw new Error("Authentication failed!");
+            })
+            .then(data => {
+                console.log(data);
+                setUser(data);
+            })
+            .catch(err => {
+                console.log(err);
+                setUser(false);
+                setErrorMsg("Session either invalid or expired")
+            });
+    }, [])
+
     return (
         <div className="LoginPage">
-            <div className="login-container">
+            {errorMsg && <Alert onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
+
+            {user != undefined && <div className="login-container">
                 <h1>Welcome to HS-TMS!</h1>
 
                 {imageReady ?
@@ -45,7 +67,7 @@ export default function LoginPage() {
                         </div>
                     </a>
                 </footer>
-            </div>
+            </div>}
         </div>
     )
 }

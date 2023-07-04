@@ -20,6 +20,8 @@ services:
       - postgres
     ports:
       - 3000:3000
+    volumes:
+      - ./backend/src:/usr/src/app/backend/src
 
   frontend:
     build: ./frontend
