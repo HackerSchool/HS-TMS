@@ -12,13 +12,6 @@ html {
     --light-gray: #aeaeae;
 }
 
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--cinza-4);
@@ -27,11 +20,63 @@ body {
 
 .page {
     background-color: var(--cinza-4);
+    height: 100vh;
     min-height: 100vh;
-    padding: 3rem;
+    width: calc(100% - 250px);
+    padding: 3rem 3rem 0rem 3rem;
     display: inline-block;
     position: fixed;
     z-index: -1;
+}
+
+.page > header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 1.2rem;
+	gap: 12px;
+}
+
+.page > header > h1 {
+    font-size: 2rem;
+}
+
+.content-container {
+	background-color: var(--cinza-1);
+    overflow-y: scroll;
+    min-height: 95%;
+    max-height: 95%;
+	border-radius: 1rem 1rem 0 0;
+}
+
+.content {
+	max-height: 100%;
+	padding: 3rem 3rem 0rem 3rem;
+    margin-bottom: 50px;
+}
+
+.btn {
+	border: 0 solid transparent;
+	border-radius: 2rem;
+	padding: 0.3rem 1.5rem;
+	background-color: var(--hs-logo);
+}
+
+.icon-btn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding-left: 1.2rem;
+	color: white;
+}
+
+.btn-group {
+    display: flex;
+	align-items: center;
+    gap: 12px;
+}
+
+.btn-group.right {
+    margin-left: auto;
 }
 
 .loading {
@@ -149,4 +194,50 @@ aside {
     border-radius: 5rem;
     border: 2px solid var(--hs-logo) ;
     max-height: 2.5rem;
+}
+
+/* Table */
+
+/* Table head cells */
+thead.MuiTableHead-root th.MuiTableCell-head {
+    color: var(--green);
+    font-size: 1.3rem;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Table body cells */
+tbody.MuiTableBody-root th.MuiTableCell-body,
+tbody.MuiTableBody-root td.MuiTableCell-body,
+tfoot.MuiTableFooter-root td.MuiTableCell-root {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Table footer icons */
+tfoot.MuiTableFooter-root svg {
+    color: white;
+}
+
+
+/* Scrollbar */
+
+/* width */
+::-webkit-scrollbar {
+	width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 1rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
 }
