@@ -7,18 +7,18 @@ class Transaction {
 	 * @param {date} date
 	 * @param {string} description
 	 * @param {float} value
-	 * @param {string} filePath
+	 * @param {boolean} hasFile
 	 * @param {boolean} hasNif
 	 * @param {Array<integer>} projects
 	 * @returns {Object}
 	 */
-	async createOne(pool, date, description, value, filePath, hasNif, projects) {
+	async createOne(pool, date, description, value, hasFile, hasNif, projects) {
 		const res = await pool.query(
 			`INSERT INTO transactions (
             date,
             description,
             value,
-            file_path,
+            has_file,
             has_nif
         )
         VALUES
@@ -26,11 +26,11 @@ class Transaction {
                 $1::date,
                 $2::text,
                 $3::numeric,
-                $4::text,
+                $4::boolean,
                 $5::boolean
             )
 		RETURNING *;`,
-			[date, description, value, filePath, hasNif]
+			[date, description, value, hasFile, hasNif]
 		);
 
 		const transactionId = res.rows[0].id;
@@ -75,7 +75,7 @@ class Transaction {
             transactions.description,
             transactions.value,
             transactions.balance,
-            transactions.file_path,
+            transactions.has_file,
             transactions.has_nif,
             string_agg(projects.name, ' / ') AS projects
         FROM
@@ -103,12 +103,12 @@ class Transaction {
 	 * @param {date} date
 	 * @param {string} description
 	 * @param {float} value
-	 * @param {string} filePath
+	 * @param {boolean} hasFile
 	 * @param {boolean} hasNif
 	 * @param {Array<integer>} projects
 	 * @returns {Object}
 	 */
-	async updateOne(pool, id, date, description, value, filePath, hasNif, projects) {
+	async updateOne(pool, id, date, description, value, hasFile, hasNif, projects) {
 		await pool.query(
 			`
         UPDATE transactions 
@@ -116,12 +116,12 @@ class Transaction {
             date = $2::date,
             description = $3::text,
             value = $4::numeric,
-            file_path = $5::text,
+            has_file = $5::boolean,
             has_nif = $6::boolean
         WHERE
             id = $1::integer;
         `,
-			[id, date, description, value, filePath, hasNif]
+			[id, date, description, value, hasFile, hasNif]
 		);
 
 		await pool.query(
@@ -212,7 +212,7 @@ class Transaction {
 			transactions.description,
 			transactions.value,
 			transactions.balance,
-			transactions.file_path,
+			transactions.has_file,
 			transactions.has_nif,
 			string_agg(projects.name, ' / ') AS projects
 		FROM
