@@ -15,6 +15,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import RequestPageIcon from '@mui/icons-material/RequestPage';
 
 function createData(date, description, value, projects, nif) {
     return { date, description, value, projects, nif };
@@ -141,7 +142,7 @@ export default function CustomTable() {
                                 <TableCell align="center">{row.value}</TableCell>
                                 <TableCell align="center">{row.projects}</TableCell>
                                 <TableCell align="center">{row.nif ? "Yes" : "No"}</TableCell>
-                                <TableCell align="center">{row.nif ? <CloudDownloadIcon /> : "-"}</TableCell>
+                                <TableCell align="center">{row.nif ? <RequestPageIcon /> : "-"}</TableCell>
                                 <TableCell align="center"><MoreHorizIcon /></TableCell>
                             </TableRow>
                         ))}

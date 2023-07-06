@@ -1,6 +1,7 @@
 import React from 'react';
 import '../styles/Transactions.css'
 import Table from '../components/Table'
+import NewTransactionBtn from '../components/NewTransactionBtn';
 import AddIcon from '@mui/icons-material/Add';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import SortIcon from '@mui/icons-material/Sort';
@@ -12,10 +13,7 @@ function TransactionsPage() {
             <header>
                 <h1>Transactions</h1>
                 <div className="btn-group left">
-                    <button className='btn icon-btn'>
-                        <AddIcon />
-                        New
-                    </button>
+                    <NewTransactionBtn />
                     <button className='btn icon-btn'>
                         <SummarizeIcon />
                         Report

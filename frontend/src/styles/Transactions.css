@@ -1,3 +1,32 @@
 .content {
     padding-top: 1.5rem;
 }
+
+/* New Transaction Modal */
+#new-transaction-modal {
+    margin: auto;
+}
+
+.value-cost-earning-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#create-transaction-projects-group {
+    width: 50%;
+}
+
+#create-transaction-nif-group {
+    flex-direction: row;
+    align-items: center;
+}
+
+#create-transaction-description-group {
+    width: 50%;
+}
+
+#create-transaction-btn {
+    font-size: 1.2rem;
+    margin: 0 auto;
+}

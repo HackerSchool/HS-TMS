@@ -18,6 +18,10 @@ body {
     color: white;
 }
 
+hr {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
 .page {
     background-color: var(--cinza-4);
     height: 100vh;
@@ -96,6 +100,113 @@ body {
     100% {
         background-color: rgba(255, 255, 255, 0);
     }
+}
+
+/* Modal */
+
+.modal {
+    background-color: var(--cinza-4);
+    border-radius: 2rem;
+    max-width: 60%;
+    max-height: 80%;
+    padding: 2rem;
+    position: absolute;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+/* close button */
+.form-header > .modal-close-btn {
+    cursor: pointer;
+    font-size: 2.7rem;
+}
+
+/* header */
+.form-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-header h1 {
+    margin-left: auto;
+    font-weight: 300;
+}
+
+/* form */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin: 3rem 0;
+}
+
+.form-row.last {
+    margin-top: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+input {
+    border-radius: 0.25rem;
+    border: 1px solid var(--cinza-4);
+    background-color: transparent;
+    color: white;
+    padding: 0.7rem;
+    color-scheme: dark;
+    font-family: 'Roboto', sans-serif;
+    min-height: 3.5rem;
+    font-size: 1rem;
+    width: 100%;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.30);
+}
+
+input[type="file"] {
+    display: flex;
+    align-items: center;
+}
+
+/* toggle buttons */
+.modal .toggle-button {
+    text-transform: none;
+    font-size: 0.8rem;
+    line-height: normal;
+    color: white;
+    border: 1px solid var(--cinza-4);
+    padding: 0rem 0.9rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.modal .toggle-button svg {
+    font-size: 1rem;
+}
+
+.modal .toggle-button.left {
+    border-radius: 6.25rem 0rem 0rem 6.25rem;
+}
+
+.modal .toggle-button.right {
+    border-radius: 0rem 6.25rem 6.25rem 0rem;
+}
+
+.modal .toggle-button.Mui-selected {
+    background-color: var(--green);
+    color: white;
+}
+
+.modal .toggle-button.Mui-selected:hover {
+    background-color: var(--green);
 }
 
 
