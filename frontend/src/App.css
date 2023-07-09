@@ -4,11 +4,14 @@ html {
     --hs-logo: #6BBA75;
     --green: #0E9553;
     --dark-green: #075531;
+    --green-alpha-40: #0e95546c;
+    --green-alpha-20: #0e955436;
     --red: #F21313;
     --cinza-1: #212121;
     --cinza-2: #252525;
     --cinza-3: #2C2C2C;
     --cinza-4: #333333;
+    --cinza-placeholder: rgba(255, 255, 255, 0.30);
     --light-gray: #aeaeae;
 }
 
@@ -114,6 +117,15 @@ hr {
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
+.modal > form {
+    height: 100%;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative; /* for the alerts */
+}
+
 /* close button */
 .form-header > .modal-close-btn {
     cursor: pointer;
@@ -133,11 +145,18 @@ hr {
 }
 
 /* form */
+.form-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 3rem;
+}
+
 .form-row {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    margin: 3rem 0;
+    gap: 10px;
 }
 
 .form-row.last {
@@ -166,7 +185,7 @@ input {
 }
 
 input::placeholder {
-    color: rgba(255, 255, 255, 0.30);
+    color: var(--cinza-placeholder);
 }
 
 input[type="file"] {
@@ -209,6 +228,38 @@ input[type="file"] {
     background-color: var(--green);
 }
 
+/* multiple select */
+.multiple-select svg {
+    color: white;
+}
+
+.multiple-select {
+    width: 100%;
+}
+
+.multiple-select .MuiSelect-multiple {
+    border-radius: 0.25rem;
+    font-family: 'Roboto', sans-serif;
+    color: var(--cinza-placeholder);
+}
+
+.multiple-select .MuiOutlinedInput-notchedOutline {
+    border: 1px solid var(--cinza-4);
+}
+
+.multiple-select .MuiChip-root {
+    background-color: var(--green);
+    color: white;
+    height: 1.5rem;
+}
+
+.MuiMenu-list .MuiMenuItem-root.Mui-selected {
+    background-color: var(--green-alpha-20);
+}
+
+.MuiMenu-list .MuiMenuItem-root.Mui-selected:hover {
+    background-color: var(--green-alpha-40);
+}
 
 /* Sidebar CSS */
 

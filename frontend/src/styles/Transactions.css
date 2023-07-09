@@ -22,6 +22,14 @@
     align-items: center;
 }
 
+#new-transaction-modal input[type="file"]::-webkit-file-upload-button {
+    background-color: var(--green);
+    border: none;
+    border-radius: 0.5rem;
+    height: 1.5rem;
+    margin-top: 0.2rem;
+  }
+
 #create-transaction-description-group {
     width: 50%;
 }
@@ -29,4 +37,17 @@
 #create-transaction-btn {
     font-size: 1.2rem;
     margin: 0 auto;
+}
+
+/* Alerts */
+.create-transaction-alert {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: fit-content;
+}
+
+.loading {
+    border-radius: 1rem;
 }
