@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios_instance from "../Axios";
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -74,7 +75,24 @@ function DownloadIcon({id}) {
     return (
         <RequestPageIcon
             /* FIXME */
-            onClick={() => window.open(`http://localhost:3000/transactions/download/${id}`, "_blank")}
+            onClick={() => {
+                axios_instance.get(`transactions/download/${id}`, {
+                    responseType: 'blob',
+                }).then(res => {
+                    // create file link in browser's memory
+                    const href = URL.createObjectURL(res.data);
+
+                    const link = document.createElement("a");
+                    link.href = href;
+                    link.setAttribute('download', `receipt${id}.pdf`)
+                    link.style.display = "none";
+                    document.body.appendChild(link);
+                    link.click();
+
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(href)
+                }).catch(err => console.log(err));
+            }}
             sx={{ cursor: "pointer" }}
         />
     )
@@ -97,18 +115,27 @@ export default function CustomTable({data}) {
         setPage(0);
     };
 
+    function formatString(str) {
+        let newStr = str;
+
+        if (str.length > 50) {
+            newStr = str.slice(0,40);
+            newStr += "...";
+        }
+        return newStr;
+    }
 
     return (
         <TableContainer>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell align="center">Date</TableCell>
+                        <TableCell align="center" padding="none">Date</TableCell>
                         <TableCell align="center">Description</TableCell>
                         <TableCell align="center" padding="none">Value (€)</TableCell>
                         <TableCell align="center" padding="none">Balance (€)</TableCell>
                         <TableCell align="center">Projects</TableCell>
-                        <TableCell align="center">NIF</TableCell>
+                        <TableCell align="center" padding="none">NIF</TableCell>
                         <TableCell align="center" padding="none">Receipt</TableCell>
                         <TableCell align="center" padding="none"></TableCell>
                     </TableRow>
@@ -123,10 +150,14 @@ export default function CustomTable({data}) {
                                 <TableCell component="th" scope="row" align="center">
                                     {row.date}
                                 </TableCell>
-                                <TableCell align="center">{row.description ? row.description : "-"}</TableCell>
+                                <TableCell align="center">
+                                    {row.description ? formatString(row.description) : "-"}
+                                </TableCell>
                                 <TableCell align="center">{row.value}</TableCell>
                                 <TableCell align="center">{row.balance}</TableCell>
-                                <TableCell align="center">{row.projects ? row.projects : "-"}</TableCell>
+                                <TableCell align="center">
+                                    {row.projects ? formatString(row.projects) : "-"}
+                                </TableCell>
                                 <TableCell align="center">{row.has_nif ? "Yes" : "No"}</TableCell>
                                 <TableCell align="center">
                                     {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
