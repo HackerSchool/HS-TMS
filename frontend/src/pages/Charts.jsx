@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/Charts.css'
 import PrintIcon from '@mui/icons-material/Print';
 import LineChart from '../components/LineChart';
 
@@ -17,13 +18,11 @@ function ChartsPage() {
                     </div>
             </header>
             <div className="content-container">
-                <div className="content">
-                    <LineChart title="1"/>
-                    <LineChart title="2"/>
-                    <LineChart title="3"/>
-                    <LineChart title="4"/>
-                    <LineChart title="5"/>
-                    <LineChart title="6"/>
+                <div className="charts">
+                    <LineChart title="Transaction Histogram"/>
+                    <LineChart title="Transaction Boxplot"/>
+                    <LineChart title="Project Transactions 1"/>
+                    <LineChart title="Project Transactions 2"/>
                 </div>
             </div>
         </section>

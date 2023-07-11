@@ -3,7 +3,7 @@ import React from "react";
 
 function LineChart(props) {
     return (
-      <>
+    <div className="chart-box">
         <div className="chartTitle">{props.title}</div>
         <div className="chart">
           <Plot
@@ -37,7 +37,7 @@ function LineChart(props) {
             }}
           />
         </div>
-      </>
+    </div>
     );
   }
 
