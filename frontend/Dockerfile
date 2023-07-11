@@ -13,7 +13,9 @@ RUN npm install
 # RUN npm ci --omit=dev
 
 # Bundle app source
-COPY . .
+COPY ./.eslintrc.cjs .
+COPY ./index.html .
+COPY ./vite*.js .
 
 EXPOSE 5173
 CMD [ "npm", "run", "dev" ]
