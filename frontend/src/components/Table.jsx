@@ -74,7 +74,6 @@ function TablePaginationActions(props) {
 function DownloadIcon({id}) {
     return (
         <RequestPageIcon
-            /* FIXME */
             onClick={() => {
                 axios_instance.get(`transactions/download/${id}`, {
                     responseType: 'blob',
@@ -118,7 +117,7 @@ export default function CustomTable({data}) {
     function formatString(str) {
         let newStr = str;
 
-        if (str.length > 50) {
+        if (str.length > 40) {
             newStr = str.slice(0,40);
             newStr += "...";
         }

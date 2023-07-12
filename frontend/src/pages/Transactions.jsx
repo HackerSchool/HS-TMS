@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from "react-router-dom"
 import axios_instance from '../Axios';
 import '../styles/Transactions.css'
 import Table from '../components/Table'
 import NewTransactionBtn from '../components/NewTransactionBtn';
-import AddIcon from '@mui/icons-material/Add';
+import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import SortIcon from '@mui/icons-material/Sort';
-import TuneIcon from '@mui/icons-material/Tune';
 
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
-    const [queryParams, setQueryParams] = useState();
+    const [queryParams, setQueryParams] = useSearchParams();
 
     useEffect(() => {
         if (fetchTransactions) {
             // FIXME - use query params
-            axios_instance.get("transactions")
+            axios_instance.get("transactions", {
+                params: queryParams,
+            })
                 .then(res => {
                     console.log(res);
                     if (res.status == 200) return res.data;
@@ -29,7 +31,11 @@ function TransactionsPage() {
         }
     }, [fetchTransactions]);
 
-    const refetchTransactions = () => setFetchTransactions(true)
+    // useEffect(() => {
+    //     setFetchTransactions(true);
+    // }, [queryParams])
+
+    const refetchTransactions = () => setFetchTransactions(true);
 
     return (
         <section className="page" id='TransactionsPage'>
@@ -37,6 +43,7 @@ function TransactionsPage() {
                 <h1>Transactions</h1>
                 <div className="btn-group left">
                     <NewTransactionBtn refetch={refetchTransactions} />
+
                     <button className='btn icon-btn'>
                         <SummarizeIcon />
                         Report
@@ -47,10 +54,12 @@ function TransactionsPage() {
                         <SortIcon />
                         Sorted by: Most Recent
                     </button>
-                    <button className='btn icon-btn' id='filter'>
-                        <TuneIcon />
-                        Filter
-                    </button>
+
+                    <TransactionsFilterBtn
+                        params={queryParams}
+                        setParams={setQueryParams}
+                        refetch={refetchTransactions}
+                    />
                 </div>
             </header>
 

@@ -1,10 +1,14 @@
-.content {
+#TransactionsPage .content {
     padding-top: 1.5rem;
 }
 
 /* New Transaction Modal */
 #new-transaction-modal {
     margin: auto;
+    border-radius: 2rem;
+    max-width: 60%;
+    max-height: 80%;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
 .value-cost-earning-container {
@@ -37,6 +41,33 @@
 #create-transaction-btn {
     font-size: 1.2rem;
     margin: 0 auto;
+}
+
+/* Transactions Filter Modal */
+#transactions-filter-modal {
+    margin-left: auto;
+    height: 100svh;
+    max-width: 35%;
+    border-radius: 2rem 0 0 2rem;
+    box-shadow: -3px 0px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+#transactions-filter-projects-group {
+    width: 100%;
+}
+
+#transactions-filter-save-btn {
+    font-size: 1.2rem;
+    margin-right: auto;
+}
+
+#transactions-filter-clear-btn {
+    font-size: 1.2rem;
+    margin-left: auto;
+}
+
+#transactions-filter-modal .form-row.last {
+    margin-top: 0;
 }
 
 /* Alerts */

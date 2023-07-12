@@ -116,7 +116,6 @@ export default function NewTransactionBtn({refetch}) {
         })
             .then(res => {
                 console.log(res)
-                setLoading(false);
                 if (res.status == 201) {
                     setSuccessMsg("Transaction created successfully");
                     setCreatedTransaction(true)
@@ -126,7 +125,8 @@ export default function NewTransactionBtn({refetch}) {
             .catch(err => {
                 console.log(err)
                 setErrorMsg("Couldn't create Transaction");
-            });
+            })
+            .finally(() => setLoading(false));
 
     }
 
@@ -149,7 +149,7 @@ export default function NewTransactionBtn({refetch}) {
 
     function getChosenProjectsIds() {
         return formData.projects.map((value) => {
-            return projectsList.find(el => el.name == value).id;
+            return projectsList.find(el => el.name == value)?.id;
         })
     }
 
@@ -172,7 +172,7 @@ export default function NewTransactionBtn({refetch}) {
 
             <Modal className="modal" id="new-transaction-modal" open={open} disableEnforceFocus
                 onClose={(e, reason) => handleClose(reason)} >
-                <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='create-form' onSubmit={submitForm}>
+                <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
                     {errorMsg && <Alert className="create-transaction-alert" onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
                     {successMsg && <Alert className="create-transaction-alert" onClose={()=>{setSuccessMsg("")}} severity="success">{successMsg}</Alert>}
 
