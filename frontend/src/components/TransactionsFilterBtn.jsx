@@ -10,16 +10,22 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
+import Alert from '@mui/material/Alert';
 
 function TransactionsFilterBtn({ params, setParams, refetch }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        if (reason != "backdropClick")
-            setOpen(false)
+        if (reason != "backdropClick") {
+            setErrorMsg("");
+            setOpen(false);
+        }
     }
 
     console.log(Array.from(params.entries()))
+
+    // Alerts to display
+    const [errorMsg, setErrorMsg] = useState("");
 
     const defaultFilters = {
         initialMonth: "",
@@ -28,6 +34,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         finalValue: "",
         projects: [],
         hasNif: "any",
+        hasFile: "any",
     }
 
     const [formData, setFormData] = useState({
@@ -37,6 +44,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         finalValue: params.get("finalValue") ?? "",
         projects: [],
         hasNif: params.get("hasNif") ?? "any",
+        hasFile: params.get("hasFile") ?? "any",
     })
 
     console.log(formData)
@@ -45,9 +53,6 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
     function handleChange(e) {
         const name = e.target.name;
         const value = e.target.value;
-
-        // Negative values are not allowed FIXME
-        // if (name == "value" && value < 0) return;
 
         setFormData((oldFormData) => ({
             ...oldFormData,
@@ -64,6 +69,15 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
             }));
     }
 
+    function handleHasFileChange(newValue) {
+        // so there's always a button selected
+        if (newValue !== null)
+            setFormData((oldFormData) => ({
+                ...oldFormData,
+                hasFile: newValue
+            }));
+    }
+
     function clearFilters(event) {
         event.preventDefault();
         setFormData(defaultFilters);
@@ -73,7 +87,21 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         // stop all the default form submission behaviour
         event.preventDefault();
 
-        // FIXME: check date and values
+        // Check date
+        if (formData.initialMonth && formData.finalMonth &&
+            (formData.initialMonth > formData.finalMonth)) {
+            setErrorMsg("Final month can't precede Initial month")
+            return;
+        }
+
+        // Check values
+        if (formData.initialValue && formData.finalValue &&
+            (parseFloat(formData.initialValue) > parseFloat(formData.finalValue))) {
+            setErrorMsg("Max value can't be lower than the Min value")
+            return;
+        }
+
+
         console.log(getChosenProjectsIds(formData.projects), formData.projects)
 
         let filters = [];
@@ -83,6 +111,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         if (formData.initialValue != "") filters.push(["initialValue", formData.initialValue]);
         if (formData.finalValue != "") filters.push(["finalValue", formData.finalValue]);
         if (formData.hasNif != "any") filters.push(["hasNif", formData.hasNif]);
+        if (formData.hasFile != "any") filters.push(["hasFile", formData.hasFile]);
         if (formData.projects.length > 0) filters.push(["projects", `[${getChosenProjectsIds(formData.projects)}]`]);
 
         let queryParams = {};
@@ -97,7 +126,8 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         console.log(queryParams)
 
         setParams(queryParams);
-        refetch()
+        refetch();
+        setErrorMsg("");
         setOpen(false);
     }
 
@@ -151,7 +181,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
             // On autofill we get a stringified value.
             projects: typeof value === 'string' ? value.split(',') : value
         }));
-    };
+    }
 
 
 
@@ -165,6 +195,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
             <Modal className="modal" id="transactions-filter-modal" open={open} disableEnforceFocus
                 onClose={(e, reason) => handleClose(reason)} >
                 <form id='transactions-filter-form' onSubmit={updateFilters}>
+                    {errorMsg && <Alert className="transactions-filter-alert" onClose={() => { setErrorMsg("") }} severity="error">{errorMsg}</Alert>}
 
                     <div className='form-header'>
                         <ArrowBackIcon className='modal-close-btn' onClick={handleClose} />
@@ -189,31 +220,56 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
 
                         <div className="form-row">
                             <div className="form-group" id='transactions-filter-initial-value-group'>
-                                <label htmlFor="value">Min value:</label>
-                                <div className="value-cost-earning-container">
-                                    <input type="number" name="initialValue" placeholder='0' step={0.01}
-                                        id="transactions-filter-initial-value"
-                                        value={formData.initialValue} onChange={handleChange} />
+                                <div className="transactions-filter-label-group">
+                                    <label htmlFor="value" className='transactions-filter-value-label'>Min value:</label>
+                                    <span className='value-help'>(?)</span>
                                 </div>
+                                <input className='transactions-filter-value' type="number" name="initialValue"
+                                    placeholder='0' step={0.01} id="transactions-filter-initial-value"
+                                    value={formData.initialValue} onChange={handleChange} />
                             </div>
 
                             <div className="form-group" id='transactions-filter-final-value-group'>
-                                <label htmlFor="value">Max value:</label>
-                                <div className="value-cost-earning-container">
-                                    <input type="number" name="finalValue" placeholder='0' step={0.01}
-                                        id="transactions-filter-final-value"
-                                        value={formData.finalValue} onChange={handleChange} />
+                                <div className="transactions-filter-label-group">
+                                    <label htmlFor="value" className='transactions-filter-value-label'>Max value:</label>
+                                    <span className='value-help'>(?)</span>
                                 </div>
+                                <input className='transactions-filter-value' type="number" name="finalValue"
+                                    placeholder='0' step={0.01} id="transactions-filter-final-value"
+                                    value={formData.finalValue} onChange={handleChange} />
                             </div>
                         </div>
 
                         <div className="form-row">
                             <div className="form-group" id='transactions-filter-nif-group'>
-                                <label htmlFor="nif">NIF:</label>
+                                <label htmlFor="nif">Has NIF:</label>
                                 <ToggleButtonGroup
                                     value={formData.hasNif}
                                     exclusive
                                     onChange={(e, value) => handleNifChange(value)}
+                                    id='transactions-filter-nif-buttons'
+                                >
+                                    <ToggleButton className='toggle-button left' value={"false"}>
+                                        <CloseIcon />
+                                        No
+                                    </ToggleButton>
+                                    <ToggleButton className='toggle-button' value={"any"}>
+                                        Any
+                                    </ToggleButton>
+                                    <ToggleButton className='toggle-button right' value={"true"}>
+                                        <CheckIcon />
+                                        Yes
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </div>
+
+                            <div className="form-group" id="transactions-filter-file-group">
+                                <label htmlFor="file">Has receipt:</label>
+                                <ToggleButtonGroup
+                                    value={formData.hasFile}
+                                    exclusive
+                                    onChange={(e, value) => handleHasFileChange(value)}
+                                    id='transactions-filter-nif-buttons'
                                 >
                                     <ToggleButton className='toggle-button left' value={"false"}>
                                         <CloseIcon />

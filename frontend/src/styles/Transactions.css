@@ -49,7 +49,38 @@
     height: 100svh;
     max-width: 35%;
     border-radius: 2rem 0 0 2rem;
-    box-shadow: -3px 0px 4px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+.transactions-filter-value {
+    width: 11.5rem;
+}
+
+#transactions-filter-modal .value-help {
+    position: relative;
+    display: inline-block;
+    color: var(--light-gray);
+    content: "(?)";
+    margin-left: 5px;
+    cursor: help;
+}
+
+#transactions-filter-modal .value-help:hover::after, 
+#transactions-filter-modal .value-help:focus::after {
+    display: block;
+    position: absolute;
+    left: -4.75rem;
+    top: 25px;
+    width: 9.5rem;
+    height: fit-content;
+    font-size: 0.8rem;
+    background-color: var(--cinza-4);
+    color: white;
+    content: "Negative values for costs";
+    border: 1px solid white;
+    border-radius: 0.25rem;
+    padding: 0.9rem;
+    z-index: 1400;
 }
 
 #transactions-filter-projects-group {
@@ -71,7 +102,9 @@
 }
 
 /* Alerts */
-.create-transaction-alert {
+.transactions-alert,
+.create-transaction-alert,
+.transactions-filter-alert {
     position: absolute;
     margin: 0 auto;
     left: 0;

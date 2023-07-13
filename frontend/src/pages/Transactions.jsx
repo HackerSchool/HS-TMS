@@ -7,15 +7,18 @@ import NewTransactionBtn from '../components/NewTransactionBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import SortIcon from '@mui/icons-material/Sort';
+import Alert from '@mui/material/Alert';
 
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
     const [queryParams, setQueryParams] = useSearchParams();
 
+    // Alerts to display
+    const [errorMsg, setErrorMsg] = useState("");
+
     useEffect(() => {
         if (fetchTransactions) {
-            // FIXME - use query params
             axios_instance.get("transactions", {
                 params: queryParams,
             })
@@ -24,7 +27,15 @@ function TransactionsPage() {
                     if (res.status == 200) return res.data;
                     throw new Error("Couldn't fetch transactions")
                 })
-                .then(data => setTransactions(data))
+                .then(data => {
+
+                    if (data.length === 0 && queryParams.size > 0) 
+                        setErrorMsg("No transactions match the specified filters");
+                    else
+                        setErrorMsg("");
+
+                    setTransactions(data)
+                })
                 .catch(err => console.log(err));
 
             setFetchTransactions(false);
@@ -39,6 +50,8 @@ function TransactionsPage() {
 
     return (
         <section className="page" id='TransactionsPage'>
+            {errorMsg && <Alert className="transactions-alert" onClose={() => { setErrorMsg("") }} severity="error">{errorMsg}</Alert>}
+
             <header>
                 <h1>Transactions</h1>
                 <div className="btn-group left">
