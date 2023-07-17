@@ -140,6 +140,14 @@ export default function CustomTable({data}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
+                    {data.length === 0 && ( // display message when there's no data to display
+                        <TableRow>
+                            <TableCell colSpan={8} align="center" sx={{fontSize: 18}}>
+                                No transactions found
+                            </TableCell>
+                        </TableRow>
+                    )}
+
                     {(rowsPerPage > 0
                         ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         : data).map((row) => (
