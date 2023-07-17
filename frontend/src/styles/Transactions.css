@@ -1,3 +1,117 @@
-.content {
+#TransactionsPage .content {
     padding-top: 1.5rem;
+}
+
+/* New Transaction Modal */
+#new-transaction-modal {
+    margin: auto;
+    border-radius: 2rem;
+    max-width: 60%;
+    max-height: 80%;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+.value-cost-earning-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#create-transaction-projects-group {
+    width: 50%;
+}
+
+#create-transaction-nif-group {
+    flex-direction: row;
+    align-items: center;
+}
+
+#new-transaction-modal input[type="file"]::-webkit-file-upload-button {
+    background-color: var(--green);
+    border: none;
+    border-radius: 0.5rem;
+    height: 1.5rem;
+    margin-top: 0.2rem;
+  }
+
+#create-transaction-description-group {
+    width: 50%;
+}
+
+#create-transaction-btn {
+    font-size: 1.2rem;
+    margin: 0 auto;
+}
+
+/* Transactions Filter Modal */
+#transactions-filter-modal {
+    margin-left: auto;
+    height: 100svh;
+    max-width: 35%;
+    border-radius: 2rem 0 0 2rem;
+    box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+.transactions-filter-value {
+    width: 11.5rem;
+}
+
+#transactions-filter-modal .value-help {
+    position: relative;
+    display: inline-block;
+    color: var(--light-gray);
+    content: "(?)";
+    margin-left: 5px;
+    cursor: help;
+}
+
+#transactions-filter-modal .value-help:hover::after, 
+#transactions-filter-modal .value-help:focus::after {
+    display: block;
+    position: absolute;
+    left: -4.75rem;
+    top: 25px;
+    width: 9.5rem;
+    height: fit-content;
+    font-size: 0.8rem;
+    background-color: var(--cinza-4);
+    color: white;
+    content: "Negative values for costs";
+    border: 1px solid white;
+    border-radius: 0.25rem;
+    padding: 0.9rem;
+    z-index: 1400;
+}
+
+#transactions-filter-projects-group {
+    width: 100%;
+}
+
+#transactions-filter-save-btn {
+    font-size: 1.2rem;
+    margin-right: auto;
+}
+
+#transactions-filter-clear-btn {
+    font-size: 1.2rem;
+    margin-left: auto;
+}
+
+#transactions-filter-modal .form-row.last {
+    margin-top: 0;
+}
+
+/* Alerts */
+.transactions-alert,
+.create-transaction-alert,
+.transactions-filter-alert {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: fit-content;
+}
+
+.loading {
+    border-radius: 1rem;
 }

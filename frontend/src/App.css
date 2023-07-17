@@ -4,11 +4,14 @@ html {
     --hs-logo: #6BBA75;
     --green: #0E9553;
     --dark-green: #075531;
+    --green-alpha-40: #0e95546c;
+    --green-alpha-20: #0e955436;
     --red: #F21313;
     --cinza-1: #212121;
     --cinza-2: #252525;
     --cinza-3: #2C2C2C;
     --cinza-4: #333333;
+    --cinza-placeholder: rgba(255, 255, 255, 0.30);
     --light-gray: #aeaeae;
 }
 
@@ -16,6 +19,10 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--cinza-4);
     color: white;
+}
+
+hr {
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .page {
@@ -98,6 +105,157 @@ body {
     }
 }
 
+/* Modal */
+
+.modal {
+    background-color: var(--cinza-4);
+    padding: 2rem;
+    position: absolute;
+}
+
+.modal > form {
+    height: 100%;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative; /* for the alerts */
+}
+
+/* close button */
+.form-header > .modal-close-btn {
+    cursor: pointer;
+    font-size: 2.7rem;
+}
+
+/* header */
+.form-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-header h1 {
+    margin-left: auto;
+    font-weight: 300;
+}
+
+/* form */
+.form-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 3rem;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.form-row.last {
+    margin-top: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+input {
+    border-radius: 0.25rem;
+    border: 1px solid var(--cinza-4);
+    background-color: transparent;
+    color: white;
+    padding: 0.7rem;
+    color-scheme: dark;
+    font-family: 'Roboto', sans-serif;
+    min-height: 3.5rem;
+    font-size: 1rem;
+    width: 100%;
+}
+
+input::placeholder {
+    color: var(--cinza-placeholder);
+}
+
+input[type="file"] {
+    display: flex;
+    align-items: center;
+}
+
+/* toggle buttons */
+.modal .toggle-button {
+    text-transform: none;
+    font-size: 0.8rem;
+    line-height: normal;
+    color: white;
+    border: 1px solid var(--cinza-4);
+    padding: 0rem 0.9rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.modal .toggle-button svg {
+    font-size: 1rem;
+}
+
+.modal .toggle-button.left {
+    border-radius: 6.25rem 0rem 0rem 6.25rem;
+}
+
+.modal .toggle-button.right {
+    border-radius: 0rem 6.25rem 6.25rem 0rem;
+}
+
+.modal .toggle-button.Mui-selected {
+    background-color: var(--green);
+    color: white;
+}
+
+.modal .toggle-button.Mui-selected:hover {
+    background-color: var(--green);
+}
+
+/* multiple select */
+.multiple-select svg {
+    color: white;
+}
+
+.multiple-select {
+    width: 100%;
+}
+
+.multiple-select .MuiSelect-multiple {
+    border-radius: 0.25rem;
+    font-family: 'Roboto', sans-serif;
+    color: var(--cinza-placeholder);
+}
+
+.multiple-select .MuiOutlinedInput-notchedOutline {
+    border: 1px solid var(--cinza-4);
+}
+
+.multiple-select .MuiChip-root {
+    background-color: var(--green);
+    color: white;
+    height: 1.5rem;
+}
+
+.MuiMenu-list .MuiMenuItem-root.Mui-selected {
+    background-color: var(--green-alpha-20);
+}
+
+.MuiMenu-list .MuiMenuItem-root.Mui-selected:hover {
+    background-color: var(--green-alpha-40);
+}
 
 /* Sidebar CSS */
 
