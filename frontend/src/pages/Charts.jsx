@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/Charts.css'
 import PrintIcon from '@mui/icons-material/Print';
 import LineChart from '../components/LineChart';
 import MonthHistogram from '../components/MonthHistogram';
+//Fazer gráfico da evolução do balance
+
 
 function ChartsPage() {
     return (
