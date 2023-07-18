@@ -6,6 +6,7 @@ function MonthHistogram({title}){
     const [histogramData, setHistogramData] = useState([]);
     const [monthEarnings, setMonthEarnings] = useState(Array(12).fill(0))
     const [monthExpenses, setMonthExpenses] = useState(Array(12).fill(0))
+    const [year, setYear]=useState(2023)
     const [fetchTransactions, setFetchTransactions] = useState(true);
 
     useEffect(() => {
@@ -60,7 +61,6 @@ function MonthHistogram({title}){
         console.log(fetchTransactions)
         if(fetchTransactions){
             const months=[1,2,3,4,5,6,7,8,9,10,11,12];
-            const year=2023;
             const y_earn_promises=months.map((month)=>fetchTransactionData(month,year,true))
             const y_exp_promises=months.map((month)=>fetchTransactionData(month,year,false))
             
@@ -80,7 +80,7 @@ function MonthHistogram({title}){
                     color: "#6bba75",
                     line: {
                     color: "#0e9553",
-                    width: 2,
+                    width: 1.5,
                     },
                 },
                 };
@@ -95,7 +95,7 @@ function MonthHistogram({title}){
                     color: "#ff7e80",
                     line: {
                     color: "#cc6466",
-                    width: 2,
+                    width: 1.5,
                     },
                 },
                 };
@@ -142,7 +142,11 @@ function MonthHistogram({title}){
                     paper_bgcolor: "#333333",
                     font: {
                         color: "#ffffff"
+                    },
+                    updatemenus:{
+
                     }
+
                 }}
             />
             </div>
