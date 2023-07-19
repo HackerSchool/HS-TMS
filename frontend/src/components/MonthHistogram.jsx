@@ -3,108 +3,117 @@ import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
 
 function MonthHistogram({title}){
-    const [histogramData, setHistogramData] = useState([]);
-    const [monthEarnings, setMonthEarnings] = useState(Array(12).fill(0))
-    const [monthExpenses, setMonthExpenses] = useState(Array(12).fill(0))
-    const [year, setYear]=useState(2023)
+    const [histogramData, setHistogramData] = useState({});
     const [fetchTransactions, setFetchTransactions] = useState(true);
-
-    useEffect(() => {
-        const fetchTransactionData = (month, year, earning_bool) => {
-            const res = axios_instance.get("transactions", {
-                params:{
-                    initialMonth:`${year}-${month}`,
-                    finalMonth:`${year}-${month}`,
-                    ...
-                    earning_bool ? {initialValue:0} : {finalValue:0}
-                },
-            })
+    //Fetches data for a specific month, year, and type of transaction (Earning/Expense)
+    const fetchTransactionData = (month, year, earning_bool) => {
+        const res = axios_instance.get("transactions", {
+            params:{
+                initialMonth:`${year}-${month}`,
+                finalMonth:`${year}-${month}`,
+                ...
+                earning_bool ? {initialValue:0} : {finalValue:0}
+            },
+        })
+        .then( response => {
+            const transactions=response.data;
+            if(transactions.length===0){
+                return 0;
+            }
+            else {
+                //Sum of the transactions values
+                return Math.abs(transactions.reduce((accumulator, transaction) => {
+                    return accumulator + transaction.value;
+                }, 0));
+            }
+        })
+        .catch(error=>{
+            console.error(error);
+        });
+        return res;
+    };
+    //Fetches the first and last year recorded by the transactions
+    const fetchYears = () => {
+        const res = axios_instance.get("transactions")
             .then( response => {
-                const transactions=response.data;
+                const transactions = response.data;
                 if(transactions.length===0){
-                    if(earning_bool){
-                        const tempEarn = [...monthEarnings];
-                        setMonthEarnings(tempEarn);
-                        tempEarn[month-1]=0;
-                        return tempEarn[month-1];
-                    } else {
-                        const tempExp = [...monthExpenses];
-                        tempExp[month-1]=0;
-                        setMonthExpenses(tempExp);
-                        return tempExp[month-1];
-                    }
-                }
-                else{
-                    if(earning_bool){
-                        const tempEarn = [...monthEarnings];
-                        tempEarn[month-1] = Math.abs(transactions.reduce((accumulator, transaction) => {
-                            return accumulator + transaction.value;
-                        }, 0));
-                        setMonthEarnings(tempEarn);
-                        console.log
-                        return tempEarn[month-1];
-                    } else {
-                        const tempExp = [...monthExpenses];
-                        tempExp[month-1] = Math.abs(transactions.reduce((accumulator, transaction) => {
-                            return accumulator + transaction.value;
-                        }, 0));
-                        setMonthExpenses(tempExp);
-                        return tempExp[month-1];
-                    }
+                    //If there are no transactions, 2023 is chosen as default year
+                    return ["2023"]
+                } else {
+                    const firstYear=parseInt(transactions[transactions.length-1].date.substring(0,4));
+                    const lastYear=parseInt(transactions[0].date.substring(0,4));
+                    return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index).toString());
                 }
             })
             .catch(error=>{
                 console.error(error);
             });
             return res;
-        };
-        console.log(fetchTransactions)
+    }
+    
+    useEffect(() => {
         if(fetchTransactions){
             const months=[1,2,3,4,5,6,7,8,9,10,11,12];
-            const y_earn_promises=months.map((month)=>fetchTransactionData(month,year,true))
-            const y_exp_promises=months.map((month)=>fetchTransactionData(month,year,false))
+            //const years=Promise.all(years_promise).then((results) => {return results});
+            const years_promise = fetchYears();
+
+            Promise.all([years_promise])
+                .then((result)=> {
+                    const years = result[0];
+
+                    const y_earn_promises = years.map((year) => {
+                        return months.map((month)=>fetchTransactionData(month,year,true))
+                    });
+
+                    const y_exp_promises = years.map((year) => {
+                        return months.map((month)=>fetchTransactionData(month,year,false))
+                    });
+                    //Isto não está bem
+                    Promise.all([...y_earn_promises, ...y_exp_promises])
+                        .then((results) => {
+                            const y_earn = results.slice(0, years.length);
+                            const y_exp = results.slice(years.length);
+                            console.log(y_earn)
+                            const earnings = {
+                            x: months,
+                            y: y_earn,
+                            name: "Earnings",
+                            text: y_earn.map(String),
+                            type: "bar",
+                            marker: {
+                                color: "#6bba75",
+                                line: {
+                                color: "#0e9553",
+                                width: 1.5,
+                                },
+                            },
+                            };
+
+                            const expenses = {
+                            x: months,
+                            y: y_exp,
+                            text: y_exp.map(String),
+                            name: "Expenses",
+                            type: "bar",
+                            marker: {
+                                color: "#ff7e80",
+                                line: {
+                                color: "#cc6466",
+                                width: 1.5,
+                                },
+                            },
+                            };
+                            setHistogramData([earnings, expenses]);
+                            setFetchTransactions(false)
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+                }).catch((error) => {
+                    console.error(error)
+                })
             
-            Promise.all([...y_earn_promises, ...y_exp_promises])
-            .then((results) => {
-                const y_earn = results.slice(0, months.length);
-                const y_exp = results.slice(months.length);
-                console.log(y_exp);
-
-                const earnings = {
-                x: months,
-                y: y_earn,
-                name: "Earnings",
-                text: y_earn.map(String),
-                type: "bar",
-                marker: {
-                    color: "#6bba75",
-                    line: {
-                    color: "#0e9553",
-                    width: 1.5,
-                    },
-                },
-                };
-
-                const expenses = {
-                x: months,
-                y: y_exp,
-                text: y_exp.map(String),
-                name: "Expenses",
-                type: "bar",
-                marker: {
-                    color: "#ff7e80",
-                    line: {
-                    color: "#cc6466",
-                    width: 1.5,
-                    },
-                },
-                };
-                setHistogramData([earnings, expenses]);
-                setFetchTransactions(false)
-            })
-            .catch((error) => {
-                console.error(error);
-            });
     }}, [fetchTransactions]);
 
     return (
@@ -143,6 +152,7 @@ function MonthHistogram({title}){
                     font: {
                         color: "#ffffff"
                     },
+                    //Dropdown menu for choosing the desired year
                     updatemenus:{
 
                     }
