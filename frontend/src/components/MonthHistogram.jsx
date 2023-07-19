@@ -4,6 +4,7 @@ import Plot from "react-plotly.js";
 
 function MonthHistogram({title}){
     const [histogramData, setHistogramData] = useState({});
+    const [year, setYear]=useState("2023");
     const [fetchTransactions, setFetchTransactions] = useState(true);
     //Fetches data for a specific month, year, and type of transaction (Earning/Expense)
     const fetchTransactionData = (month, year, earning_bool) => {
@@ -43,6 +44,7 @@ function MonthHistogram({title}){
                 } else {
                     const firstYear=parseInt(transactions[transactions.length-1].date.substring(0,4));
                     const lastYear=parseInt(transactions[0].date.substring(0,4));
+                    setYear(lastYear)
                     return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index).toString());
                 }
             })
@@ -51,60 +53,69 @@ function MonthHistogram({title}){
             });
             return res;
     }
-    
+
+    const generateHistogramDataForYear = () => {
+        return histogramData[year] || []; // Returns the data for the selected year or an empty array if it's not available
+      };
+
     useEffect(() => {
         if(fetchTransactions){
-            const months=[1,2,3,4,5,6,7,8,9,10,11,12];
-            //const years=Promise.all(years_promise).then((results) => {return results});
-            const years_promise = fetchYears();
 
+            const months=[1,2,3,4,5,6,7,8,9,10,11,12];
+            const years_promise = fetchYears();
             Promise.all([years_promise])
                 .then((result)=> {
                     const years = result[0];
 
-                    const y_earn_promises = years.map((year) => {
-                        return months.map((month)=>fetchTransactionData(month,year,true))
-                    });
+                    const y_earn_promises = months.flatMap((month) => 
+                         years.map((year)=>fetchTransactionData(month,year,true))
+                    );
 
-                    const y_exp_promises = years.map((year) => {
-                        return months.map((month)=>fetchTransactionData(month,year,false))
-                    });
-                    //Isto não está bem
+                    const y_exp_promises = months.flatMap((month) => 
+                         years.map((year)=>fetchTransactionData(month,year,false))
+                    );
+
                     Promise.all([...y_earn_promises, ...y_exp_promises])
                         .then((results) => {
-                            const y_earn = results.slice(0, years.length);
-                            const y_exp = results.slice(years.length);
-                            console.log(y_earn)
-                            const earnings = {
-                            x: months,
-                            y: y_earn,
-                            name: "Earnings",
-                            text: y_earn.map(String),
-                            type: "bar",
-                            marker: {
-                                color: "#6bba75",
-                                line: {
-                                color: "#0e9553",
-                                width: 1.5,
-                                },
-                            },
-                            };
-
-                            const expenses = {
-                            x: months,
-                            y: y_exp,
-                            text: y_exp.map(String),
-                            name: "Expenses",
-                            type: "bar",
-                            marker: {
-                                color: "#ff7e80",
-                                line: {
-                                color: "#cc6466",
-                                width: 1.5,
-                                },
-                            },
-                            };
-                            setHistogramData([earnings, expenses]);
+                            const y_earn = results.slice(0,results.length/2);
+                            const y_exp = results.slice(results.length/2);
+                            let data = {}
+                            years.forEach((year)=>{
+                                const year_index = years.indexOf(year);
+                                const y_year_earn=y_earn.filter((value, index) => index % years.length === year_index);
+                                const y_year_exp=y_exp.filter((value, index) => index % years.length === year_index);
+                                const earnings = {
+                                    x: months,
+                                    y: y_year_earn,
+                                    name: "Earnings",
+                                    text: y_year_earn.map(String),
+                                    type: "bar",
+                                    marker: {
+                                        color: "#6bba75",
+                                        line: {
+                                        color: "#0e9553",
+                                        width: 1.5,
+                                        },
+                                    },
+                                    };
+                                const expenses = {
+                                    x: months,
+                                    y: y_year_exp,
+                                    text: y_year_exp.map(String),
+                                    name: "Expenses",
+                                    type: "bar",
+                                    marker: {
+                                        color: "#ff7e80",
+                                        line: {
+                                        color: "#cc6466",
+                                        width: 1.5,
+                                        },
+                                    },
+                                    };
+                                const year_data={[year]:[earnings,expenses],};
+                                data = {...data, ...year_data};
+                            });
+                            setHistogramData(data);
                             setFetchTransactions(false)
                         })
                         .catch((error) => {
@@ -113,15 +124,13 @@ function MonthHistogram({title}){
                 }).catch((error) => {
                     console.error(error)
                 })
-            
     }}, [fetchTransactions]);
-
     return (
         <div className="chart-box">
             <div className="chartTitle">{title}</div>
             <div className="chart">
             <Plot
-                data={histogramData}
+                data={histogramData[year]}
                 layout = {{
                     legend: {
                         x: 1,
@@ -153,10 +162,20 @@ function MonthHistogram({title}){
                         color: "#ffffff"
                     },
                     //Dropdown menu for choosing the desired year
-                    updatemenus:{
+                    updatemenus:[{
+                        buttons:[
+                            //Object.keys(histogramData).map((year) => ({
+                            //    method:"restyle",
+                            //    args: [["data"], [histogramData[year]]],
+                            //    label: year,
+                            //  }))
 
-                    }
-
+                        ],
+                        type:"dropdown",
+                        xanchor:"left",
+                        yanchor:"top",
+                        showactive: true,
+                    }]
                 }}
             />
             </div>
