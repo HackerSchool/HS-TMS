@@ -131,8 +131,8 @@ export default function CustomTable({data}) {
                     <TableRow>
                         <TableCell align="center" padding="none">Date</TableCell>
                         <TableCell align="center">Description</TableCell>
-                        <TableCell align="center" padding="none">Value (€)</TableCell>
-                        <TableCell align="center" padding="none">Balance (€)</TableCell>
+                        <TableCell align="center">Value</TableCell>
+                        <TableCell align="center" padding="none">Balance</TableCell>
                         <TableCell align="center">Projects</TableCell>
                         <TableCell align="center" padding="none">NIF</TableCell>
                         <TableCell align="center" padding="none">Receipt</TableCell>
@@ -160,8 +160,8 @@ export default function CustomTable({data}) {
                                 <TableCell align="center">
                                     {row.description ? formatString(row.description) : "-"}
                                 </TableCell>
-                                <TableCell align="center">{row.value}</TableCell>
-                                <TableCell align="center">{row.balance}</TableCell>
+                                <TableCell align="center">{`${row.value}€`}</TableCell>
+                                <TableCell align="center">{`${row.balance}€`}</TableCell>
                                 <TableCell align="center">
                                     {row.projects ? formatString(row.projects) : "-"}
                                 </TableCell>

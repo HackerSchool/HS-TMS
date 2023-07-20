@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom"
 import axios_instance from '../Axios';
 import '../styles/Transactions.css'
@@ -42,7 +42,7 @@ function TransactionsPage() {
         }
     }, [fetchTransactions]);
 
-    const refetchTransactions = () => setFetchTransactions(true);
+    const refetchTransactions = useCallback(() => setFetchTransactions(true));
 
     return (
         <section className="page" id='TransactionsPage'>
