@@ -75,7 +75,7 @@ function TransactionsPage() {
 
             <div className="content-container">
                 <div className="content">
-                    <Table data={transactions} />
+                    <Table data={transactions} refetch={refetchTransactions} />
                 </div>
             </div>
 

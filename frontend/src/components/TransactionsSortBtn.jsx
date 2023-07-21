@@ -59,10 +59,10 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
 
     return (
         <>
-            <ButtonGroup >
-                <button ref={anchorRef} className='btn icon-btn' id='transactions-sort-btn' onClick={handleToggle}>
+            <ButtonGroup ref={anchorRef} >
+                <button className='btn icon-btn' id='transactions-sort-btn' onClick={handleToggle}>
                     <SortIcon />
-                    {`Sorted by: ${options[selectedIndex].text}`}
+                    {`${options[selectedIndex].text}`}
                 </button>
                 <button className='btn icon-btn sort-arrow-btn' onClick={handleToggle} >
                     <ArrowDropDownIcon />
@@ -73,7 +73,7 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
                 sx={{ zIndex: 1 }}
                 open={open}
                 anchorEl={anchorRef.current}
-                placement='bottom-end'
+                placement='bottom'
                 role={undefined}
                 transition
                 disablePortal
@@ -83,7 +83,7 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
                         {...TransitionProps}
                         style={{
                             transformOrigin:
-                                placement === 'bottom-end' ? 'center top' : 'center bottom',
+                                placement = 'center top',
                         }}
                     >
                         <Paper sx={{ backgroundColor: "transparent" }}>

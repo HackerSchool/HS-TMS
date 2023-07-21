@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios_instance from "../Axios";
+import TransactionsOptionsBtn from "./TransactionsOptionsBtn";
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -97,7 +98,7 @@ function DownloadIcon({id}) {
     )
 }
 
-export default function CustomTable({data}) {
+export default function CustomTable({ data, refetch }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
@@ -169,7 +170,9 @@ export default function CustomTable({data}) {
                                 <TableCell align="center">
                                     {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
                                 </TableCell>
-                                <TableCell align="center"><MoreHorizIcon /></TableCell>
+                                <TableCell align="center">
+                                    <TransactionsOptionsBtn transaction={row} refetch={refetch} />
+                                </TableCell>
                             </TableRow>
                         ))}
                     {emptyRows > 0 && (
