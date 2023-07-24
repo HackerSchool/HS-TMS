@@ -125,7 +125,17 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
 
         console.log(queryParams)
 
-        setParams(queryParams);
+        setParams(oldParams => {
+            if (oldParams.get("orderBy") && oldParams.get("order")) {
+                queryParams = {
+                    ...queryParams,
+                    "orderBy": oldParams.get("orderBy"),
+                    "order": oldParams.get("order")
+                }
+            }
+
+            return queryParams;
+        });
         refetch();
         setErrorMsg("");
         setOpen(false);

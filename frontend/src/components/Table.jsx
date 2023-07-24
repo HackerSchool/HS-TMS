@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios_instance from "../Axios";
+import TransactionsOptionsBtn from "./TransactionsOptionsBtn";
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -97,7 +98,7 @@ function DownloadIcon({id}) {
     )
 }
 
-export default function CustomTable({data}) {
+export default function CustomTable({ data, refetch }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
@@ -131,8 +132,8 @@ export default function CustomTable({data}) {
                     <TableRow>
                         <TableCell align="center" padding="none">Date</TableCell>
                         <TableCell align="center">Description</TableCell>
-                        <TableCell align="center" padding="none">Value (€)</TableCell>
-                        <TableCell align="center" padding="none">Balance (€)</TableCell>
+                        <TableCell align="center">Value</TableCell>
+                        <TableCell align="center" padding="none">Balance</TableCell>
                         <TableCell align="center">Projects</TableCell>
                         <TableCell align="center" padding="none">NIF</TableCell>
                         <TableCell align="center" padding="none">Receipt</TableCell>
@@ -140,6 +141,14 @@ export default function CustomTable({data}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
+                    {data.length === 0 && ( // display message when there's no data to display
+                        <TableRow>
+                            <TableCell colSpan={8} align="center" sx={{fontSize: 18}}>
+                                No transactions found
+                            </TableCell>
+                        </TableRow>
+                    )}
+
                     {(rowsPerPage > 0
                         ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         : data).map((row) => (
@@ -152,8 +161,8 @@ export default function CustomTable({data}) {
                                 <TableCell align="center">
                                     {row.description ? formatString(row.description) : "-"}
                                 </TableCell>
-                                <TableCell align="center">{row.value}</TableCell>
-                                <TableCell align="center">{row.balance}</TableCell>
+                                <TableCell align="center">{`${row.value}€`}</TableCell>
+                                <TableCell align="center">{`${row.balance}€`}</TableCell>
                                 <TableCell align="center">
                                     {row.projects ? formatString(row.projects) : "-"}
                                 </TableCell>
@@ -161,7 +170,9 @@ export default function CustomTable({data}) {
                                 <TableCell align="center">
                                     {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
                                 </TableCell>
-                                <TableCell align="center"><MoreHorizIcon /></TableCell>
+                                <TableCell align="center">
+                                    <TransactionsOptionsBtn transaction={row} refetch={refetch} />
+                                </TableCell>
                             </TableRow>
                         ))}
                     {emptyRows > 0 && (

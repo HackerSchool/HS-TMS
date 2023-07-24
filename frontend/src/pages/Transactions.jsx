@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom"
 import axios_instance from '../Axios';
 import '../styles/Transactions.css'
 import Table from '../components/Table'
 import NewTransactionBtn from '../components/NewTransactionBtn';
+import TransactionsSortButton from '../components/TransactionsSortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import SortIcon from '@mui/icons-material/Sort';
 import Alert from '@mui/material/Alert';
 
 function TransactionsPage() {
@@ -42,11 +42,7 @@ function TransactionsPage() {
         }
     }, [fetchTransactions]);
 
-    // useEffect(() => {
-    //     setFetchTransactions(true);
-    // }, [queryParams])
-
-    const refetchTransactions = () => setFetchTransactions(true);
+    const refetchTransactions = useCallback(() => setFetchTransactions(true));
 
     return (
         <section className="page" id='TransactionsPage'>
@@ -63,10 +59,11 @@ function TransactionsPage() {
                     </button>
                 </div>
                 <div className="btn-group right">
-                    <button className='btn icon-btn' id='sorted-by'>
-                        <SortIcon />
-                        Sorted by: Most Recent
-                    </button>
+                    <TransactionsSortButton
+                        params={queryParams}
+                        setParams={setQueryParams}
+                        refetch={refetchTransactions} 
+                    />
 
                     <TransactionsFilterBtn
                         params={queryParams}
@@ -78,7 +75,7 @@ function TransactionsPage() {
 
             <div className="content-container">
                 <div className="content">
-                    <Table data={transactions} />
+                    <Table data={transactions} refetch={refetchTransactions} />
                 </div>
             </div>
 

@@ -43,6 +43,38 @@
     margin: 0 auto;
 }
 
+/* Transactions Sort button */
+#transactions-sort-btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-right: 0.5rem;
+}
+
+.sort-arrow-btn {
+    padding: 0 0.5rem 0 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.sort-menu {
+    background-color: var(--green);
+    border-radius: 0 0 0.5rem 0.5rem;
+    box-shadow: inset 0px 2.2px 2px 0px #0000004a;
+}
+
+.sort-menu .sort-option {
+    color: white;
+}
+
+.sort-menu .sort-option.Mui-selected {
+    background-color: var(--hs-logo);
+}
+
+.sort-menu .sort-option:hover,
+.sort-menu .sort-option.Mui-selected:hover {
+    background-color: var(--green-hover);
+}
+
 /* Transactions Filter Modal */
 #transactions-filter-modal {
     margin-left: auto;
@@ -99,6 +131,30 @@
 
 #transactions-filter-modal .form-row.last {
     margin-top: 0;
+}
+
+/* Transaction Options Menu */
+.transactions-options-menu {
+    background-color: var(--cinza-4);
+    border-radius: 0.5rem;
+}
+
+.transactions-options-menu .transaction-option {
+    color: white;
+    font-size: 0.9rem;
+    line-height: normal;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.transactions-options-menu .transaction-option svg {
+    font-size: 1.3rem;
+}
+
+.transactions-options-menu .transaction-option:hover {
+    background-color: var(--cinza-3);
 }
 
 /* Alerts */
