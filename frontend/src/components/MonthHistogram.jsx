@@ -59,6 +59,7 @@ function MonthHistogram({title}){
         };
         console.log(fetchTransactions)
         if(fetchTransactions){
+            //Alterar isto para permitir anos letivos maybe, se calhar months pode ser lista de tuplos (month,year), em função do year (que passaria a ser referente ao ano letivo)
             const months=[1,2,3,4,5,6,7,8,9,10,11,12];
             const year=2023;
             const y_earn_promises=months.map((month)=>fetchTransactionData(month,year,true))
@@ -76,6 +77,7 @@ function MonthHistogram({title}){
                 name: "Earnings",
                 text: y_earn.map(String),
                 type: "bar",
+                width: 0.4,
                 marker: {
                     color: "#6bba75",
                     line: {
@@ -91,6 +93,7 @@ function MonthHistogram({title}){
                 text: y_exp.map(String),
                 name: "Expenses",
                 type: "bar",
+                width: 0.4,
                 marker: {
                     color: "#ff7e80",
                     line: {
@@ -122,21 +125,21 @@ function MonthHistogram({title}){
                       },
                     barmode: "group",
                     yaxis: {
-                        showgrid: false,
+                        showgrid: true,
+                        gridcolor: "#474747",
                         showline:true,
                         zeroline: true,
-                        zerolinecolor: "#6BBA75",
+                        zerolinecolor: "#ffffff",
                         hoverformat:".2f",
-                        color: "#6BBA75",
+                        linecolor: "#ffffff",
                     },
                     xaxis: {
-                        range:[1,12],
                         tickvals:[1,2,3,4,5,6,7,8,9,10,11,12],
                         ticktext:["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                         showgrid: false,
                         zeroline: true,
-                        zerolinecolor: "#6BBA75",
-                        color: "#6BBA75",
+                        zerolinecolor: "#ffffff",
+                        color: "#ffffff",
                     },
                     plot_bgcolor: "#333333",
                     paper_bgcolor: "#333333",
