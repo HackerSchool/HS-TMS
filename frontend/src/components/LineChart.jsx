@@ -32,6 +32,7 @@ function LineChart(props) {
                 showgrid: false,
                 color: "#6BBA75",
               },
+              width:600,
               plot_bgcolor: "#333333",
               paper_bgcolor: "#333333",
             }}

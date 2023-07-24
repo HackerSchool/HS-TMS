@@ -4,7 +4,7 @@ import PrintIcon from '@mui/icons-material/Print';
 import LineChart from '../components/LineChart';
 import MonthHistogram from '../components/MonthHistogram';
 //Fazer gráfico da evolução do balance
-
+//Talvez fazer comparação dos gastos dos projetos com os gastos médios de todos os projetos?
 
 function ChartsPage() {
     return (
@@ -26,6 +26,9 @@ function ChartsPage() {
                     <LineChart title="Transaction Boxplot"/>
                     <LineChart title="Project Transactions 1"/>
                     <LineChart title="Project Transactions 2"/>
+                    <LineChart title="Project Transactions 3"/>
+                    <LineChart title="Project Transactions 4"/>
+
                 </div>
             </div>
         </section>

@@ -154,6 +154,7 @@ function MonthHistogram({title}){
                         zerolinecolor: "#ffffff",
                         color: "#ffffff",
                     },
+                    width:600,
                     plot_bgcolor: "#333333",
                     paper_bgcolor: "#333333",
                     font: {
