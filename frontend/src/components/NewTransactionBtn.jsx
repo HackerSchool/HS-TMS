@@ -10,7 +10,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
 import Alert from '@mui/material/Alert';
 
-export default function NewTransactionBtn({refetch}) {
+export default function NewTransactionBtn({ refetch }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
@@ -170,7 +170,7 @@ export default function NewTransactionBtn({refetch}) {
                 New
             </button>
 
-            <Modal className="modal" id="new-transaction-modal" open={open} disableEnforceFocus
+            <Modal className="modal transaction-modal" id="new-transaction-modal" open={open} disableEnforceFocus
                 onClose={(e, reason) => handleClose(reason)} >
                 <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
                     {errorMsg && <Alert className="create-transaction-alert" onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
@@ -183,17 +183,17 @@ export default function NewTransactionBtn({refetch}) {
 
                     <div className="form-body">
                         <div className="form-row">
-                            <div className="form-group" id='create-transaction-date-group'>
+                            <div className="form-group transaction-date-group" id='create-transaction-date-group'>
                                 <label htmlFor="date">Date: *</label>
-                                <input type="date" name="date" id="create-transaction-date" required
+                                <input type="date" name="date" className='transaction-date' id="create-transaction-date" required
                                     value={formData.date} onChange={handleChange} />
                             </div>
 
-                            <div className="form-group" id='create-transaction-value-group'>
+                            <div className="form-group transaction-value-group" id='create-transaction-value-group'>
                                 <label htmlFor="value">Value: *</label>
                                 <div className="value-cost-earning-container">
                                     <input type="number" name="value" placeholder='0' min={0} step={0.01}
-                                        id="create-transaction-value" required
+                                        className='transaction-value' id="create-transaction-value" required
                                         value={formData.value} onChange={handleChange} />
                                     <ToggleButtonGroup
                                         value={formData.isCost}
@@ -214,7 +214,7 @@ export default function NewTransactionBtn({refetch}) {
                         </div>
 
                         <div className="form-row">
-                            <div className="form-group" id='create-transaction-projects-group'>
+                            <div className="form-group transaction-projects-group" id='create-transaction-projects-group'>
                                 <label htmlFor="projects">Projects:</label>
                                 <MultipleSelect
                                     options={projectsList}
@@ -224,7 +224,7 @@ export default function NewTransactionBtn({refetch}) {
 
 
                             </div>
-                            <div className="form-group" id='create-transaction-nif-group'>
+                            <div className="form-group transaction-nif-group" id='create-transaction-nif-group'>
                                 <label htmlFor="nif">NIF:</label>
                                 <ToggleButtonGroup
                                     value={formData.hasNif}
@@ -244,12 +244,12 @@ export default function NewTransactionBtn({refetch}) {
                         </div>
 
                         <div className="form-row">
-                            <div className="form-group" id='create-transaction-description-group'>
+                            <div className="form-group transaction-description-group" id='create-transaction-description-group'>
                                 <label htmlFor="description">Description:</label>
                                 <input type="text" name='description' placeholder='Description of the transaction'
                                     value={formData.description} onChange={handleChange} />
                             </div>
-                            <div className="form-group" id='create-transaction-file-group'>
+                            <div className="form-group transaction-file-group" id='create-transaction-file-group'>
                                 <label htmlFor="file">Receipt:</label>
                                 <input type="file" name='receipt' accept='.pdf' ref={fileRef} />
                             </div>
@@ -258,7 +258,7 @@ export default function NewTransactionBtn({refetch}) {
 
                     <hr />
                     <div className="form-row last">
-                        <button type='submit' className="btn" id='create-transaction-btn' >
+                        <button type='submit' className="btn transaction-submit-btn" id='create-transaction-btn' >
                             Create
                         </button>
                     </div>

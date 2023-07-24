@@ -6,6 +6,7 @@ import Table from '../components/Table'
 import NewTransactionBtn from '../components/NewTransactionBtn';
 import TransactionsSortButton from '../components/TransactionsSortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
+import TransactionEditModal from '../components/TransactionEditModal';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import Alert from '@mui/material/Alert';
 
@@ -13,6 +14,11 @@ function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
     const [queryParams, setQueryParams] = useSearchParams();
+
+    // Transaction Edit Modal
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [transactionToEdit, setTransactionToEdit] = useState();
+
 
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
@@ -43,6 +49,11 @@ function TransactionsPage() {
     }, [fetchTransactions]);
 
     const refetchTransactions = useCallback(() => setFetchTransactions(true));
+
+    const launchEditModal = useCallback((transaction) => {
+        setTransactionToEdit(transaction);
+        setOpenEditModal(true);
+    });
 
     return (
         <section className="page" id='TransactionsPage'>
@@ -75,9 +86,20 @@ function TransactionsPage() {
 
             <div className="content-container">
                 <div className="content">
-                    <Table data={transactions} refetch={refetchTransactions} />
+                    <Table
+                        data={transactions}
+                        refetch={refetchTransactions}
+                        openEditModal={launchEditModal}
+                    />
                 </div>
             </div>
+
+            {openEditModal && <TransactionEditModal
+                open={openEditModal}
+                setOpen={setOpenEditModal}
+                transaction={transactionToEdit}
+                refetch={refetchTransactions}
+            />}
 
         </section>
     );
