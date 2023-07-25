@@ -94,7 +94,7 @@ function TransactionsPage() {
                 </div>
             </div>
 
-            {openEditModal && <TransactionEditModal
+            {transactionToEdit && <TransactionEditModal
                 open={openEditModal}
                 setOpen={setOpenEditModal}
                 transaction={transactionToEdit}

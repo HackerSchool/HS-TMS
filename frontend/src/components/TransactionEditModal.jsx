@@ -9,18 +9,37 @@ import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Grow from '@mui/material/Grow';
 
 function TransactionEditModal({ open, setOpen, transaction, refetch }) {
 
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        if (reason != "backdropClick") {
-            setErrorMsg("");
-            setSuccessMsg("");
-            if (editedTransaction) refetch();
-            setOpen(false)
-        }
+        if (editedTransaction) refetch();
+        setOpen(false)
     };
+
+    function reset() {
+        setErrorMsg("");
+        setSuccessMsg("");
+        // Update the form data everytime the transaction being edited changes
+        setFormData({
+            date: transaction.date,
+            value: Math.abs(transaction.value),
+            isCost: transaction.value < 0 ? true : false,
+            projects: transaction.projects !== null
+                    ? transaction.projects.split("/").map((name, index, array) => {
+                        if (array.length === 1) return name;
+                        if (index === 0) return name.substring(0, name.length - 1);
+                        if (index === array.length - 1) return name.substring(1);
+                        return name.substring(1, name.length - 1);
+                    })
+                    : [],
+            hasNif: transaction.has_nif,
+            description: transaction.description
+        })
+    }
     
     // refs
     const formRef = useRef();
@@ -134,7 +153,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     const [projectsList, setProjectsList] = useState([]);
 
     useEffect(() => {
-        if (projectsList.length == 0 && open) {
+        // Fetch projects on first open
+        if (projectsList.length == 0 && open) { // FIXME
             console.log("fetching projects...");
 
             axios_instance.get("projects")
@@ -148,6 +168,10 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
                 })
                 .catch(err => console.log(err));
         }
+
+        // Reset form data
+        if (open) reset();
+
     }, [open])
 
     function getChosenProjectsIds() {
@@ -168,11 +192,20 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
 
 
     return (
-        <Modal className="modal transaction-modal" id="edit-transaction-modal" open={open} disableEnforceFocus
-            onClose={(e, reason) => handleClose(reason)} >
+        <Modal
+            className="modal transaction-modal"
+            id="edit-transaction-modal"
+            open={open}
+            disableEnforceFocus
+            onClose={(e, reason) => handleClose(reason)}
+            closeAfterTransition 
+            slotProps={{ backdrop: { timeout: 500 } }}
+        >
+            <Grow in={open} easing={{ exit: "ease-in" }} >
+            <Box className="box transaction-box" >
             <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='edit-transaction-form' onSubmit={submitForm}>
-                {errorMsg && <Alert className="edit-transaction-alert" onClose={() => { setErrorMsg("") }} severity="error">{errorMsg}</Alert>}
-                {successMsg && <Alert className="edit-transaction-alert" onClose={() => { setSuccessMsg("") }} severity="success">{successMsg}</Alert>}
+                {errorMsg && <Alert className="edit-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
+                {successMsg && <Alert className="edit-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
 
                 <div className='form-header'>
                     <CloseIcon className='modal-close-btn' onClick={handleClose} />
@@ -261,6 +294,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
                     </button>
                 </div>
             </form>
+            </Box>
+            </Grow>
         </Modal>
     );
 }

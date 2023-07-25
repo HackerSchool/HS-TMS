@@ -9,26 +9,29 @@ import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Grow from '@mui/material/Grow';
 
 export default function NewTransactionBtn({ refetch }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        if (reason != "backdropClick") {
-            setFormData({
-                date: "",
-                value: "",
-                isCost: true,
-                projects: [],
-                hasNif: false,
-                description: ""
-            })
-            setErrorMsg("");
-            setSuccessMsg("");
-            if (createdTransaction) refetch();
-            setOpen(false)
-        }
+        if (createdTransaction) refetch();
+        setOpen(false)
     };
+
+    function reset() {
+        setFormData({
+            date: "",
+            value: "",
+            isCost: true,
+            projects: [],
+            hasNif: false,
+            description: ""
+        })
+        setErrorMsg("");
+        setSuccessMsg("");
+    }
     
     // refs
     const formRef = useRef();
@@ -134,7 +137,8 @@ export default function NewTransactionBtn({ refetch }) {
     const [projectsList, setProjectsList] = useState([]);
 
     useEffect(() => {
-        if (projectsList.length == 0 && open) {
+        // Fetch projects on first open
+        if (projectsList.length == 0 && open) { // FIXME
             console.log("fetching projects...");
 
             axios_instance.get("projects")
@@ -145,6 +149,10 @@ export default function NewTransactionBtn({ refetch }) {
                 .then(data => { setProjectsList(data); console.log(data) })
                 .catch(err => console.log(err));
         }
+
+        // Reset form data
+        if (open) reset();
+
     }, [open])
 
     function getChosenProjectsIds() {
@@ -170,11 +178,20 @@ export default function NewTransactionBtn({ refetch }) {
                 New
             </button>
 
-            <Modal className="modal transaction-modal" id="new-transaction-modal" open={open} disableEnforceFocus
-                onClose={(e, reason) => handleClose(reason)} >
+            <Modal
+                className="modal transaction-modal"
+                id="new-transaction-modal"
+                open={open}
+                disableEnforceFocus
+                onClose={(e, reason) => handleClose(reason)}
+                closeAfterTransition 
+                slotProps={{ backdrop: { timeout: 500 } }}
+            >
+                <Grow in={open} easing={{ exit: "ease-in" }}>
+                <Box className="box transaction-box">
                 <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
-                    {errorMsg && <Alert className="create-transaction-alert" onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
-                    {successMsg && <Alert className="create-transaction-alert" onClose={()=>{setSuccessMsg("")}} severity="success">{successMsg}</Alert>}
+                    {errorMsg && <Alert className="create-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
+                    {successMsg && <Alert className="create-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
 
                     <div className='form-header'>
                         <CloseIcon className='modal-close-btn' onClick={handleClose} />
@@ -263,6 +280,8 @@ export default function NewTransactionBtn({ refetch }) {
                         </button>
                     </div>
                 </form>
+                </Box>
+                </Grow>
             </Modal>
         </>
     )

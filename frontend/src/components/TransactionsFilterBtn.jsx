@@ -2,24 +2,22 @@ import React, { useState, useEffect } from 'react';
 import axios_instance from '../Axios';
 import TuneIcon from '@mui/icons-material/Tune';
 import MultipleSelect from './MultipleSelect';
-import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Slide from '@mui/material/Slide';
 
 function TransactionsFilterBtn({ params, setParams, refetch }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        if (reason != "backdropClick") {
             setErrorMsg("");
             setOpen(false);
-        }
     }
 
     console.log(Array.from(params.entries()))
@@ -146,7 +144,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
     const [projectsList, setProjectsList] = useState([]);
 
     useEffect(() => {
-        if (projectsList.length == 0 && open) {
+        if (projectsList.length == 0 && open) { // FIXME
             console.log("fetching projects...");
 
             axios_instance.get("projects")
@@ -202,10 +200,19 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
                 Filter
             </button>
 
-            <Modal className="modal" id="transactions-filter-modal" open={open} disableEnforceFocus
-                onClose={(e, reason) => handleClose(reason)} >
+            <Modal
+                className="modal"
+                id="transactions-filter-modal"
+                open={open}
+                disableEnforceFocus
+                onClose={(e, reason) => handleClose(reason)}
+                closeAfterTransition 
+                slotProps={{ backdrop: { timeout: 500 } }}
+            >
+                <Slide in={open} direction='left' >
+                <Box className="box filters-box" >
                 <form id='transactions-filter-form' onSubmit={updateFilters}>
-                    {errorMsg && <Alert className="transactions-filter-alert" onClose={() => { setErrorMsg("") }} severity="error">{errorMsg}</Alert>}
+                    {errorMsg && <Alert className="transactions-filter-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
 
                     <div className='form-header'>
                         <ArrowBackIcon className='modal-close-btn' onClick={handleClose} />
@@ -318,6 +325,8 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
                         </button>
                     </div>
                 </form>
+                </Box>
+                </Slide>
             </Modal>
         </>
     );

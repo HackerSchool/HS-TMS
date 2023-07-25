@@ -5,9 +5,12 @@
 /* New Transaction Modal */
 .transaction-modal {
     margin: auto;
-    border-radius: 2rem;
     max-width: 60%;
     max-height: 80%;
+}
+
+.transaction-box {
+    border-radius: 2rem;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
@@ -81,6 +84,9 @@
     margin-left: auto;
     height: 100svh;
     max-width: 35%;
+}
+
+.filters-box {
     border-radius: 2rem 0 0 2rem;
     box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.75);
 }
