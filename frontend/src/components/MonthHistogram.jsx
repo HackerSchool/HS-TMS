@@ -3,8 +3,8 @@ import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
 
 function MonthHistogram({title}){
-    const [histogramData, setHistogramData] = useState({});
-    const [year, setYear]=useState("2023");
+    const [histogramData, setHistogramData] = useState([]);
+    const [years, setYears]=useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
     //Fetches data for a specific month, year, and type of transaction (Earning/Expense)
     const fetchTransactionData = (month, year, earning_bool) => {
@@ -44,8 +44,7 @@ function MonthHistogram({title}){
                 } else {
                     const firstYear=parseInt(transactions[transactions.length-1].date.substring(0,4));
                     const lastYear=parseInt(transactions[0].date.substring(0,4));
-                    setYear(lastYear)
-                    return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index).toString());
+                    return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index).toString()).reverse();
                 }
             })
             .catch(error=>{
@@ -61,6 +60,7 @@ function MonthHistogram({title}){
             Promise.all([years_promise])
                 .then((result)=> {
                     const years = result[0];
+                    setYears(years)
 
                     const y_earn_promises = months.flatMap((month) => 
                          years.map((year)=>fetchTransactionData(month,year,true))
@@ -74,7 +74,7 @@ function MonthHistogram({title}){
                         .then((results) => {
                             const y_earn = results.slice(0,results.length/2);
                             const y_exp = results.slice(results.length/2);
-                            let data = {}
+                            let data = []
                             years.forEach((year)=>{
                                 const year_index = years.indexOf(year);
                                 const y_year_earn=y_earn.filter((value, index) => index % years.length === year_index);
@@ -86,6 +86,8 @@ function MonthHistogram({title}){
                                     text: y_year_earn.map(String),
                                     type: "bar",
                                     width:0.4,
+                                    //Only the most recent year with transactions is initially visible
+                                    visible: year_index===0,
                                     marker: {
                                         color: "#6bba75",
                                         line: {
@@ -101,6 +103,7 @@ function MonthHistogram({title}){
                                     name: "Expenses",
                                     type: "bar",
                                     width:0.4,
+                                    visible: year_index===0,
                                     marker: {
                                         color: "#ff7e80",
                                         line: {
@@ -109,10 +112,9 @@ function MonthHistogram({title}){
                                         },
                                     },
                                     };
-                                const year_data={[year]:[earnings,expenses],};
-                                data = {...data, ...year_data};
+                                const year_data=[earnings,expenses];
+                                data = [...data, ...year_data];
                             });
-                            console.log(data)
                             setHistogramData(data);
                             setFetchTransactions(false)
                         })
@@ -128,12 +130,13 @@ function MonthHistogram({title}){
             <div className="chartTitle">{title}</div>
             <div className="chart">
             <Plot
-                data={histogramData[year]}
+                data={histogramData}
+                config={{modeBarButtonsToRemove:[ "select2d", "lasso2d"], displaylogo:false}}
                 layout = {{
                     legend: {
                         x: 1,
                         xanchor: 'right',
-                        y: 1,
+                        y: 1.15,
                         bgcolor: 'rgba(0,0,0,0)'
                       },
                     barmode: "group",
@@ -154,7 +157,10 @@ function MonthHistogram({title}){
                         zerolinecolor: "#ffffff",
                         color: "#ffffff",
                     },
-                    width:600,
+                    width: 680,
+                    height:450,
+                    margin: {t: 60, b: 30, l: 30, r: 30},
+                    autosize: false,
                     plot_bgcolor: "#333333",
                     paper_bgcolor: "#333333",
                     font: {
@@ -162,17 +168,23 @@ function MonthHistogram({title}){
                     },
                     //Dropdown menu for choosing the desired year
                     updatemenus:[{
-                        buttons:[
-                            //Object.keys(histogramData).map((year) => ({
-                            //    method:"restyle",
-                            //    args: [["data"], [histogramData[year]]],
-                            //    label: year,
-                            //  }))
-
-                        ],
+                        buttons:years.map((year,index)=>{
+                            const visibleArray=Array(years.length*2).fill(false);
+                            visibleArray[index*2]=true;
+                            visibleArray[index*2+1]=true;
+                            return {
+                                method:"restyle",
+                                args:["visible", visibleArray],
+                                label: year
+                            }
+                        }),
                         type:"dropdown",
                         xanchor:"left",
-                        yanchor:"top",
+                        x:0,
+                        y:1.15,
+                        bgcolor: '#6bba75',
+                        bordercolor: '#6bba75', // Set the border color to be the same as the background color
+                        borderwidth: 2,
                         showactive: true,
                     }]
                 }}
