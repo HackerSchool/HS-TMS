@@ -1,117 +1,41 @@
-import React from "react";
-import "../App.css";
-import "../styles/Projects.css";
-
-import "../components/Sidebar";
-import Sidebar from "../components/Sidebar";
-
+import React from 'react';
+import '../styles/Projects.css'
+import ProjList from '../components/ProjList';
 import AddIcon from '@mui/icons-material/Add';
+import SortIcon from '@mui/icons-material/Sort';
+import TuneIcon from '@mui/icons-material/Tune';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 
 function ProjectsPage() {
-  return (
-    <div className="page">
-      <Sidebar />
-      <div className="content">
-        <div className="head">
-          <div className=".head_l">
-            <div className="title">
-              Projects
+    return (
+        <section className="page" id='ProjectsPage'>
+            <header>
+                <h1>Projects</h1>
+                <div className="btn-group left">
+                    <button className='btn icon-btn'>
+                        <AddIcon />
+                        New
+                    </button>
+                </div>
+                <div className="btn-group right">
+                    <button className='btn icon-btn' id='sorted-by'>
+                        <SortIcon />
+                        Sorted by: Most Recent
+                    </button>
+                    <button className='btn icon-btn' id='filter'>
+                        <TuneIcon />
+                        Filter
+                    </button>
+                </div>
+            </header>
+
+            <div className="content-container">
+                <div className="content">
+                    <ProjList/>
+                </div>
             </div>
-            <button className="buttons">
-              <AddIcon/>
-              New
-            </button>
-          </div>
-          <div className=".head_r">
-            <button className="buttons">Sorted by: Active First</button>
-            <div className="title"></div>
-            <button className="buttons">Filter</button>
-          </div>
-        </div>
-        <div className="list_holder">
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          <div className="project_holder">
-            <h1>Arquimidia</h1>
-            <p>6 transactions</p>
-            <p>Balance: -10</p>
-            <p>Active</p>
-            <button id = 'edit_proj'><ModeEditIcon/></button>
-          </div>
-          
-        </div>
-      </div>
-    </div>
-  );
+        </section>
+    );
 }
 
 export default ProjectsPage;
