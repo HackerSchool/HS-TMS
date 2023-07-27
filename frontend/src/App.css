@@ -57,7 +57,7 @@ hr {
 	border-radius: 1rem 1rem 0 0;
 }
 
-.content {
+.content-container > .content {
 	max-height: 100%;
 	padding: 3rem 3rem 0rem 3rem;
     margin-bottom: 50px;
@@ -195,6 +195,45 @@ input[type="file"] {
     align-items: center;
 }
 
+/* Confirmation Modal */
+.confirmation-modal {
+    margin: auto;
+    height: fit-content;
+    max-width: 40%;
+}
+
+.confirmation-box {
+    border-radius: 2rem;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.confirmation-box hr {
+    width: 100%;
+}
+
+.confirmation-box .content {
+    margin: 1rem 0;
+    width: 100%;
+    min-height: fit-content;
+}
+
+.confirmation-box .btn-group {
+    margin-top: 1rem;
+}
+
+.confirmation-box .btn-group .btn.cancel {
+    background-color: var(--cinza-4);
+}
+
+.confirmation-box .btn-group .btn:focus {
+    outline: 2px solid white;
+}
+
+
 /* toggle buttons */
 .modal .toggle-button {
     text-transform: none;
@@ -214,14 +253,17 @@ input[type="file"] {
 }
 
 .modal .toggle-button.left {
-    border-radius: 6.25rem 0rem 0rem 6.25rem;
+    border-top-left-radius: 6.25rem;
+    border-bottom-left-radius: 6.25rem;
 }
 
 .modal .toggle-button.right {
-    border-radius: 0rem 6.25rem 6.25rem 0rem;
+    border-top-right-radius: 6.25rem;
+    border-bottom-right-radius: 6.25rem;
 }
 
-.modal .toggle-button.Mui-selected {
+.modal .toggle-button.Mui-selected,
+.modal .toggle-button.active {
     background-color: var(--green);
     color: white;
 }

@@ -2,7 +2,7 @@
     padding-top: 1.5rem;
 }
 
-/* New Transaction Modal */
+/* Transaction Modal */
 .transaction-modal {
     margin: auto;
     max-width: 60%;
@@ -24,7 +24,8 @@
     width: 50%;
 }
 
-.transaction-nif-group {
+.transaction-nif-group,
+#edit-transaction-file-group {
     flex-direction: row;
     align-items: center;
 }
@@ -39,6 +40,10 @@
 
 .transaction-description-group {
     width: 50%;
+}
+
+.transaction-modal hr {
+    margin-top: 1rem;
 }
 
 .transaction-submit-btn {

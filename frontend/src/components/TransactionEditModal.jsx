@@ -14,7 +14,6 @@ import Grow from '@mui/material/Grow';
 
 function TransactionEditModal({ open, setOpen, transaction, refetch }) {
 
-    const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
         if (editedTransaction) refetch();
         setOpen(false)
@@ -43,7 +42,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     
     // refs
     const formRef = useRef();
-    const fileRef = useRef();
 
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
@@ -121,8 +119,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
         body.append("projects", JSON.stringify(getChosenProjectsIds()));
         body.append("hasNif", formData.hasNif);
         body.append("description", formData.description);
-        /* FIXME */ body.append("hasFile", transaction.has_file)
-        // body.append("receipt", fileRef.current.files[0]);
+        // the receipt can't be changed so just send back the hasFile flag
+        body.append("hasFile", transaction.has_file)
 
         console.log(Array.from(body.entries()))
 
@@ -281,8 +279,11 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
                                 value={formData.description} onChange={handleChange} />
                         </div>
                         <div className="form-group transaction-file-group" id='edit-transaction-file-group'>
-                            <label htmlFor="file">Receipt:</label>
-                            <input type="file" name='receipt' accept='.pdf' ref={fileRef} />
+                            <label htmlFor="file">Has receipt:</label>
+                            <div className={`toggle-button left right ${transaction.has_file ? "active" : ""}`}>
+                                {transaction.has_file ? <CheckIcon /> : <CloseIcon />}
+                                {transaction.has_file ? "Yes" : "No"}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -7,6 +7,7 @@ import NewTransactionBtn from '../components/NewTransactionBtn';
 import TransactionsSortButton from '../components/TransactionsSortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import Alert from '@mui/material/Alert';
 
@@ -19,10 +20,51 @@ function TransactionsPage() {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState();
 
+    // Transaction Deletion
+    const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] = useState();
+
+    function onDeleteCancelation() {
+        setOpenConfirmationModal(false);
+    }
+
+    function onDeleteConfirmation() {
+        axios_instance.delete(`transactions/${transactionToDelete.id}`)
+            .then(res => {
+                if (res.status === 204) refetchTransactions();
+                else throw new Error(`Couldn't delete transaction ${transactionToDelete.id}`)
+                /* FIXME */
+            });
+
+        setOpenConfirmationModal(false);
+    }
+
+    function getTransactionDeletionText() {
+        const title = "Do you wish to permanently delete the following transaction"
+            + (transactionToDelete.has_file ? ", along with its corresponding receipt?" : "?");
+
+        const transaction = <div style={{ lineHeight: 1.5 }}>
+            <b>Date:</b> {transactionToDelete.date} <br />
+            <b>Description:</b> {transactionToDelete.description} <br />
+            <b>Value:</b> {transactionToDelete.value}€ <br />
+            <b>Projects:</b> {transactionToDelete.projects ?? "none"} <br />
+            <b>NIF:</b> {transactionToDelete.has_nif ? "Yes" : "No"}
+        </div>
+
+        return (
+            <div>
+                {title}
+                <br />
+                <br />
+                {transaction}
+            </div>
+        );
+    }
 
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
 
+    // To fetch transactions when needed
     useEffect(() => {
         if (fetchTransactions) {
             axios_instance.get("transactions", {
@@ -53,6 +95,11 @@ function TransactionsPage() {
     const launchEditModal = useCallback((transaction) => {
         setTransactionToEdit(transaction);
         setOpenEditModal(true);
+    });
+
+    const launchConfirmationModal = useCallback((transaction) => {
+        setTransactionToDelete(transaction);
+        setOpenConfirmationModal(true);
     });
 
     return (
@@ -90,6 +137,7 @@ function TransactionsPage() {
                         data={transactions}
                         refetch={refetchTransactions}
                         openEditModal={launchEditModal}
+                        openDeleteModal={launchConfirmationModal}
                     />
                 </div>
             </div>
@@ -99,6 +147,14 @@ function TransactionsPage() {
                 setOpen={setOpenEditModal}
                 transaction={transactionToEdit}
                 refetch={refetchTransactions}
+            />}
+
+            {transactionToDelete && <ConfirmationModal
+                open={openConfirmationModal}
+                title={`Delete transaction ${transactionToDelete.id}`}
+                content={getTransactionDeletionText()}
+                onCancel={onDeleteCancelation}
+                onConfirm={onDeleteConfirmation}
             />}
 
         </section>
