@@ -9,7 +9,7 @@ import TransactionsSortButton from '../components/TypeOfYearBtn';
 
 function ChartsPage() {
     const [fetchTransactions, setFetchTransactions] = useState(true);
-    const [title, setTitle]=useState("Transaction Histogram")
+    const [typeOfYear, setTypeOfYear]=useState("civic")
     const refetchTransactions = useCallback(() => setFetchTransactions(true));
 
     return (
@@ -26,7 +26,7 @@ function ChartsPage() {
                 </div>
                 <div className="btn-group right">
                     <TransactionsSortButton
-                        setTitle={setTitle}
+                        setTypeOfYear={setTypeOfYear}
                         refetch={refetchTransactions} 
                     />
                 </div>

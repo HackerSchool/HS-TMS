@@ -15,14 +15,14 @@ const options=[
     {text: 'Academic Years', type:'academic'},
 ]
 
-export default function TypeOfYearBtn({setTitle,refetch}){
+export default function TypeOfYearBtn({setTypeOfYear,refetch}){
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const handleMenuItemClick = (event, index) => {
         const chosenOption = options[index];
-        setTitle(chosenOption.type);
+        setTypeOfYear(chosenOption.type);
         refetch();
         setSelectedIndex(index);
         setOpen(false);
