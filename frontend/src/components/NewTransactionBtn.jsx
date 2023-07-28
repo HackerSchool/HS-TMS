@@ -9,26 +9,29 @@ import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Grow from '@mui/material/Grow';
 
-export default function NewTransactionBtn({refetch}) {
+export default function NewTransactionBtn({ refetch }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        if (reason != "backdropClick") {
-            setFormData({
-                date: "",
-                value: "",
-                isCost: true,
-                projects: [],
-                hasNif: false,
-                description: ""
-            })
-            setErrorMsg("");
-            setSuccessMsg("");
-            if (createdTransaction) refetch();
-            setOpen(false)
-        }
+        if (createdTransaction) refetch();
+        setOpen(false)
     };
+
+    function reset() {
+        setFormData({
+            date: "",
+            value: "",
+            isCost: true,
+            projects: [],
+            hasNif: false,
+            description: ""
+        })
+        setErrorMsg("");
+        setSuccessMsg("");
+    }
     
     // refs
     const formRef = useRef();
@@ -134,7 +137,8 @@ export default function NewTransactionBtn({refetch}) {
     const [projectsList, setProjectsList] = useState([]);
 
     useEffect(() => {
-        if (projectsList.length == 0 && open) {
+        // Fetch projects on first open
+        if (projectsList.length == 0 && open) { // FIXME
             console.log("fetching projects...");
 
             axios_instance.get("projects")
@@ -145,6 +149,10 @@ export default function NewTransactionBtn({refetch}) {
                 .then(data => { setProjectsList(data); console.log(data) })
                 .catch(err => console.log(err));
         }
+
+        // Reset form data
+        if (open) reset();
+
     }, [open])
 
     function getChosenProjectsIds() {
@@ -170,11 +178,20 @@ export default function NewTransactionBtn({refetch}) {
                 New
             </button>
 
-            <Modal className="modal" id="new-transaction-modal" open={open} disableEnforceFocus
-                onClose={(e, reason) => handleClose(reason)} >
+            <Modal
+                className="modal transaction-modal"
+                id="new-transaction-modal"
+                open={open}
+                disableEnforceFocus
+                onClose={(e, reason) => handleClose(reason)}
+                closeAfterTransition 
+                slotProps={{ backdrop: { timeout: 500 } }}
+            >
+                <Grow in={open} easing={{ exit: "ease-in" }}>
+                <Box className="box transaction-box">
                 <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
-                    {errorMsg && <Alert className="create-transaction-alert" onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
-                    {successMsg && <Alert className="create-transaction-alert" onClose={()=>{setSuccessMsg("")}} severity="success">{successMsg}</Alert>}
+                    {errorMsg && <Alert className="create-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
+                    {successMsg && <Alert className="create-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
 
                     <div className='form-header'>
                         <CloseIcon className='modal-close-btn' onClick={handleClose} />
@@ -183,17 +200,17 @@ export default function NewTransactionBtn({refetch}) {
 
                     <div className="form-body">
                         <div className="form-row">
-                            <div className="form-group" id='create-transaction-date-group'>
+                            <div className="form-group transaction-date-group" id='create-transaction-date-group'>
                                 <label htmlFor="date">Date: *</label>
-                                <input type="date" name="date" id="create-transaction-date" required
+                                <input type="date" name="date" className='transaction-date' id="create-transaction-date" required
                                     value={formData.date} onChange={handleChange} />
                             </div>
 
-                            <div className="form-group" id='create-transaction-value-group'>
+                            <div className="form-group transaction-value-group" id='create-transaction-value-group'>
                                 <label htmlFor="value">Value: *</label>
                                 <div className="value-cost-earning-container">
                                     <input type="number" name="value" placeholder='0' min={0} step={0.01}
-                                        id="create-transaction-value" required
+                                        className='transaction-value' id="create-transaction-value" required
                                         value={formData.value} onChange={handleChange} />
                                     <ToggleButtonGroup
                                         value={formData.isCost}
@@ -214,7 +231,7 @@ export default function NewTransactionBtn({refetch}) {
                         </div>
 
                         <div className="form-row">
-                            <div className="form-group" id='create-transaction-projects-group'>
+                            <div className="form-group transaction-projects-group" id='create-transaction-projects-group'>
                                 <label htmlFor="projects">Projects:</label>
                                 <MultipleSelect
                                     options={projectsList}
@@ -224,7 +241,7 @@ export default function NewTransactionBtn({refetch}) {
 
 
                             </div>
-                            <div className="form-group" id='create-transaction-nif-group'>
+                            <div className="form-group transaction-nif-group" id='create-transaction-nif-group'>
                                 <label htmlFor="nif">NIF:</label>
                                 <ToggleButtonGroup
                                     value={formData.hasNif}
@@ -244,12 +261,12 @@ export default function NewTransactionBtn({refetch}) {
                         </div>
 
                         <div className="form-row">
-                            <div className="form-group" id='create-transaction-description-group'>
+                            <div className="form-group transaction-description-group" id='create-transaction-description-group'>
                                 <label htmlFor="description">Description:</label>
                                 <input type="text" name='description' placeholder='Description of the transaction'
                                     value={formData.description} onChange={handleChange} />
                             </div>
-                            <div className="form-group" id='create-transaction-file-group'>
+                            <div className="form-group transaction-file-group" id='create-transaction-file-group'>
                                 <label htmlFor="file">Receipt:</label>
                                 <input type="file" name='receipt' accept='.pdf' ref={fileRef} />
                             </div>
@@ -258,11 +275,13 @@ export default function NewTransactionBtn({refetch}) {
 
                     <hr />
                     <div className="form-row last">
-                        <button type='submit' className="btn" id='create-transaction-btn' >
+                        <button type='submit' className="btn transaction-submit-btn" id='create-transaction-btn' >
                             Create
                         </button>
                     </div>
                 </form>
+                </Box>
+                </Grow>
             </Modal>
         </>
     )

@@ -98,7 +98,7 @@ function DownloadIcon({id}) {
     )
 }
 
-export default function CustomTable({ data, refetch }) {
+export default function CustomTable({ data, refetch, openEditModal, openDeleteModal }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
@@ -171,7 +171,12 @@ export default function CustomTable({ data, refetch }) {
                                     {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
                                 </TableCell>
                                 <TableCell align="center">
-                                    <TransactionsOptionsBtn transaction={row} refetch={refetch} />
+                                    <TransactionsOptionsBtn
+                                        transaction={row}
+                                        refetch={refetch}
+                                        openEditModal={openEditModal}
+                                        openDeleteModal={openDeleteModal}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}

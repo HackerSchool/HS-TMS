@@ -10,7 +10,7 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 
-function TransactionsOptionsBtn({ transaction, refetch }) {
+function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDeleteModal }) {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef();
     const handleToggle = () => setOpen(oldValue => !oldValue);
@@ -55,14 +55,14 @@ function TransactionsOptionsBtn({ transaction, refetch }) {
                                 <MenuList className='transactions-options-menu'>
                                     <MenuItem
                                         className='transaction-option'
-                                        onClick={(event) => null}
+                                        onClick={(event) => openEditModal(transaction)}
                                     >
                                         <EditIcon />
                                         Edit
                                     </MenuItem>
                                     <MenuItem
                                         className='transaction-option'
-                                        onClick={(event) => deleteTransaction()}
+                                        onClick={(event) => openDeleteModal(transaction)}
                                     >
                                         <DeleteIcon />
                                         Delete

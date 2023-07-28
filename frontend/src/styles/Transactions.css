@@ -2,12 +2,15 @@
     padding-top: 1.5rem;
 }
 
-/* New Transaction Modal */
-#new-transaction-modal {
+/* Transaction Modal */
+.transaction-modal {
     margin: auto;
-    border-radius: 2rem;
     max-width: 60%;
     max-height: 80%;
+}
+
+.transaction-box {
+    border-radius: 2rem;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
@@ -17,16 +20,17 @@
     gap: 1rem;
 }
 
-#create-transaction-projects-group {
+.transaction-projects-group {
     width: 50%;
 }
 
-#create-transaction-nif-group {
+.transaction-nif-group,
+#edit-transaction-file-group {
     flex-direction: row;
     align-items: center;
 }
 
-#new-transaction-modal input[type="file"]::-webkit-file-upload-button {
+.transaction-modal input[type="file"]::-webkit-file-upload-button {
     background-color: var(--green);
     border: none;
     border-radius: 0.5rem;
@@ -34,11 +38,15 @@
     margin-top: 0.2rem;
   }
 
-#create-transaction-description-group {
+.transaction-description-group {
     width: 50%;
 }
 
-#create-transaction-btn {
+.transaction-modal hr {
+    margin-top: 1rem;
+}
+
+.transaction-submit-btn {
     font-size: 1.2rem;
     margin: 0 auto;
 }
@@ -58,12 +66,13 @@
 
 .sort-menu {
     background-color: var(--green);
-    border-radius: 0 0 0.5rem 0.5rem;
-    box-shadow: inset 0px 2.2px 2px 0px #0000004a;
+    border-radius: 0.5rem;
+    top: 0.3rem;
 }
 
 .sort-menu .sort-option {
     color: white;
+    justify-content: center;
 }
 
 .sort-menu .sort-option.Mui-selected {
@@ -80,6 +89,9 @@
     margin-left: auto;
     height: 100svh;
     max-width: 35%;
+}
+
+.filters-box {
     border-radius: 2rem 0 0 2rem;
     box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.75);
 }
@@ -160,6 +172,7 @@
 /* Alerts */
 .transactions-alert,
 .create-transaction-alert,
+.edit-transaction-alert,
 .transactions-filter-alert {
     position: absolute;
     margin: 0 auto;

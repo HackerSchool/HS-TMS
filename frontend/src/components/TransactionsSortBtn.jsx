@@ -70,7 +70,7 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
             </ButtonGroup>
 
             <Popper
-                sx={{ zIndex: 1 }}
+                sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
                 open={open}
                 anchorEl={anchorRef.current}
                 placement='bottom'
