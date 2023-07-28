@@ -30,3 +30,36 @@
   transform: translateX(-65%);
   margin:0.5rem;
 }
+
+/* Type of Year Button */
+#type-year-btn {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-right: 0.5rem;
+}
+
+.type-year-arrow-btn {
+  padding: 0 0.5rem 0 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.type-year-menu {
+  background-color: var(--green);
+  border-radius: 0.5rem;
+  top: 0.3rem;
+}
+
+.type-year-menu .type-year-option {
+  color: white;
+  justify-content: center;
+}
+
+.type-year-menu .type-year-option.Mui-selected {
+  background-color: var(--hs-logo);
+}
+
+.type-year-menu .type-year-option:hover,
+.type-year-menu .type-year-option.Mui-selected:hover {
+  background-color: var(--green-hover);
+}

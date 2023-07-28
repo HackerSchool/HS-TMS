@@ -2,10 +2,9 @@ import React, {useEffect,useState} from "react";
 import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
 
-function MonthHistogram({title}){
+function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
     const [histogramData, setHistogramData] = useState([]);
     const [years, setYears]=useState([]);
-    const [fetchTransactions, setFetchTransactions] = useState(true);
     //Fetches data for a specific month, year, and type of transaction (Earning/Expense)
     const fetchTransactionData = (month, year, earning_bool) => {
         const res = axios_instance.get("transactions", {
@@ -182,6 +181,7 @@ function MonthHistogram({title}){
                         xanchor:"left",
                         x:0,
                         y:1.15,
+                        font: {color: '#333333'},
                         bgcolor: '#6bba75',
                         bordercolor: '#6bba75', // Set the border color to be the same as the background color
                         borderwidth: 2,
