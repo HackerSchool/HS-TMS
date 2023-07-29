@@ -33,7 +33,7 @@ function ChartsPage() {
             </header>
             <div className="content-container">
                 <div className="charts">
-                    <MonthHistogram title={title} fetchTransactions={fetchTransactions} setFetchTransactions={setFetchTransactions}/>
+                    <MonthHistogram title="Transaction Histogram" typeOfYear={typeOfYear} fetchTransactions={fetchTransactions} setFetchTransactions={setFetchTransactions}/>
                     <LineChart title="Transaction Boxplot"/>
                     <LineChart title="Project Transactions 1"/>
                     <LineChart title="Project Transactions 2"/>

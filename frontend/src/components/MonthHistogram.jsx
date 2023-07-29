@@ -2,7 +2,7 @@ import React, {useEffect,useState} from "react";
 import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
 
-function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
+function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransactions}){
     const [histogramData, setHistogramData] = useState([]);
     const [years, setYears]=useState([]);
     //Fetches data for a specific month, year, and type of transaction (Earning/Expense)
@@ -41,9 +41,14 @@ function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
                     //If there are no transactions, 2023 is chosen as default year
                     return ["2023"]
                 } else {
-                    const firstYear=parseInt(transactions[transactions.length-1].date.substring(0,4));
-                    const lastYear=parseInt(transactions[0].date.substring(0,4));
-                    return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index).toString()).reverse();
+                    //If typeOfYear is civic then the first year is automatically the first year seen. If typeOfYear is academic we need to check if the month is lesser than 9 (september): if it is the first academic year is firstYear-1/firstYear.
+                    //if it isn't the first academic year is firstYear/firstYear+1 (we only return the first year of the academic year). The same check is done for lastYear.
+                    const firstYear= typeOfYear==="civic" ? parseInt(transactions[transactions.length-1].date.substring(0,4)) : 
+                        parseInt(transactions[transactions.length-1].date.substring(5,7)) < 9 ? parseInt(transactions[transactions.length-1].date.substring(0,4))-1 : parseInt(transactions[transactions.length-1].date.substring(0,4));
+                    const lastYear=typeOfYear==="civic" ? parseInt(transactions[0].date.substring(0,4)) : 
+                        parseInt(transactions[0].date.substring(5,7)) < 9 ? parseInt(transactions[0].date.substring(0,4))-1 : parseInt(transactions[0].date.substring(0,4));
+                    console.log(firstYear, lastYear)
+                    return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
                 }
             })
             .catch(error=>{
@@ -54,19 +59,18 @@ function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
 
     useEffect(() => {
         if(fetchTransactions){
-            const months=[1,2,3,4,5,6,7,8,9,10,11,12];
+            const months= typeOfYear=== "civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
             const years_promise = fetchYears();
             Promise.all([years_promise])
                 .then((result)=> {
                     const years = result[0];
                     setYears(years)
-
                     const y_earn_promises = months.flatMap((month) => 
-                         years.map((year)=>fetchTransactionData(month,year,true))
+                         years.map((year)=>typeOfYear==="academic" && month < 9 ? fetchTransactionData(month,year+1,true) : fetchTransactionData(month,year,true))
                     );
 
                     const y_exp_promises = months.flatMap((month) => 
-                         years.map((year)=>fetchTransactionData(month,year,false))
+                         years.map((year)=>typeOfYear==="academic" && month < 9 ? fetchTransactionData(month,year+1,false) : fetchTransactionData(month,year,false))
                     );
 
                     Promise.all([...y_earn_promises, ...y_exp_promises])
@@ -79,7 +83,7 @@ function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
                                 const y_year_earn=y_earn.filter((value, index) => index % years.length === year_index);
                                 const y_year_exp=y_exp.filter((value, index) => index % years.length === year_index);
                                 const earnings = {
-                                    x: months,
+                                    x: months.map(String),
                                     y: y_year_earn,
                                     name: "Earnings",
                                     text: y_year_earn.map(String),
@@ -96,7 +100,7 @@ function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
                                     },
                                     };
                                 const expenses = {
-                                    x: months,
+                                    x: months.map(String),
                                     y: y_year_exp,
                                     text: y_year_exp.map(String),
                                     name: "Expenses",
@@ -149,8 +153,9 @@ function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
                         linecolor: "#ffffff",
                     },
                     xaxis: {
-                        tickvals:[1,2,3,4,5,6,7,8,9,10,11,12],
-                        ticktext:["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                        type: "category",
+                        tickvals: typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12].map(String) : [9,10,11,12,1,2,3,4,5,6,7,8].map(String),
+                        ticktext: typeOfYear==="civic" ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] : ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
                         showgrid: false,
                         zeroline: true,
                         zerolinecolor: "#ffffff",
@@ -174,7 +179,7 @@ function MonthHistogram({title, fetchTransactions, setFetchTransactions}){
                             return {
                                 method:"restyle",
                                 args:["visible", visibleArray],
-                                label: year
+                                label: typeOfYear==="civic"? year : [String(year), "/", String(year+1)].join("")
                             }
                         }),
                         type:"dropdown",
