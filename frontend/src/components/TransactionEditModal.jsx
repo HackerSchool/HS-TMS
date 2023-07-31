@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
 import MultipleSelect from './MultipleSelect';
+import { DownloadIcon } from './Table';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -194,7 +195,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
             className="modal transaction-modal"
             id="edit-transaction-modal"
             open={open}
-            disableEnforceFocus
+            disableRestoreFocus
             onClose={(e, reason) => handleClose(reason)}
             closeAfterTransition 
             slotProps={{ backdrop: { timeout: 500 } }}
@@ -279,11 +280,12 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
                                 value={formData.description} onChange={handleChange} />
                         </div>
                         <div className="form-group transaction-file-group" id='edit-transaction-file-group'>
-                            <label htmlFor="file">Has receipt:</label>
+                            <label htmlFor="file">Receipt:</label>
                             <div className={`toggle-button left right ${transaction.has_file ? "active" : ""}`}>
                                 {transaction.has_file ? <CheckIcon /> : <CloseIcon />}
                                 {transaction.has_file ? "Yes" : "No"}
                             </div>
+                            {transaction.has_file && <DownloadIcon id={transaction.id} />}
                         </div>
                     </div>
                 </div>

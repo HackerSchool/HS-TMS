@@ -28,13 +28,15 @@ function App() {
             .catch(err => {
                 console.log(err);
                 setUser(false);
-                setErrorMsg("Session either invalid or expired")
+                if (typeof err === String) setErrorMsg(err);
+                else if (err.response.status === 403)
+                    setErrorMsg("Successfully authenticated via FenixEdu but not authorized in the system")
             });
     }, [])
 
     return (
         <div className="App">
-            {errorMsg && <Alert className="login-alert" onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
+            {errorMsg && <Alert className="login-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
 
             {user != undefined && <Routes>
                 {!user && <Route path="/login" element={<LoginPage />} />}

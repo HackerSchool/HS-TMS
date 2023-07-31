@@ -107,6 +107,20 @@ hr {
     }
 }
 
+/* Focus highlighting */
+.modal:focus, .box:focus {
+    outline: none;
+    border: none;
+}
+
+.btn:focus {
+    outline: 2px solid white;
+}
+
+.btn:active {
+    outline: none;
+}
+
 /* Modal */
 
 .modal {
@@ -215,6 +229,10 @@ input[type="file"] {
     width: 100%;
 }
 
+.confirmation-box .title {
+    text-align: center;
+}
+
 .confirmation-box .content {
     margin: 1rem 0;
     width: 100%;
@@ -228,11 +246,6 @@ input[type="file"] {
 .confirmation-box .btn-group .btn.cancel {
     background-color: var(--cinza-4);
 }
-
-.confirmation-box .btn-group .btn:focus {
-    outline: 2px solid white;
-}
-
 
 /* toggle buttons */
 .modal .toggle-button {
@@ -289,6 +302,10 @@ input[type="file"] {
 
 .multiple-select .MuiOutlinedInput-notchedOutline {
     border: 1px solid var(--cinza-4);
+}
+
+.css-13vaet-MuiInputBase-root-MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--cinza-4) !important;
 }
 
 .multiple-select .MuiChip-root {

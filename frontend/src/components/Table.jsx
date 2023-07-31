@@ -72,8 +72,9 @@ function TablePaginationActions(props) {
     );
 }
 
-function DownloadIcon({id}) {
+export function DownloadIcon({id}) {
     return (
+        <div className="receipt-download-icon-container" style={{ cursor: "pointer", position: "relative" }}>
         <RequestPageIcon
             onClick={() => {
                 axios_instance.get(`transactions/download/${id}`, {
@@ -93,8 +94,9 @@ function DownloadIcon({id}) {
                     URL.revokeObjectURL(href)
                 }).catch(err => console.log(err));
             }}
-            sx={{ cursor: "pointer" }}
+            className="receipt-download-icon"
         />
+        </div>
     )
 }
 

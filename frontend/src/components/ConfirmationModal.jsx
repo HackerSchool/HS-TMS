@@ -12,7 +12,7 @@ function ConfirmationModal({ open, title, content, onCancel, onConfirm }) {
         <Modal
             className="modal confirmation-modal"
             open={open}
-            disableEnforceFocus
+            disableRestoreFocus
             onClose={(e, reason) => handleClose(reason)}
             closeAfterTransition
             slotProps={{ backdrop: { timeout: 300 } }}
@@ -28,7 +28,7 @@ function ConfirmationModal({ open, title, content, onCancel, onConfirm }) {
                             Cancel
                         </button>
 
-                        <button className="btn" autoFocus onClick={() => onConfirm()}>
+                        <button className="btn" onClick={() => onConfirm()}>
                             OK
                         </button>
                     </div>

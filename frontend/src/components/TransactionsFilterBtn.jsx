@@ -204,7 +204,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
                 className="modal"
                 id="transactions-filter-modal"
                 open={open}
-                disableEnforceFocus
+                disableRestoreFocus
                 onClose={(e, reason) => handleClose(reason)}
                 closeAfterTransition 
                 slotProps={{ backdrop: { timeout: 500 } }}

@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SortIcon from '@mui/icons-material/Sort'
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -59,15 +58,11 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
 
     return (
         <>
-            <ButtonGroup ref={anchorRef} >
-                <button className='btn icon-btn' id='transactions-sort-btn' onClick={handleToggle}>
-                    <SortIcon />
-                    {`${options[selectedIndex].text}`}
-                </button>
-                <button className='btn icon-btn sort-arrow-btn' onClick={handleToggle} >
-                    <ArrowDropDownIcon />
-                </button>
-            </ButtonGroup>
+            <button ref={anchorRef} className='btn icon-btn' id='transactions-sort-btn' onClick={handleToggle}>
+                <SortIcon />
+                {`${options[selectedIndex].text}`}
+                <ArrowDropDownIcon />
+            </button>
 
             <Popper
                 sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
@@ -88,13 +83,19 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
                     >
                         <Paper sx={{ backgroundColor: "transparent" }}>
                             <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList className='sort-menu' id="transactions-sort-menu" autoFocusItem>
+                                <MenuList
+                                    className='sort-menu'
+                                    id="transactions-sort-menu"
+                                    autoFocusItem
+                                    variant='menu'
+                                >
                                     {options.map((option, index) => (
                                         <MenuItem
                                             key={option.text}
                                             className='sort-option'
                                             selected={index === selectedIndex}
                                             onClick={(event) => handleMenuItemClick(event, index)}
+                                            tabIndex={0}
                                         >
                                             {option.text}
                                         </MenuItem>

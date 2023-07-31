@@ -1,5 +1,5 @@
 function isLoggedIn(req, res, next) {
-	req.isAuthenticated() ? next() : res.sendStatus(401);
+    req.user ? (req.user.username !== "forbidden" ? next() : res.sendStatus(403)) : res.sendStatus(401);
 }
 
 module.exports = isLoggedIn;

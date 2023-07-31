@@ -182,7 +182,7 @@ export default function NewTransactionBtn({ refetch }) {
                 className="modal transaction-modal"
                 id="new-transaction-modal"
                 open={open}
-                disableEnforceFocus
+                disableRestoreFocus
                 onClose={(e, reason) => handleClose(reason)}
                 closeAfterTransition 
                 slotProps={{ backdrop: { timeout: 500 } }}

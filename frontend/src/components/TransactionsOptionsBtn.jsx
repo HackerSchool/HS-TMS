@@ -56,6 +56,7 @@ function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDelet
                                     <MenuItem
                                         className='transaction-option'
                                         onClick={(event) => openEditModal(transaction)}
+                                        tabIndex={0}
                                     >
                                         <EditIcon />
                                         Edit
@@ -63,6 +64,7 @@ function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDelet
                                     <MenuItem
                                         className='transaction-option'
                                         onClick={(event) => openDeleteModal(transaction)}
+                                        tabIndex={0}
                                     >
                                         <DeleteIcon />
                                         Delete

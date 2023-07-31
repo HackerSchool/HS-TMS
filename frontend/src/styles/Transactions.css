@@ -53,15 +53,7 @@
 
 /* Transactions Sort button */
 #transactions-sort-btn {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    padding-right: 0.5rem;
-}
-
-.sort-arrow-btn {
-    padding: 0 0.5rem 0 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    padding-right: 0.5rem; 
 }
 
 .sort-menu {
@@ -75,7 +67,8 @@
     justify-content: center;
 }
 
-.sort-menu .sort-option.Mui-selected {
+.sort-menu .sort-option.Mui-selected,
+.sort-menu .sort-option.Mui-selected:focus {
     background-color: var(--hs-logo);
 }
 
@@ -167,6 +160,34 @@
 
 .transactions-options-menu .transaction-option:hover {
     background-color: var(--cinza-3);
+}
+
+/* Receipt download icon */
+.receipt-download-icon-container {
+    height: min-content;
+    width: min-content;
+    margin: auto;
+    display: flex;
+    align-items: center;
+}
+
+.receipt-download-icon-container:hover::after {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 5%);
+    width: fit-content;
+    height: fit-content;
+    font-size: 0.8rem;
+    background-color: var(--cinza-4);
+    color: white;
+    content: "Download";
+    border-radius: 0.25rem;
+    padding: 0.7rem 0.4rem 0.2rem 0.4rem;
+    z-index: 1400;
+    cursor: default;
+    clip-path: polygon(50% 0%, 65% 25%, 100% 25%, 100% 100%, 0 100%, 0 25%, 35% 25%);
 }
 
 /* Alerts */

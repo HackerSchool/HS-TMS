@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom"
 import axios_instance from '../Axios';
 import '../styles/Transactions.css'
-import Table from '../components/Table'
+import Table, { DownloadIcon } from '../components/Table'
 import NewTransactionBtn from '../components/NewTransactionBtn';
 import TransactionsSortButton from '../components/TransactionsSortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
@@ -40,25 +40,17 @@ function TransactionsPage() {
     }
 
     function getTransactionDeletionText() {
-        const title = "Do you wish to permanently delete the following transaction"
-            + (transactionToDelete.has_file ? ", along with its corresponding receipt?" : "?");
-
-        const transaction = <div style={{ lineHeight: 1.5 }}>
+        return (
+        <div style={{ lineHeight: 1.5 }}>
             <b>Date:</b> {transactionToDelete.date} <br />
-            <b>Description:</b> {transactionToDelete.description} <br />
+            <b>Description:</b> {transactionToDelete.description !== "" ? transactionToDelete.description : "none"} <br />
             <b>Value:</b> {transactionToDelete.value}€ <br />
             <b>Projects:</b> {transactionToDelete.projects ?? "none"} <br />
-            <b>NIF:</b> {transactionToDelete.has_nif ? "Yes" : "No"}
+            <b>NIF:</b> {transactionToDelete.has_nif ? "Yes" : "No"} <br />
+            <b>Receipt:</b> {transactionToDelete.has_file ?
+                <div style={{ display: 'inline-flex', alignItems: 'center'}}>Yes <DownloadIcon id={transactionToDelete.id} /></div> : "No"}
         </div>
-
-        return (
-            <div>
-                {title}
-                <br />
-                <br />
-                {transaction}
-            </div>
-        );
+        )
     }
 
     // Alerts to display
@@ -151,7 +143,8 @@ function TransactionsPage() {
 
             {transactionToDelete && <ConfirmationModal
                 open={openConfirmationModal}
-                title={`Delete transaction ${transactionToDelete.id}`}
+                title={"Do you wish to permanently delete the following transaction"
+                + (transactionToDelete.has_file ? ", along with its corresponding receipt?" : "?")}
                 content={getTransactionDeletionText()}
                 onCancel={onDeleteCancelation}
                 onConfirm={onDeleteConfirmation}
