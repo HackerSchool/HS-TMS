@@ -93,6 +93,12 @@ hr {
     animation: pulse 2.5s infinite;
 }
 
+.loading-circle {
+    color: white !important;
+    width: 1.2rem !important;
+    height: 1.2rem !important;
+}
+
 @keyframes pulse {
     0% {
         background-color: rgba(255, 255, 255, 0);

@@ -11,6 +11,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function NewTransactionBtn({ refetch }) {
     const [open, setOpen] = useState(false);
@@ -31,6 +32,7 @@ export default function NewTransactionBtn({ refetch }) {
         })
         setErrorMsg("");
         setSuccessMsg("");
+        setCreatedTransaction(false);
     }
     
     // refs
@@ -56,6 +58,8 @@ export default function NewTransactionBtn({ refetch }) {
 
     // Handle form changes
     function handleChange(e) {
+        if (loading) return;
+
         const name = e.target.name;
         const value = e.target.value;
 
@@ -69,6 +73,8 @@ export default function NewTransactionBtn({ refetch }) {
     }
 
     function handleCostChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -78,6 +84,8 @@ export default function NewTransactionBtn({ refetch }) {
     }
 
     function handleNifChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -93,6 +101,11 @@ export default function NewTransactionBtn({ refetch }) {
     function submitForm(event) {
         // stop all the default form submission behaviour
         event.preventDefault();
+
+        // to remove the focus highlight while this fn is running
+        document.activeElement.blur();
+
+        if (loading) return;
 
         const form = formRef.current;
 
@@ -162,6 +175,8 @@ export default function NewTransactionBtn({ refetch }) {
     }
 
     function handleProjectsChange(event) {
+        if (loading) return;
+
         const value = event.target.value;
 
         setFormData((oldFormData) => ({
@@ -189,7 +204,7 @@ export default function NewTransactionBtn({ refetch }) {
             >
                 <Grow in={open} easing={{ exit: "ease-in" }}>
                 <Box className="box transaction-box">
-                <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
+                <form encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
                     {errorMsg && <Alert className="create-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
                     {successMsg && <Alert className="create-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
 
@@ -275,8 +290,9 @@ export default function NewTransactionBtn({ refetch }) {
 
                     <hr />
                     <div className="form-row last">
-                        <button type='submit' className="btn transaction-submit-btn" id='create-transaction-btn' >
-                            Create
+                        <button type='submit' className={`btn transaction-submit-btn ${loading && "icon-btn"}`} id='create-transaction-btn' >
+                            {loading && <CircularProgress className='loading-circle' />}
+                            {loading ? "Creating" : "Create"}
                         </button>
                     </div>
                 </form>

@@ -12,6 +12,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function TransactionEditModal({ open, setOpen, transaction, refetch }) {
 
@@ -23,6 +24,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     function reset() {
         setErrorMsg("");
         setSuccessMsg("");
+        setEditedTransaction(false);
         // Update the form data everytime the transaction being edited changes
         setFormData({
             date: transaction.date,
@@ -70,6 +72,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
 
     // Handle form changes
     function handleChange(e) {
+        if (loading) return;
+
         const name = e.target.name;
         const value = e.target.value;
 
@@ -83,6 +87,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     }
 
     function handleCostChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -92,6 +98,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     }
 
     function handleNifChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -107,6 +115,11 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     function submitForm(event) {
         // stop all the default form submission behaviour
         event.preventDefault();
+
+        // to remove the focus highlight while this fn is running
+        document.activeElement.blur();
+
+        if (loading) return;
 
         const form = formRef.current;
 
@@ -180,6 +193,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     }
 
     function handleProjectsChange(event) {
+        if (loading) return;
+
         const value = event.target.value;
 
         setFormData((oldFormData) => ({
@@ -202,7 +217,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
         >
             <Grow in={open} easing={{ exit: "ease-in" }} >
             <Box className="box transaction-box" >
-            <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='edit-transaction-form' onSubmit={submitForm}>
+            <form encType='multipart/form-data' ref={formRef} id='edit-transaction-form' onSubmit={submitForm}>
                 {errorMsg && <Alert className="edit-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
                 {successMsg && <Alert className="edit-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
 
@@ -292,8 +307,9 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
 
                 <hr />
                 <div className="form-row last">
-                    <button type='submit' className="btn transaction-submit-btn" id='edit-transaction-btn' >
-                        Save
+                    <button type='submit' className={`btn transaction-submit-btn ${loading && "icon-btn"}`} id='edit-transaction-btn' >
+                        {loading && <CircularProgress className='loading-circle' />}
+                        {loading ? "Saving" : "Save"}
                     </button>
                 </div>
             </form>

@@ -10,6 +10,7 @@ import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
@@ -32,8 +33,10 @@ function TransactionsPage() {
         axios_instance.delete(`transactions/${transactionToDelete.id}`)
             .then(res => {
                 if (res.status === 204) refetchTransactions();
-                else throw new Error(`Couldn't delete transaction ${transactionToDelete.id}`)
-                /* FIXME */
+                else throw new Error();
+            })
+            .catch(err => {
+                setErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`)
             });
 
         setOpenConfirmationModal(false);
@@ -56,9 +59,14 @@ function TransactionsPage() {
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
 
+    // To show loading state while fetching transactions
+    const [loading, setLoading] = useState(false);
+
     // To fetch transactions when needed
     useEffect(() => {
         if (fetchTransactions) {
+            setLoading(true);
+
             axios_instance.get("transactions", {
                 params: queryParams,
             })
@@ -76,7 +84,8 @@ function TransactionsPage() {
 
                     setTransactions(data)
                 })
-                .catch(err => console.log(err));
+                .catch(err => console.log(err))
+                .finally(() => setLoading(false));
 
             setFetchTransactions(false);
         }
@@ -96,10 +105,11 @@ function TransactionsPage() {
 
     return (
         <section className="page" id='TransactionsPage'>
-            {errorMsg && <Alert className="transactions-alert" onClose={() => { setErrorMsg("") }} severity="error">{errorMsg}</Alert>}
+            {errorMsg && <Alert className="transactions-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
 
             <header>
                 <h1>Transactions</h1>
+                {loading && <CircularProgress className='loading-circle' />}
                 <div className="btn-group left">
                     <NewTransactionBtn refetch={refetchTransactions} />
 
