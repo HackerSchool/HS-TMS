@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 
-export default function NewTransactionBtn({ refetch }) {
+export default function NewTransactionBtn({ refetch, projectsList }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
@@ -146,24 +146,8 @@ export default function NewTransactionBtn({ refetch }) {
 
     }
 
-    // Projects to choose
-    const [projectsList, setProjectsList] = useState([]);
-
+    // Reset form data
     useEffect(() => {
-        // Fetch projects on first open
-        if (projectsList.length == 0 && open) { // FIXME
-            console.log("fetching projects...");
-
-            axios_instance.get("projects")
-                .then(res => {
-                    if (res.status == 200) return res.data;
-                    throw new Error("Couldn't fetch projects");
-                })
-                .then(data => { setProjectsList(data); console.log(data) })
-                .catch(err => console.log(err));
-        }
-
-        // Reset form data
         if (open) reset();
 
     }, [open])

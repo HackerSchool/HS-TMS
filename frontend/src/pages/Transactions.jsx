@@ -32,7 +32,10 @@ function TransactionsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`transactions/${transactionToDelete.id}`)
             .then(res => {
-                if (res.status === 204) refetchTransactions();
+                if (res.status === 204) {
+                    setSuccessMsg("Transaction deleted successfully");
+                    refetchTransactions();
+                }
                 else throw new Error();
             })
             .catch(err => {
@@ -58,6 +61,7 @@ function TransactionsPage() {
 
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
 
     // To show loading state while fetching transactions
     const [loading, setLoading] = useState(false);
@@ -93,11 +97,34 @@ function TransactionsPage() {
 
     const refetchTransactions = useCallback(() => setFetchTransactions(true));
 
+    // list of all existing projects for child components to use
+    const [projectsList, setProjectsList] = useState([]);
+
+    // fetch all projects everytime the page is opened
+    useEffect(() => {
+        console.log("fetching projects...")
+
+        axios_instance.get("projects")
+            .then(res => {
+                if (res.status === 200) return res.data;
+                throw new Error();
+            })
+            .then(data => setProjectsList(data))
+            .catch(err => {
+                let msg = "Couldn't fetch projects.";
+                if (err.response) msg += ` Status code: ${err.response.status}`;
+
+                setErrorMsg(msg);
+            });
+    }, []);
+
+    // Callback passed to the table to open a transaction's edit modal
     const launchEditModal = useCallback((transaction) => {
         setTransactionToEdit(transaction);
         setOpenEditModal(true);
     });
 
+    // Callback passed to the table to open a transaction's delete modal
     const launchConfirmationModal = useCallback((transaction) => {
         setTransactionToDelete(transaction);
         setOpenConfirmationModal(true);
@@ -106,18 +133,24 @@ function TransactionsPage() {
     return (
         <section className="page" id='TransactionsPage'>
             {errorMsg && <Alert className="transactions-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
+            {successMsg && <Alert className="transactions-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
 
             <header>
                 <h1>Transactions</h1>
-                {loading && <CircularProgress className='loading-circle' />}
                 <div className="btn-group left">
-                    <NewTransactionBtn refetch={refetchTransactions} />
+                    <NewTransactionBtn
+                        projectsList={projectsList}
+                        refetch={refetchTransactions}
+                    />
 
                     <button className='btn icon-btn'>
                         <SummarizeIcon />
                         Report
                     </button>
                 </div>
+
+                {loading && <CircularProgress className='loading-circle' />}
+
                 <div className="btn-group right">
                     <TransactionsSortButton
                         params={queryParams}
@@ -129,6 +162,7 @@ function TransactionsPage() {
                         params={queryParams}
                         setParams={setQueryParams}
                         refetch={refetchTransactions}
+                        projectsList={projectsList}
                     />
                 </div>
             </header>
@@ -149,6 +183,7 @@ function TransactionsPage() {
                 setOpen={setOpenEditModal}
                 transaction={transactionToEdit}
                 refetch={refetchTransactions}
+                projectsList={projectsList}
             />}
 
             {transactionToDelete && <ConfirmationModal

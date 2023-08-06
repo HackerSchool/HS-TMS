@@ -191,7 +191,14 @@
 }
 
 /* Alerts */
-.transactions-alert,
+.transactions-alert {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    width: fit-content;
+    z-index: 100;
+}
+
 .create-transaction-alert,
 .edit-transaction-alert,
 .transactions-filter-alert {
@@ -200,8 +207,4 @@
     left: 0;
     right: 0;
     width: fit-content;
-}
-
-.loading {
-    border-radius: 1rem;
 }

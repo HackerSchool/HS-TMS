@@ -12,7 +12,7 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 
-function TransactionsFilterBtn({ params, setParams, refetch }) {
+function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
@@ -139,38 +139,21 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         setOpen(false);
     }
 
-
-    // Projects to choose
-    const [projectsList, setProjectsList] = useState([]);
-
+    // In case the URL params have project IDs specified, we need to translate
+    // the IDs to their corresponding names
     useEffect(() => {
-        if (projectsList.length == 0 && open) { // FIXME
-            console.log("fetching projects...");
-
-            axios_instance.get("projects")
-                .then(res => {
-                    if (res.status == 200) return res.data;
-                    throw new Error("Couldn't fetch projects");
-                })
-                .then(data => {
-                    setProjectsList(data);
-                    console.log(data);
-
-                    const chosenProjectsIds = JSON.parse(params.get("projects")) ?? [];
-                    if (chosenProjectsIds.length > 0) {
-                        setFormData((oldFormData) => ({
-                            ...oldFormData,
-                            projects: getChosenProjectsNames(chosenProjectsIds, data) ?? []
-                        }))
-                    }
-                })
-                .catch(err => console.log(err));
+        const chosenProjectsIds = JSON.parse(params.get("projects")) ?? [];
+        if (chosenProjectsIds.length > 0) {
+            setFormData((oldFormData) => ({
+                ...oldFormData,
+                projects: getChosenProjectsNames(chosenProjectsIds) ?? []
+            }))
         }
-    }, [open])
+    }, [projectsList]);
 
-    function getChosenProjectsNames(chosenProjectsIds, allProjects) {
+    function getChosenProjectsNames(chosenProjectsIds) {
         return chosenProjectsIds.map((value) => {
-            return allProjects.find(el => el.id == value)?.name;
+            return projectsList.find(el => el.id == value)?.name;
         })
     }
 

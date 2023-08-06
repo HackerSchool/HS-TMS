@@ -12,23 +12,11 @@ import MenuList from '@mui/material/MenuList';
 
 function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDeleteModal }) {
     const [open, setOpen] = useState(false);
-    const anchorRef = useRef();
     const handleToggle = () => setOpen(oldValue => !oldValue);
     const handleClose = (event) => setOpen(false);
-
-    function deleteTransaction() {
-        if (!confirm(`Do you wish to permanently delete transaction ${transaction.id}`
-            + (transaction.has_file ? `, along with its corresponding receipt?` : `?`)))
-            return;
-
-        axios_instance.delete(`transactions/${transaction.id}`)
-            .then(res => {
-                if (res.status === 204) refetch();
-                else throw new Error(`Couldn't delete transaction ${transaction.id}`)
-                /* FIXME */
-            })
-    }
-
+    
+    const anchorRef = useRef();
+    
     return (
         <>
             <MoreHorizIcon ref={anchorRef} onClick={handleToggle} sx={{ cursor: 'pointer' }} />
