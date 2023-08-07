@@ -121,8 +121,6 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
         body.append("description", formData.description);
         body.append("receipt", fileRef.current.files[0]);
 
-        console.log(Array.from(body.entries()))
-
         setLoading(true);
 
         axios_instance.post("transactions", body, {
@@ -131,7 +129,6 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
             }
         })
             .then(res => {
-                console.log(res)
                 if (res.status == 201) {
                     setSuccessMsg("Transaction created successfully");
                     setCreatedTransaction(true)
@@ -139,8 +136,10 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                 else throw new Error();
             })
             .catch(err => {
-                console.log(err)
-                setErrorMsg("Couldn't create Transaction");
+                let msg = "Couldn't create transaction"
+                if (err.response) msg += `. Status code: ${err.response.status}`;
+
+                setErrorMsg(msg);
             })
             .finally(() => setLoading(false));
 

@@ -20,8 +20,6 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
             setOpen(false);
     }
 
-    console.log(Array.from(params.entries()))
-
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -44,8 +42,6 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         hasNif: params.get("hasNif") ?? "any",
         hasFile: params.get("hasFile") ?? "any",
     })
-
-    console.log(formData)
 
     // Handle form changes
     function handleChange(e) {
@@ -99,9 +95,6 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
             return;
         }
 
-
-        console.log(getChosenProjectsIds(formData.projects), formData.projects)
-
         let filters = [];
 
         if (formData.initialMonth != "") filters.push(["initialMonth", formData.initialMonth]);
@@ -120,8 +113,6 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                 [el[0]]: el[1]
             }
         }
-
-        console.log(queryParams)
 
         setParams(oldParams => {
             if (oldParams.get("orderBy") && oldParams.get("order")) {
@@ -165,7 +156,6 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
 
     function handleProjectsChange(event) {
         const value = event.target.value;
-        console.log(typeof value);
 
         setFormData((oldFormData) => ({
             ...oldFormData,

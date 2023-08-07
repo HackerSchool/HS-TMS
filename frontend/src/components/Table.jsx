@@ -15,9 +15,8 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import RequestPageIcon from '@mui/icons-material/RequestPage';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function TablePaginationActions(props) {
     const { count, page, rowsPerPage, onPageChange } = props;
@@ -100,7 +99,7 @@ export function DownloadIcon({id}) {
     )
 }
 
-export default function CustomTable({ data, refetch, openEditModal, openDeleteModal }) {
+export default function CustomTable({ data, refetch, openEditModal, openDeleteModal, loading }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
@@ -143,7 +142,7 @@ export default function CustomTable({ data, refetch, openEditModal, openDeleteMo
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.length === 0 && ( // display message when there's no data to display
+                    {data.length === 0 && !loading && ( // display message when there's no data to display
                         <TableRow>
                             <TableCell colSpan={8} align="center" sx={{fontSize: 18}}>
                                 No transactions found
@@ -151,11 +150,20 @@ export default function CustomTable({ data, refetch, openEditModal, openDeleteMo
                         </TableRow>
                     )}
 
-                    {(rowsPerPage > 0
+                    {loading && (
+                    <TableRow>
+                        <TableCell colSpan={8} align="center" sx={{ border: 0 }} >
+                            <CircularProgress className="loading-circle large" sx={{ m: 5}} />
+                        </TableCell>
+                    </TableRow>
+                    )}
+
+                    {!loading && (rowsPerPage > 0
                         ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         : data).map((row) => (
                             <TableRow
                                 key={`${row.date}+${row.value}+${Math.random()}`}
+                                hover
                             >
                                 <TableCell component="th" scope="row" align="center">
                                     {row.date}
@@ -188,7 +196,7 @@ export default function CustomTable({ data, refetch, openEditModal, openDeleteMo
                         </TableRow>
                     )}
                 </TableBody>
-                <TableFooter>
+                {!loading && <TableFooter>
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[15, 20, 25, { label: 'All', value: -1 }]}
@@ -207,7 +215,7 @@ export default function CustomTable({ data, refetch, openEditModal, openDeleteMo
                             ActionsComponent={TablePaginationActions}
                         />
                     </TableRow>
-                </TableFooter>
+                </TableFooter>}
             </Table>
         </TableContainer>
     );

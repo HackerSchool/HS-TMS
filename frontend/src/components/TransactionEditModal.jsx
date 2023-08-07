@@ -136,8 +136,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
         // the receipt can't be changed so just send back the hasFile flag
         body.append("hasFile", transaction.has_file)
 
-        console.log(Array.from(body.entries()))
-
         setLoading(true);
 
         axios_instance.put(`transactions/${transaction.id}`, body, {
@@ -146,7 +144,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
             }
         })
             .then(res => {
-                console.log(res)
                 if (res.status == 200) {
                     setSuccessMsg("Transaction updated successfully");
                     setEditedTransaction(true)
@@ -154,8 +151,10 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                 else throw new Error();
             })
             .catch(err => {
-                console.log(err)
-                setErrorMsg("Couldn't update Transaction");
+                let msg = "Couldn't update Transaction";
+                if (err.response) msg += `. Status code: ${err.response.status}`
+
+                setErrorMsg(msg);
             })
             .finally(() => setLoading(false));
 

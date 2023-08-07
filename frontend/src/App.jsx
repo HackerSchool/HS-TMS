@@ -21,18 +21,14 @@ function App() {
                 if (res.status == 200) return res.data;
                 throw new Error("Authentication failed!");
             })
-            .then(data => {
-                console.log(data);
-                setUser(data);
-            })
+            .then(data => setUser(data))
             .catch(err => {
-                console.log(err);
                 setUser(false);
                 if (typeof err === String) setErrorMsg(err);
                 else if (err.response.status === 403)
                     setErrorMsg("Successfully authenticated via FenixEdu but not authorized in the system")
             });
-    }, [])
+    }, []);
 
     return (
         <div className="App">

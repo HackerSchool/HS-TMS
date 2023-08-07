@@ -97,6 +97,7 @@ async function getAllTransactions(req, res) {
         initialValue,
         finalValue,
         hasNif,
+        hasFile,
         projects,
         orderBy,
         order
@@ -110,6 +111,7 @@ async function getAllTransactions(req, res) {
             initialValue && parseFloat(initialValue),
             finalValue && parseFloat(finalValue),
             hasNif && JSON.parse(hasNif),
+            hasFile && JSON.parse(hasFile),
             projects && JSON.parse(projects),
             orderBy,
             order

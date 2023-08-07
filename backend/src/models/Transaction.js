@@ -183,6 +183,7 @@ class Transaction {
 	 * @param {float} [initialValue=Number.NEGATIVE_INFINITY]
 	 * @param {float} [finalValue=Number.POSITIVE_INFINITY]
 	 * @param {boolean} [hasNif=null]
+	 * @param {boolean} [hasFile=null]
 	 * @param {Array<integer>} [projects=[]]
 	 * @param {string} [orderBy="date"]
 	 * @param {string} [order="DESC"]
@@ -195,6 +196,7 @@ class Transaction {
 		initialValue = Number.NEGATIVE_INFINITY,
 		finalValue = Number.POSITIVE_INFINITY,
 		hasNif = null,
+		hasFile = null,
 		projects = [],
 		orderBy = "date",
 		order = "DESC"
@@ -231,6 +233,11 @@ class Transaction {
 		if (hasNif !== null) {
 			query += ` AND transactions.has_nif = $${queryParams.length + 1}::boolean`;
 			queryParams.push(hasNif);
+		}
+
+		if (hasFile !== null) {
+			query += ` AND transactions.has_file = $${queryParams.length + 1}::boolean`;
+			queryParams.push(hasFile);
 		}
 
 		query += " GROUP BY transactions.id";

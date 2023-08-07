@@ -10,7 +10,6 @@ import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
@@ -75,7 +74,6 @@ function TransactionsPage() {
                 params: queryParams,
             })
                 .then(res => {
-                    console.log(res);
                     if (res.status == 200) return res.data;
                     throw new Error("Couldn't fetch transactions")
                 })
@@ -88,7 +86,12 @@ function TransactionsPage() {
 
                     setTransactions(data)
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    let msg = "Couldn't fetch transactions";
+                    if (err.response) msg += `. Status code: ${err.response.status}`
+
+                    setErrorMsg(msg);
+                })
                 .finally(() => setLoading(false));
 
             setFetchTransactions(false);
@@ -102,8 +105,6 @@ function TransactionsPage() {
 
     // fetch all projects everytime the page is opened
     useEffect(() => {
-        console.log("fetching projects...")
-
         axios_instance.get("projects")
             .then(res => {
                 if (res.status === 200) return res.data;
@@ -111,8 +112,8 @@ function TransactionsPage() {
             })
             .then(data => setProjectsList(data))
             .catch(err => {
-                let msg = "Couldn't fetch projects.";
-                if (err.response) msg += ` Status code: ${err.response.status}`;
+                let msg = "Couldn't fetch projects";
+                if (err.response) msg += `. Status code: ${err.response.status}`;
 
                 setErrorMsg(msg);
             });
@@ -149,8 +150,6 @@ function TransactionsPage() {
                     </button>
                 </div>
 
-                {loading && <CircularProgress className='loading-circle' />}
-
                 <div className="btn-group right">
                     <TransactionsSortButton
                         params={queryParams}
@@ -174,6 +173,7 @@ function TransactionsPage() {
                         refetch={refetchTransactions}
                         openEditModal={launchEditModal}
                         openDeleteModal={launchConfirmationModal}
+                        loading={loading}
                     />
                 </div>
             </div>
