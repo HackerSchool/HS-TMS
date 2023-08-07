@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import axios_instance from "../Axios";
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SortIcon from '@mui/icons-material/Sort'
@@ -10,19 +11,31 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import '../styles/SelectBtn.css'
 
-const options=[
-    {text: 'Civic Years', type:'civic'},
-    {text: 'Academic Years', type:'academic'},
-]
-
-export default function TypeOfYearBtn({setTypeOfYear,refetch}){
+export default function ProjectSelectBtn({setProjectID,refetch, idx}){
+    const [options, setOptions] = useState([{name:'placeholder'}]);
+    const [fetchProjects, setFetchProjects]=useState(true);
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
+    //usar índice diferente maybe
     const [selectedIndex, setSelectedIndex] = useState(0);
 
+    useEffect(()=>{
+        if(fetchProjects){
+            axios_instance.get("projects")
+            .then((response)=>{
+                //Only active projects are shown on the menu
+                setOptions(response.data.filter((project)=>project.active===true))
+                setFetchProjects(false)
+            })
+            .catch((error)=>{
+                console.log(error)
+            });
+        }
+    }, [fetchProjects])
+    
     const handleMenuItemClick = (event, index) => {
         const chosenOption = options[index];
-        setTypeOfYear(chosenOption.type);
+        setProjectID(chosenOption.id);
         refetch();
         setSelectedIndex(index);
         setOpen(false);
@@ -41,7 +54,7 @@ export default function TypeOfYearBtn({setTypeOfYear,refetch}){
             <ButtonGroup ref={anchorRef} >
                 <button className='btn icon-btn' id='select-btn' onClick={handleToggle}>
                     <SortIcon />
-                    {`${options[selectedIndex].text}`}
+                    {`${options[selectedIndex].name}`}
                 </button>
                 <button className='btn icon-btn select-arrow-btn' onClick={handleToggle} >
                     <ArrowDropDownIcon />
@@ -70,12 +83,12 @@ export default function TypeOfYearBtn({setTypeOfYear,refetch}){
                                 <MenuList className='select-menu' id="select-menu" autoFocusItem>
                                     {options.map((option, index) => (
                                         <MenuItem
-                                            key={option.text}
+                                            key={option.name}
                                             className='select-option'
                                             selected={index === selectedIndex}
                                             onClick={(event) => handleMenuItemClick(event, index)}
                                         >
-                                            {option.text}
+                                            {option.name}
                                         </MenuItem>
                                     ))}
                                 </MenuList>

@@ -1,10 +1,15 @@
+import React, {useEffect,useState} from "react";
+import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
-import React from "react";
 
-function LineChart(props) {
+function BalanceTimeSeries({title, typeOfYear}){
+    const [fetchTransactions, setFetchTransactions]= useState(true)
+
     return (
     <div className="chart-box">
-        <div className="chartTitle">{props.title}</div>
+        <div className="chart-header">
+            <div className="chartTitle">{title}</div>
+        </div>
         <div className="chart">
           <Plot
             data={[
@@ -40,6 +45,6 @@ function LineChart(props) {
         </div>
     </div>
     );
-  }
+}
 
-export default LineChart;
+export default BalanceTimeSeries;

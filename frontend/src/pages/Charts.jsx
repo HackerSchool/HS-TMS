@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import '../styles/Charts.css'
 import PrintIcon from '@mui/icons-material/Print';
-import LineChart from '../components/LineChart';
 import MonthHistogram from '../components/MonthHistogram';
 import TransactionsSortButton from '../components/TypeOfYearBtn';
-//Fazer gráfico da evolução do balance
+import ProjectLineChart from '../components/ProjectLineChart';
+import BalanceTimeSeries from '../components/BalanceTimeSeries';
+//time series da evolução do balance
+//gráfico de earnings com a data real em vez de ser por mês?
 //Talvez fazer comparação dos gastos dos projetos com os gastos médios de todos os projetos?
 
 function ChartsPage() {
@@ -34,11 +36,11 @@ function ChartsPage() {
             <div className="content-container">
                 <div className="charts">
                     <MonthHistogram title="Transaction Histogram" typeOfYear={typeOfYear} fetchTransactions={fetchTransactions} setFetchTransactions={setFetchTransactions}/>
-                    <LineChart title="Transaction Boxplot"/>
-                    <LineChart title="Project Transactions 1"/>
-                    <LineChart title="Project Transactions 2"/>
-                    <LineChart title="Project Transactions 3"/>
-                    <LineChart title="Project Transactions 4"/>
+                    <BalanceTimeSeries title="Transaction Boxplot"/>
+                    <ProjectLineChart title="Project Transactions 1"/>
+                    <ProjectLineChart title="Project Transactions 2"/>
+                    <ProjectLineChart title="Project Transactions 3"/>
+                    <ProjectLineChart title="Project Transactions 4"/>
 
                 </div>
             </div>
