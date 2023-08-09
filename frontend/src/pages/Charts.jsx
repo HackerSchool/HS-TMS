@@ -36,7 +36,7 @@ function ChartsPage() {
             <div className="content-container">
                 <div className="charts">
                     <MonthHistogram title="Transaction Histogram" typeOfYear={typeOfYear} fetchTransactions={fetchTransactions} setFetchTransactions={setFetchTransactions}/>
-                    <BalanceTimeSeries title="Transaction Boxplot"/>
+                    <BalanceTimeSeries title="Balance"/>
                     <ProjectLineChart title="Project Transactions 1"/>
                     <ProjectLineChart title="Project Transactions 2"/>
                     <ProjectLineChart title="Project Transactions 3"/>
