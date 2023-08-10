@@ -248,6 +248,7 @@ input[type="file"] {
     margin: 1rem 0;
     width: 100%;
     min-height: fit-content;
+    overflow-x: scroll;
 }
 
 .confirmation-box .btn-group {

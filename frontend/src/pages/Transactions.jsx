@@ -48,12 +48,12 @@ function TransactionsPage() {
         return (
         <div style={{ lineHeight: 1.5 }}>
             <b>Date:</b> {transactionToDelete.date} <br />
-            <b>Description:</b> {transactionToDelete.description !== "" ? transactionToDelete.description : "none"} <br />
             <b>Value:</b> {transactionToDelete.value}€ <br />
             <b>Projects:</b> {transactionToDelete.projects ?? "none"} <br />
             <b>NIF:</b> {transactionToDelete.has_nif ? "Yes" : "No"} <br />
             <b>Receipt:</b> {transactionToDelete.has_file ?
-                <div style={{ display: 'inline-flex', alignItems: 'center'}}>Yes <DownloadIcon id={transactionToDelete.id} /></div> : "No"}
+                <div style={{ display: 'inline-flex', alignItems: 'center'}}>Yes <DownloadIcon id={transactionToDelete.id} /></div> : "No"}<br />
+            <b>Description:</b> {transactionToDelete.description !== "" ? transactionToDelete.description : "none"} 
         </div>
         )
     }
