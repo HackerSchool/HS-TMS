@@ -7,12 +7,12 @@ class Project {
 	 * @returns {Object}
 	 */
 	async createOne(pool, name, active) {
-		const res = await pool.query(
-			`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean) RETURNING *;`,
-			[name, active]
-		);
-
-		return await this.getOne(pool, res.rows[0].id);
+		return (
+			await pool.query(
+				`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean) RETURNING *;`,
+				[name, active]
+			)
+		).rows[0];
 	}
 
 	/**
@@ -22,11 +22,8 @@ class Project {
 	 * @returns {Object}
 	 */
 	async getOne(pool, id) {
-		const res = await pool.query(`SELECT * FROM projects WHERE id = $1::integer`, [
-			id
-		]);
-
-		return res.rows[0];
+		return (await pool.query(`SELECT * FROM projects WHERE id = $1::integer`, [id]))
+			.rows[0];
 	}
 
 	/**
@@ -38,18 +35,18 @@ class Project {
 	 * @returns {Object}
 	 */
 	async updateOne(pool, id, name, active) {
-		await pool.query(
-			`
+		return (
+			await pool.query(
+				`
 		UPDATE projects
 		SET name = $2::text,
 			active = $3::boolean
 		WHERE id = $1::integer
 		RETURNING *;
-	`,
-			[id, name, active]
-		);
-
-		return await this.getOne(pool, id);
+		`,
+				[id, name, active]
+			)
+		).rows[0];
 	}
 
 	/**
@@ -63,7 +60,7 @@ class Project {
 			`
 		DELETE FROM projects
 		WHERE id = $1::integer;
-	`,
+		`,
 			[id]
 		);
 	}
@@ -74,9 +71,7 @@ class Project {
 	 * @returns {Array<Object>}
 	 */
 	async getAll(pool) {
-		const res = await pool.query(`SELECT * FROM projects ORDER BY id`);
-
-		return res.rows;
+		return (await pool.query(`SELECT * FROM projects ORDER BY name`)).rows;
 	}
 }
 

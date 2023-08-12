@@ -13,8 +13,9 @@ class Transaction {
 	 * @returns {Object}
 	 */
 	async createOne(pool, date, description, value, hasFile, hasNif, projects) {
-		const res = await pool.query(
-			`INSERT INTO transactions (
+		const transactionId = (
+			await pool.query(
+				`INSERT INTO transactions (
             date,
             description,
             value,
@@ -30,10 +31,9 @@ class Transaction {
                 $5::boolean
             )
 		RETURNING *;`,
-			[date, description, value, hasFile, hasNif]
-		);
-
-		const transactionId = res.rows[0].id;
+				[date, description, value, hasFile, hasNif]
+			)
+		).rows[0].id;
 
 		await Promise.all(
 			projects.map(async (projectId) => {
@@ -67,8 +67,9 @@ class Transaction {
 	 * @returns {Object}
 	 */
 	async getOne(pool, id) {
-		const res = await pool.query(
-			`
+		const res = (
+			await pool.query(
+				`
         SELECT
             transactions.id,
             transactions.date,
@@ -87,13 +88,14 @@ class Transaction {
         WHERE transactions.id = $1::integer
         GROUP BY transactions.id
     `,
-			[id]
-		);
+				[id]
+			)
+		).rows[0];
 
-		res.rows[0].date = dateUtils.convertToLocalTimezone(res.rows[0].date);
-		res.rows[0].value = parseFloat(res.rows[0].value);
-		res.rows[0].balance = parseFloat(res.rows[0].balance);
-		return res.rows[0];
+		res.date = dateUtils.convertToLocalTimezone(res.date);
+		res.value = parseFloat(res.value);
+		res.balance = parseFloat(res.balance);
+		return res;
 	}
 
 	/**
