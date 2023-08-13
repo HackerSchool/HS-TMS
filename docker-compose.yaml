@@ -3,6 +3,7 @@ version: "3"
 services:
 
   postgres:
+    container_name: postgres
     image: postgres
     restart: always
     ports:
@@ -14,6 +15,7 @@ services:
       - POSTGRES_PASSWORD=postgres
 
   backend:
+    container_name: backend
     build: ./backend
     restart: always
     depends_on:
@@ -24,6 +26,7 @@ services:
       - ./backend/src:/usr/src/app/backend/src
 
   frontend:
+    container_name: frontend
     build: ./frontend
     restart: always
     depends_on:

@@ -59,3 +59,14 @@ CREATE TRIGGER update_balance_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON transactions
 FOR EACH ROW
 EXECUTE PROCEDURE update_balance();
+
+CREATE PROCEDURE create_user(
+   p_username TEXT,
+   p_name TEXT
+)
+AS $$
+BEGIN
+   INSERT INTO users (username, active, "name")
+   VALUES (p_username, false, p_name);
+END;
+$$ LANGUAGE plpgsql;
