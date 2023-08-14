@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios_instance from '../Axios';
+import FadingAlert from './FadingAlert';
 import TuneIcon from '@mui/icons-material/Tune';
 import MultipleSelect from './MultipleSelect';
 import Modal from '@mui/material/Modal';
@@ -8,7 +8,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckIcon from '@mui/icons-material/Check';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 
@@ -16,12 +15,14 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-            setErrorMsg("");
-            setOpen(false);
+        setDisplayErrorMsg(false);
+
+        setOpen(false);
     }
 
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
+    const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
 
     const defaultFilters = {
         initialMonth: "",
@@ -84,14 +85,16 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         // Check date
         if (formData.initialMonth && formData.finalMonth &&
             (formData.initialMonth > formData.finalMonth)) {
-            setErrorMsg("Final month can't precede Initial month")
+            setErrorMsg("Final month can't precede Initial month");
+            setDisplayErrorMsg(true);
             return;
         }
 
         // Check values
         if (formData.initialValue && formData.finalValue &&
             (parseFloat(formData.initialValue) > parseFloat(formData.finalValue))) {
-            setErrorMsg("Max value can't be lower than the Min value")
+            setErrorMsg("Max value can't be lower than the Min value");
+            setDisplayErrorMsg(true);
             return;
         }
 
@@ -126,7 +129,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
             return queryParams;
         });
         refetch();
-        setErrorMsg("");
+        setDisplayErrorMsg(false);
         setOpen(false);
     }
 
@@ -185,7 +188,11 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                 <Slide in={open} direction='left' >
                 <Box className="box filters-box" >
                 <form id='transactions-filter-form' onSubmit={updateFilters}>
-                    {errorMsg && <Alert className="transactions-filter-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
+
+                    <FadingAlert show={displayErrorMsg} className="transactions-filter-alert"
+                            onClose={() => setDisplayErrorMsg(false)} severity="error">
+                        {errorMsg}
+                    </FadingAlert>
 
                     <div className='form-header'>
                         <ArrowBackIcon className='modal-close-btn' onClick={handleClose} />

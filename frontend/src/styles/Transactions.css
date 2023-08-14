@@ -191,10 +191,17 @@
 }
 
 /* Alerts */
-.transactions-alert {
+.alerts-container {
     position: absolute;
     bottom: 40px;
     right: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.transactions-alert {
     width: fit-content;
     z-index: 100;
 }

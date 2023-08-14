@@ -8,31 +8,41 @@ import DashboardPage from './pages/Dashboard';
 import TransactionsPage from './pages/Transactions';
 import ProjectsPage from './pages/Projects';
 import ChartsPage from './pages/Charts';
-import Alert from '@mui/material/Alert';
+import FadingAlert from "./components/FadingAlert"
 
 function App() {
 
     const [user, setUser] = useState();
     const [errorMsg, setErrorMsg] = useState("");
+    const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
 
     useEffect(() => {
         axios_instance.get("auth/user")
             .then(res => {
-                if (res.status == 200) return res.data;
+                if (res.status === 200) return res.data;
                 throw new Error("Authentication failed!");
             })
             .then(data => setUser(data))
             .catch(err => {
                 setUser(false);
-                if (typeof err === String) setErrorMsg(err);
-                else if (err.response.status === 403)
-                    setErrorMsg("Successfully authenticated via FenixEdu but not authorized in the system")
+
+                if (!err.response) { // Thrown error above
+                    setErrorMsg(err.message);
+                    setDisplayErrorMsg(true);
+                }
+                else if (err.response.status === 403) { // AxiosError, sv responded with 4xx
+                    setErrorMsg("Successfully authenticated via FenixEdu but not authorized in the system");
+                    setDisplayErrorMsg(true);
+                }
             });
     }, []);
 
     return (
         <div className="App">
-            {errorMsg && <Alert className="login-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
+            <FadingAlert show={displayErrorMsg} className="login-alert" duration={3000}
+                    onClose={() => setDisplayErrorMsg(false)} severity="error">
+                {errorMsg}
+            </FadingAlert>
 
             {user != undefined && <Routes>
                 {!user && <Route path="/login" element={<LoginPage />} />}

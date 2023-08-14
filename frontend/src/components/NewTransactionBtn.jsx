@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
 import MultipleSelect from './MultipleSelect';
+import FadingAlert from './FadingAlert';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -8,16 +9,16 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 
-export default function NewTransactionBtn({ refetch, projectsList }) {
+export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg, showSuccessMsg }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        if (createdTransaction) refetch();
+        if (loading) return;
+        
         setOpen(false)
     };
 
@@ -31,8 +32,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
             description: ""
         })
         setErrorMsg("");
-        setSuccessMsg("");
-        setCreatedTransaction(false);
+        setDisplayErrorMsg(false);
     }
     
     // refs
@@ -41,10 +41,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
 
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
-    const [successMsg, setSuccessMsg] = useState("");
-
-    // to know whether it's necessary to refetch transactions or not
-    const [createdTransaction, setCreatedTransaction] = useState(false);
+    const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -112,6 +109,13 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
+        // guarantee the receipt is a pdf
+        if (fileRef.current.files[0] && fileRef.current.files[0].type !== "application/pdf") {
+            setErrorMsg("Receipt's file type needs to be \"pdf\"");
+            setDisplayErrorMsg(true);
+            return;
+        }
+
         const body = new FormData();
 
         body.append("date", formData.date);
@@ -129,9 +133,9 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
             }
         })
             .then(res => {
-                if (res.status == 201) {
-                    setSuccessMsg("Transaction created successfully");
-                    setCreatedTransaction(true)
+                if (res.status === 201) {
+                    showSuccessMsg("Transaction created successfully");
+                    refetch();
                 }
                 else throw new Error();
             })
@@ -139,9 +143,12 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                 let msg = "Couldn't create transaction"
                 if (err.response) msg += `. Status code: ${err.response.status}`;
 
-                setErrorMsg(msg);
+                showErrorMsg(msg);
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setLoading(false);
+                setOpen(false);
+            });
 
     }
 
@@ -188,8 +195,11 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                 <Grow in={open} easing={{ exit: "ease-in" }}>
                 <Box className="box transaction-box">
                 <form encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
-                    {errorMsg && <Alert className="create-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
-                    {successMsg && <Alert className="create-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
+
+                    <FadingAlert show={displayErrorMsg} className="create-transaction-alert"
+                            onClose={() => setDisplayErrorMsg(false)} severity="error">
+                        {errorMsg}
+                    </FadingAlert>
 
                     <div className='form-header'>
                         <CloseIcon className='modal-close-btn' onClick={handleClose} />

@@ -72,13 +72,16 @@ function TablePaginationActions(props) {
 }
 
 export function DownloadIcon({id}) {
+    const [pending, setPending] = useState(false);
+
     return (
-        <div className="receipt-download-icon-container" style={{ cursor: "pointer", position: "relative" }}>
-        <RequestPageIcon
+        <div className="receipt-download-icon-container" style={{ cursor: "pointer", position: "relative" }}
             onClick={() => {
+                setPending(true);
                 axios_instance.get(`transactions/download/${id}`, {
                     responseType: 'blob',
-                }).then(res => {
+                })
+                .then(res => {
                     // create file link in browser's memory
                     const href = URL.createObjectURL(res.data);
 
@@ -91,10 +94,15 @@ export function DownloadIcon({id}) {
 
                     document.body.removeChild(link);
                     URL.revokeObjectURL(href)
-                }).catch(err => console.log(err));
+                })
+                .catch(err => console.log(err))
+                .finally(() => setPending(false));
             }}
-            className="receipt-download-icon"
-        />
+        >
+        {pending ? 
+            <CircularProgress className="loading-circle twenty-four-px" />
+            : <RequestPageIcon className="receipt-download-icon" />
+        }
         </div>
     )
 }

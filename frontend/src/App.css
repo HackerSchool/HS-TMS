@@ -104,6 +104,11 @@ hr {
     height: 4rem !important;
 }
 
+.loading-circle.twenty-four-px {
+    width: 24px !important;
+    height: 24px !important;
+}
+
 @keyframes pulse {
     0% {
         background-color: rgba(255, 255, 255, 0);
@@ -234,6 +239,7 @@ input[type="file"] {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    overflow: hidden;
 }
 
 .confirmation-box hr {
@@ -248,7 +254,7 @@ input[type="file"] {
     margin: 1rem 0;
     width: 100%;
     min-height: fit-content;
-    overflow-x: scroll;
+    overflow: visible;
 }
 
 .confirmation-box .btn-group {

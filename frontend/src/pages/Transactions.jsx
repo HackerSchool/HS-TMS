@@ -8,8 +8,8 @@ import TransactionsSortButton from '../components/TransactionsSortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
+import FadingAlert from '../components/FadingAlert';
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import Alert from '@mui/material/Alert';
 
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
@@ -33,12 +33,14 @@ function TransactionsPage() {
             .then(res => {
                 if (res.status === 204) {
                     setSuccessMsg("Transaction deleted successfully");
+                    setDisplaySuccessMsg(true);
                     refetchTransactions();
                 }
                 else throw new Error();
             })
             .catch(err => {
-                setErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`)
+                setErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`);
+                setDisplayErrorMsg(true);
             });
 
         setOpenConfirmationModal(false);
@@ -60,7 +62,19 @@ function TransactionsPage() {
 
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
+    const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
     const [successMsg, setSuccessMsg] = useState("");
+    const [displaySuccessMsg, setDisplaySuccessMsg] = useState(false);
+
+    const showErrorMsg = useCallback((errorMsg) => {
+        setErrorMsg(errorMsg);
+        setDisplayErrorMsg(true);
+    })
+
+    const showSuccessMsg = useCallback((successMsg) => {
+        setSuccessMsg(successMsg);
+        setDisplaySuccessMsg(true);
+    })
 
     // To show loading state while fetching transactions
     const [loading, setLoading] = useState(false);
@@ -79,10 +93,10 @@ function TransactionsPage() {
                 })
                 .then(data => {
 
-                    if (data.length === 0 && queryParams.size > 0) 
+                    if (data.length === 0 && queryParams.size > 0) {
                         setErrorMsg("No transactions match the specified filters");
-                    else
-                        setErrorMsg("");
+                        setDisplayErrorMsg(true);
+                    }
 
                     setTransactions(data)
                 })
@@ -91,6 +105,7 @@ function TransactionsPage() {
                     if (err.response) msg += `. Status code: ${err.response.status}`
 
                     setErrorMsg(msg);
+                    setDisplayErrorMsg(true);
                 })
                 .finally(() => setLoading(false));
 
@@ -116,6 +131,7 @@ function TransactionsPage() {
                 if (err.response) msg += `. Status code: ${err.response.status}`;
 
                 setErrorMsg(msg);
+                setDisplayErrorMsg(true);
             });
     }, []);
 
@@ -133,8 +149,17 @@ function TransactionsPage() {
 
     return (
         <section className="page" id='TransactionsPage'>
-            {errorMsg && <Alert className="transactions-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
-            {successMsg && <Alert className="transactions-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
+
+            <div className="alerts-container">
+                <FadingAlert show={displayErrorMsg} className="transactions-alert"
+                        onClose={() => setDisplayErrorMsg(false)} severity="error">
+                    {errorMsg}
+                </FadingAlert>
+                <FadingAlert show={displaySuccessMsg} className="transactions-alert"
+                        onClose={() => setDisplaySuccessMsg(false)} severity="success">
+                    {successMsg}
+                </FadingAlert>
+            </div>
 
             <header>
                 <h1>Transactions</h1>
@@ -142,6 +167,8 @@ function TransactionsPage() {
                     <NewTransactionBtn
                         projectsList={projectsList}
                         refetch={refetchTransactions}
+                        showErrorMsg={showErrorMsg}
+                        showSuccessMsg={showSuccessMsg}
                     />
 
                     <button className='btn icon-btn'>
@@ -184,6 +211,8 @@ function TransactionsPage() {
                 transaction={transactionToEdit}
                 refetch={refetchTransactions}
                 projectsList={projectsList}
+                showErrorMsg={showErrorMsg}
+                showSuccessMsg={showSuccessMsg}
             />}
 
             {transactionToDelete && <ConfirmationModal

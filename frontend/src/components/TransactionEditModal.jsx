@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
 import MultipleSelect from './MultipleSelect';
 import { DownloadIcon } from './Table';
+import FadingAlert from './FadingAlert';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -9,22 +10,19 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 
-function TransactionEditModal({ open, setOpen, transaction, refetch, projectsList }) {
+function TransactionEditModal({ open, setOpen, transaction, refetch, projectsList, showErrorMsg, showSuccessMsg }) {
 
     const handleClose = (reason) => {
-        if (editedTransaction) refetch();
+        if (loading) return;
+
         setOpen(false)
     };
 
     function reset() {
-        setErrorMsg("");
-        setSuccessMsg("");
-        setEditedTransaction(false);
         // Update the form data everytime the transaction being edited changes
         setFormData({
             date: transaction.date,
@@ -45,13 +43,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
     
     // refs
     const formRef = useRef();
-
-    // Alerts to display
-    const [errorMsg, setErrorMsg] = useState("");
-    const [successMsg, setSuccessMsg] = useState("");
-
-    // to know whether it's necessary to refetch transactions or not
-    const [editedTransaction, setEditedTransaction] = useState(false);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -144,9 +135,9 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
             }
         })
             .then(res => {
-                if (res.status == 200) {
-                    setSuccessMsg("Transaction updated successfully");
-                    setEditedTransaction(true)
+                if (res.status === 200) {
+                    showSuccessMsg("Transaction updated successfully");
+                    refetch();
                 }
                 else throw new Error();
             })
@@ -154,9 +145,12 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                 let msg = "Couldn't update Transaction";
                 if (err.response) msg += `. Status code: ${err.response.status}`
 
-                setErrorMsg(msg);
+                showErrorMsg(msg);
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setLoading(false);
+                setOpen(false)
+            });
 
     }
 
@@ -198,8 +192,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
             <Grow in={open} easing={{ exit: "ease-in" }} >
             <Box className="box transaction-box" >
             <form encType='multipart/form-data' ref={formRef} id='edit-transaction-form' onSubmit={submitForm}>
-                {errorMsg && <Alert className="edit-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
-                {successMsg && <Alert className="edit-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
 
                 <div className='form-header'>
                     <CloseIcon className='modal-close-btn' onClick={handleClose} />
