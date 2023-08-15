@@ -23,6 +23,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
     const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
+    const [alertId, setAlertId] = useState(0);
 
     const defaultFilters = {
         initialMonth: "",
@@ -85,6 +86,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         // Check date
         if (formData.initialMonth && formData.finalMonth &&
             (formData.initialMonth > formData.finalMonth)) {
+            setAlertId(oldId => oldId + 1);
             setErrorMsg("Final month can't precede Initial month");
             setDisplayErrorMsg(true);
             return;
@@ -93,6 +95,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         // Check values
         if (formData.initialValue && formData.finalValue &&
             (parseFloat(formData.initialValue) > parseFloat(formData.finalValue))) {
+            setAlertId(oldId => oldId + 1);
             setErrorMsg("Max value can't be lower than the Min value");
             setDisplayErrorMsg(true);
             return;
@@ -130,6 +133,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         });
         refetch();
         setDisplayErrorMsg(false);
+        setAlertId(0);
         setOpen(false);
     }
 
@@ -189,8 +193,8 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                 <Box className="box filters-box" >
                 <form id='transactions-filter-form' onSubmit={updateFilters}>
 
-                    <FadingAlert show={displayErrorMsg} className="transactions-filter-alert"
-                            onClose={() => setDisplayErrorMsg(false)} severity="error">
+                    <FadingAlert show={displayErrorMsg} className="transactions-filter-alert" id={alertId}
+                            onClose={() => setDisplayErrorMsg(false)} severity="error" >
                         {errorMsg}
                     </FadingAlert>
 

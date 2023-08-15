@@ -32,15 +32,13 @@ function TransactionsPage() {
         axios_instance.delete(`transactions/${transactionToDelete.id}`)
             .then(res => {
                 if (res.status === 204) {
-                    setSuccessMsg("Transaction deleted successfully");
-                    setDisplaySuccessMsg(true);
+                    showSuccessMsg("Transaction deleted successfully");
                     refetchTransactions();
                 }
                 else throw new Error();
             })
             .catch(err => {
-                setErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`);
-                setDisplayErrorMsg(true);
+                showErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`);
             });
 
         setOpenConfirmationModal(false);
@@ -63,15 +61,19 @@ function TransactionsPage() {
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
     const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
+    const [errorAlertId, setErrorAlertId] = useState(0);
     const [successMsg, setSuccessMsg] = useState("");
     const [displaySuccessMsg, setDisplaySuccessMsg] = useState(false);
+    const [successAlertId, setSuccessAlertId] = useState(0);
 
     const showErrorMsg = useCallback((errorMsg) => {
+        setErrorAlertId(oldId => oldId + 1);
         setErrorMsg(errorMsg);
         setDisplayErrorMsg(true);
     })
 
     const showSuccessMsg = useCallback((successMsg) => {
+        setSuccessAlertId(oldId => oldId + 1);
         setSuccessMsg(successMsg);
         setDisplaySuccessMsg(true);
     })
@@ -93,10 +95,8 @@ function TransactionsPage() {
                 })
                 .then(data => {
 
-                    if (data.length === 0 && queryParams.size > 0) {
-                        setErrorMsg("No transactions match the specified filters");
-                        setDisplayErrorMsg(true);
-                    }
+                    if (data.length === 0 && queryParams.size > 0)
+                        showErrorMsg("No transactions match the specified filters");
 
                     setTransactions(data)
                 })
@@ -104,8 +104,7 @@ function TransactionsPage() {
                     let msg = "Couldn't fetch transactions";
                     if (err.response) msg += `. Status code: ${err.response.status}`
 
-                    setErrorMsg(msg);
-                    setDisplayErrorMsg(true);
+                    showErrorMsg(msg);
                 })
                 .finally(() => setLoading(false));
 
@@ -130,8 +129,7 @@ function TransactionsPage() {
                 let msg = "Couldn't fetch projects";
                 if (err.response) msg += `. Status code: ${err.response.status}`;
 
-                setErrorMsg(msg);
-                setDisplayErrorMsg(true);
+                showErrorMsg(msg);
             });
     }, []);
 
@@ -151,12 +149,12 @@ function TransactionsPage() {
         <section className="page" id='TransactionsPage'>
 
             <div className="alerts-container">
-                <FadingAlert show={displayErrorMsg} className="transactions-alert"
-                        onClose={() => setDisplayErrorMsg(false)} severity="error">
+                <FadingAlert show={displayErrorMsg} className="transactions-alert" id={errorAlertId}
+                        onClose={() => setDisplayErrorMsg(false)} severity="error" >
                     {errorMsg}
                 </FadingAlert>
-                <FadingAlert show={displaySuccessMsg} className="transactions-alert"
-                        onClose={() => setDisplaySuccessMsg(false)} severity="success">
+                <FadingAlert show={displaySuccessMsg} className="transactions-alert" id={successAlertId}
+                        onClose={() => setDisplaySuccessMsg(false)} severity="success" >
                     {successMsg}
                 </FadingAlert>
             </div>

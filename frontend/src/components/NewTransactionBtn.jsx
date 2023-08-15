@@ -33,6 +33,7 @@ export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg,
         })
         setErrorMsg("");
         setDisplayErrorMsg(false);
+        setAlertId(0);
     }
     
     // refs
@@ -42,6 +43,7 @@ export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg,
     // Alerts to display
     const [errorMsg, setErrorMsg] = useState("");
     const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
+    const [alertId, setAlertId] = useState(0);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -111,6 +113,7 @@ export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg,
 
         // guarantee the receipt is a pdf
         if (fileRef.current.files[0] && fileRef.current.files[0].type !== "application/pdf") {
+            setAlertId(oldId => oldId + 1);
             setErrorMsg("Receipt's file type needs to be \"pdf\"");
             setDisplayErrorMsg(true);
             return;

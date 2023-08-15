@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Alert from '@mui/material/Alert';
 import Fade from '@mui/material/Fade';
 
-function FadingAlert({ show, onClose, className, children, severity = 'info', duration = 2000, timeout = 1000 }) {
+function FadingAlert({ id, show, onClose, className, children, severity = 'info', duration = 3000, timeout = 1000 }) {
 
     // set the duration timer
     useEffect(() => {
@@ -16,7 +16,7 @@ function FadingAlert({ show, onClose, className, children, severity = 'info', du
             clearTimeout(timeId)
         };
 
-    }, [show]);
+    }, [show, children, id]);
 
     // If show is true the alert will be rendered
     return (

@@ -8,6 +8,7 @@ import DashboardPage from './pages/Dashboard';
 import TransactionsPage from './pages/Transactions';
 import ProjectsPage from './pages/Projects';
 import ChartsPage from './pages/Charts';
+import SettingsPage from "./pages/Settings"
 import FadingAlert from "./components/FadingAlert"
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
                     <Route path='transactions' element={<TransactionsPage />} />
                     <Route path='projects' element={<ProjectsPage />} />
                     <Route path='charts' element={<ChartsPage />} />
+                    <Route path='settings' element={<SettingsPage />} />
                     <Route path='*' element={<Navigate to='dashboard' />} />
                 </Route>}
                 <Route path='*' element={user ? <Navigate to='/home' /> : <Navigate to='/login' />} />

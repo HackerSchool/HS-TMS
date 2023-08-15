@@ -8,6 +8,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 function Sidebar({user}) {
 
@@ -45,6 +46,10 @@ function Sidebar({user}) {
                 <NavLink to='charts' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
                         <BarChartIcon />
                         Charts
+                </NavLink>
+                <NavLink to='settings' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                        <SettingsIcon />
+                        Settings
                 </NavLink>
 
                 <div className="nav-item" id='user'>

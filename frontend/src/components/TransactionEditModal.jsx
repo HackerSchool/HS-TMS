@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
 import MultipleSelect from './MultipleSelect';
 import { DownloadIcon } from './Table';
-import FadingAlert from './FadingAlert';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
