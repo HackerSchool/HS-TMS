@@ -1,0 +1,143 @@
+#DashboardPage {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding-bottom: 3rem;
+}
+
+.dashboard-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* flex-wrap: wrap; FIXME */ 
+    gap: 4rem;
+}
+
+.dashboard-row.last {
+    flex-grow: 1;
+}
+
+.dashboard-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.dashboard-item-content {
+    background-color: var(--cinza-2);
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.15);
+}
+
+#dashboard-project-overview .dashboard-item-content {
+    background-color: unset;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    box-shadow: none;
+}
+
+.dashboard-card-row {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.dashboard-card {
+    background-color: var(--cinza-2);
+    border-radius: 1.25rem;
+    width: 15.25rem;
+    height: 6.5rem;
+    padding: 1.25rem 1.875rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card.green {
+    background-color: var(--green);
+}
+
+.dashboard-card-text {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.dashboard-card-text.align-top {
+    align-items: start;
+    padding-top: 4px
+}
+
+.dashboard-card-heading {
+    font-size: 2rem;
+    padding-right: 10px;
+}
+
+.dashboard-card-main {
+    font-size: 2rem;
+    position: relative;
+}
+
+.dashboard-card-main.bolder {
+    font-weight: 500;
+    font-size: 2.5rem;
+}
+
+.dashboard-card-main.smaller {
+    font-size: 1.7rem;
+}
+
+.dashboard-card-sub {
+    position: absolute;
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+.dashboard-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.dashboard-card-icon svg {
+    width: 50px;
+    height: 50px;
+}
+
+
+#dashboard-reminders {
+    flex-grow: 1;
+}
+
+.reminders-title-group {
+    display: inline-flex;
+    gap: 1rem;
+}
+
+#dashboard-reminders .dashboard-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#dashboard-balance {
+    flex-grow: 1;
+}
+
+#dashboard-recent-transactions {
+    flex-grow: 1;
+}
+
+hr.vl {
+    transform: rotate("90deg");
+    height: 65%;
+    align-self: center;
+}
