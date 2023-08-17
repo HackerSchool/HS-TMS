@@ -189,6 +189,7 @@ class Transaction {
 	 * @param {Array<integer>} [projects=[]]
 	 * @param {string} [orderBy="date"]
 	 * @param {string} [order="DESC"]
+	 * @param {integer} [order=null]
 	 * @returns {Array<Object>}
 	 */
 	async getAll(
@@ -201,7 +202,8 @@ class Transaction {
 		hasFile = null,
 		projects = [],
 		orderBy = "date",
-		order = "DESC"
+		order = "DESC",
+		limit = null
 	) {
 		const initialMonthDate = new Date(initialMonth + "-01");
 
@@ -257,6 +259,11 @@ class Transaction {
 			query += ` ORDER BY value ${order}, date DESC`;
 		} else {
 			query += ` ORDER BY date DESC, id DESC`;
+		}
+
+		if (limit !== null) {
+			query += ` LIMIT $${queryParams.length + 1}::integer`;
+			queryParams.push(limit);
 		}
 
 		const res = await pool.query(query, queryParams);
