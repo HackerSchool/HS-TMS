@@ -46,7 +46,7 @@ export default function RecentTransactionsTable({ data, loading }) {
                     {loading && (
                     <TableRow>
                         <TableCell colSpan={4} align="center" sx={{ border: 0 }} >
-                            <CircularProgress className="loading-circle large" sx={{ m: 0}} />
+                            <CircularProgress className="loading-circle large" sx={{ m: 5}} />
                         </TableCell>
                     </TableRow>
                     )}

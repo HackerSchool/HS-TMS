@@ -1,36 +1,103 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import '../styles/Dashboard.css'
 import axios_instance from '../Axios';
 import DashboardCard from '../components/DashboardCard';
 import RecentTransactionsTable from '../components/RecentTransactionsTable';
+import NewReminderBtn from '../components/NewReminderBtn';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import PersonIcon from '@mui/icons-material/Person';
-import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import Reminder from '../components/Reminder';
+import chart from '../assets/chart.png'
+import { CircularProgress } from '@mui/material';
+
+// Format dates as "YYYY-MM"
+const formatDate = (date) => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear());
+    return `${year}-${month}`;
+};
 
 function DashboardPage() {
 
-    // Projects overview stats
+    // Treasury overview stats
     const [totalBalance, setTotalBalance] = useState();
     const [activeProjects, setActiveProjects] = useState();
     const [transactionsLastMonth, setTransactionsLastMonth] = useState();
     const [authorizedUsersNumber, setAuthorizedUsersNumber] = useState();
-    
-    // Reminders
-    const [reminders, setReminders] = useState([]);
-    const [remindersLoading, setRemindersLoading] = useState(true);
 
+    // active projects
     useEffect(() => {
-        axios_instance.get("reminders")
+        axios_instance.get("projects")
             .then(res => {
                 if (res.status === 200) return res.data;
-                else throw new Error();
+                throw new Error();
             })
-            .then(data => setReminders(data)) // FIXME
-            .catch(err => {
-                console.log(err); // FIXME
+            .then(data => {
+                const activeProjCount = data.reduce((count, proj) => {
+                    if (proj.active === true) return count + 1;
+                    return count;
+                }, 0);
+
+                setActiveProjects(activeProjCount);
             })
-            .finally(() => setRemindersLoading(false));
-    })
+            .catch(err => console.log(err)); //FIXME
+    }, []);
+
+    // Transactions last month
+    useEffect(() => {
+        const lastMonthDate = new Date();
+        lastMonthDate.setDate(lastMonthDate.getDate() - 30);
+
+        axios_instance.get("transactions", {
+            params: {
+                initialMonth: formatDate(lastMonthDate), // FIXME
+                finalMonth: formatDate(lastMonthDate)
+            }
+        })
+            .then(res => {
+                if (res.status === 200) return res.data;
+                throw new Error();
+            })
+            .then(data => setTransactionsLastMonth(data.length))
+            .catch(err => console.log(err)); // FIXME
+    }, []);
+    
+    // Authorized members
+    useEffect(() => {
+        axios_instance.get("users")
+            .then(res => {
+                if (res.status === 200) return res.data;
+                throw new Error();
+            })
+            .then(data => setAuthorizedUsersNumber(data.length))
+            .catch(err => console.log(err));
+    }, []);
+
+    // Reminders
+    const [reminders, setReminders] = useState([]);
+    const [remindersLoading, setRemindersLoading] = useState(false);
+    const [fetchReminders, setFetchReminders] = useState(true);
+
+    const refetchReminders = useCallback(() => setFetchReminders(true));
+
+    useEffect(() => {
+        if (fetchReminders) {
+            setRemindersLoading(true);
+
+            axios_instance.get("reminders")
+                .then(res => {
+                    if (res.status === 200) return res.data;
+                    else throw new Error();
+                })
+                .then(data => setReminders(data)) // FIXME
+                .catch(err => {
+                    console.log(err); // FIXME
+                })
+                .finally(() => setRemindersLoading(false));
+
+            setFetchReminders(false);
+        }
+    }, [fetchReminders]);
 
     // Balance chart
     const [chartData, setChartData] = useState();
@@ -40,35 +107,41 @@ function DashboardPage() {
     const [transactionsLoading, setTransactionsLoading] = useState(true);
 
     useEffect(() => {
-        axios_instance.get("transactions")
+        axios_instance.get("transactions", {
+            params: { limit: 10 }
+        })
             .then(res => {
                 if (res.status === 200) return res.data;
                 else throw new Error();
             })
-            .then(data => setTransactions(data.slice(0,4))) // FIXME
+            .then(data => {
+                setTransactions(data);
+                setTotalBalance(data[0].balance ?? 0);
+            })
             .catch(err => {
                 console.log(err); // FIXME
             })
             .finally(() => setTransactionsLoading(false));
-    })
+    }, []);
 
 
 
     return (
         <section className="page" id='DashboardPage'>
+            <div className="dashboard-container">
             <div className="dashboard-row">
-                <div className="dashboard-item" id='dashboard-project-overview'>
-                    <h3 className='dashboard-item-title'>Projects Overview</h3>
+                <div className="dashboard-item" id='dashboard-treasury-overview'>
+                    <h3 className='dashboard-item-title'>Treasury Overview</h3>
                     <div className="dashboard-item-content">
                         <div className="dashboard-card-row">
                             <DashboardCard
-                                mainText="€ 1000"
+                                mainText={`€ ${totalBalance ?? "?"}`}
                                 subText="Total balance"
                                 green
                                 bolderMain
                             />
                             <DashboardCard
-                                headingText="8"
+                                headingText={activeProjects ?? "?"}
                                 mainText="Active"
                                 subText="Projects"
                                 icon={<TaskAltIcon />}
@@ -76,16 +149,16 @@ function DashboardPage() {
                         </div>
                         <div className="dashboard-card-row">
                             <DashboardCard
-                                headingText="3"
+                                headingText={transactionsLastMonth ?? "?"}
                                 mainText="Transactions"
                                 subText='in the past month'
                                 smallerMain
                             />
                             <DashboardCard
-                                headingText="60"
-                                mainText="Active"
-                                subText="members"
-                                icon={<PersonIcon />}
+                                headingText={authorizedUsersNumber ?? "?"}
+                                mainText={authorizedUsersNumber === 1 ? "Person" : "People"}
+                                subText="in the system"
+                                icon={<ManageAccountsIcon />}
                             />
                         </div>
                     </div>
@@ -96,10 +169,27 @@ function DashboardPage() {
                 <div className="dashboard-item" id='dashboard-reminders'>
                     <div className="reminders-title-group">
                         <h3 className='dashboard-item-title'>Reminders</h3>
-                        <NotificationAddIcon sx={{ cursor: 'pointer' }} />
+                        <NewReminderBtn refetch={refetchReminders} />
                     </div>
                     <div className="dashboard-item-content">
-                        No reminders found
+                        <div className="reminders-container">
+                            {remindersLoading && 
+                                <CircularProgress 
+                                    className='loading-circle large'
+                                    sx={{ alignSelf: "center", m: "auto" }}
+                                />}
+
+                            {!remindersLoading && (reminders.length === 0 ? "No reminders found" :
+                                reminders.map((reminder, idx) => {
+                                    return (
+                                        <div className='reminder-container' key={idx}>
+                                        {idx > 0 && <hr /> }
+                                        <Reminder date={reminder.date} title={reminder.title} desc={reminder.description} />
+                                        </div>
+                                    )
+                                }))
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -107,7 +197,9 @@ function DashboardPage() {
             <div className="dashboard-row last">
                 <div className="dashboard-item" id='dashboard-balance'>
                     <h3 className='dashboard-item-title'>Balance over the last 30 days</h3>
-                    <div className="dashboard-item-content"></div>
+                    <div className="dashboard-item-content">
+                        <img src={chart} alt="Balance chart" style={{ maxHeight: "95%" }}/>
+                    </div>
                 </div>
 
                 <hr className='vl' />
@@ -121,6 +213,7 @@ function DashboardPage() {
                         />
                     </div>
                 </div>
+            </div>
             </div>
         </section>
     );

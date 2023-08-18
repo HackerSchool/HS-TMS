@@ -278,7 +278,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
 
                 <hr />
                 <div className="form-row last">
-                    <button type='submit' className={`btn transaction-submit-btn ${loading && "icon-btn"}`} id='edit-transaction-btn' >
+                    <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='edit-transaction-btn' >
                         {loading && <CircularProgress className='loading-circle' />}
                         {loading ? "Saving" : "Save"}
                     </button>

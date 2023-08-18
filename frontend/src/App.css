@@ -158,6 +158,11 @@ hr {
     position: relative; /* for the alerts */
 }
 
+.submit-btn {
+    font-size: 1.2rem;
+    margin: 0 auto;
+}
+
 /* close button */
 .form-header > .modal-close-btn {
     cursor: pointer;

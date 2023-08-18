@@ -286,7 +286,7 @@ export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg,
 
                     <hr />
                     <div className="form-row last">
-                        <button type='submit' className={`btn transaction-submit-btn ${loading && "icon-btn"}`} id='create-transaction-btn' >
+                        <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='create-transaction-btn' >
                             {loading && <CircularProgress className='loading-circle' />}
                             {loading ? "Creating" : "Create"}
                         </button>
