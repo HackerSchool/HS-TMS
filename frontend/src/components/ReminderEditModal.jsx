@@ -140,9 +140,9 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
 
                     <div className="form-row">
                         <div className="form-group reminder-description-group" id='edit-reminder-description-group'>
-                            <label htmlFor="description">Description: *</label>
+                            <label htmlFor="description">Description:</label>
                             <input type="text" name='description' placeholder='Description of the reminder'
-                                value={formData.description} onChange={handleChange} required />
+                                value={formData.description} onChange={handleChange} />
                         </div>
                     </div>
                 </div>

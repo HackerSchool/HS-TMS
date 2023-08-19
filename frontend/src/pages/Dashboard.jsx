@@ -12,11 +12,12 @@ import Reminder from '../components/Reminder';
 import chart from '../assets/chart.png'
 import CircularProgress from '@mui/material/CircularProgress'
 
-// Format dates as "YYYY-MM"
+// Format dates as "YYYY-MM-DD"
 const formatDate = (date) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     const year = String(date.getFullYear());
-    return `${year}-${month}`;
+    return `${year}-${month}-${day}`;
 };
 
 function DashboardPage() {
@@ -52,8 +53,8 @@ function DashboardPage() {
 
         axios_instance.get("transactions", {
             params: {
-                initialMonth: formatDate(lastMonthDate), // FIXME
-                finalMonth: formatDate(lastMonthDate)
+                initialDate: formatDate(lastMonthDate),
+                finalDate: formatDate(new Date())
             }
         })
             .then(res => {
@@ -192,7 +193,7 @@ function DashboardPage() {
                             <DashboardCard
                                 headingText={transactionsLastMonth ?? "?"}
                                 mainText="Transactions"
-                                subText='in the past month'
+                                subText='in the past 30 days'
                                 smallerMain
                             />
                             <DashboardCard
@@ -249,8 +250,8 @@ function DashboardPage() {
 
                 <hr className='vl' />
 
-                <div className="dashboard-item" id='dashboard-recent-transactions'>
-                    <h3 className='dashboard-item-title'>Recent Transactions</h3>
+                <div className="dashboard-item" id='dashboard-latest-transactions'>
+                    <h3 className='dashboard-item-title'>Latest Transactions</h3>
                     <div className="dashboard-item-content">
                         <RecentTransactionsTable
                             data={transactions}

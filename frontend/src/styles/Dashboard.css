@@ -233,12 +233,12 @@
     flex-grow: 1;
 }
 
-/* recent transactions */
-#dashboard-recent-transactions {
+/* latest transactions */
+#dashboard-latest-transactions {
     flex-grow: 1;
 }
 
-#dashboard-recent-transactions .dashboard-item-content {
+#dashboard-latest-transactions .dashboard-item-content {
     padding-top: 0.8rem;
 }
 
