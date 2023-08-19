@@ -92,6 +92,8 @@ async function getAllTransactions(req, res) {
 	const pool = req.pool;
 
 	const {
+		initialDate,
+		finalDate,
 		initialMonth,
 		finalMonth,
 		initialValue,
@@ -107,6 +109,8 @@ async function getAllTransactions(req, res) {
 	res.status(200).send(
 		await Transaction.getAll(
 			pool,
+			initialDate,
+			finalDate,
 			initialMonth,
 			finalMonth,
 			initialValue && parseFloat(initialValue),
