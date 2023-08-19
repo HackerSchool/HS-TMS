@@ -180,10 +180,12 @@ class Transaction {
 	/**
 	 * @async
 	 * @param {pg.Pool} pool
-	 * @param {date} [initialMonth="2000-01"]
-	 * @param {date} [finalMonth="3000-01"]
-	 * @param {float} [initialValue=Number.NEGATIVE_INFINITY]
-	 * @param {float} [finalValue=Number.POSITIVE_INFINITY]
+	 * @param {date} [initialDate=null]
+	 * @param {date} [finalDate=null]
+	 * @param {string} [initialMonth=null]
+	 * @param {string} [finalMonth=null]
+	 * @param {float} [initialValue=null]
+	 * @param {float} [finalValue=null]
 	 * @param {boolean} [hasNif=null]
 	 * @param {boolean} [hasFile=null]
 	 * @param {Array<integer>} [projects=[]]
@@ -194,10 +196,12 @@ class Transaction {
 	 */
 	async getAll(
 		pool,
-		initialMonth = "2000-01",
-		finalMonth = "3000-01",
-		initialValue = Number.NEGATIVE_INFINITY,
-		finalValue = Number.POSITIVE_INFINITY,
+		initialDate = null,
+		finalDate = null,
+		initialMonth = null,
+		finalMonth = null,
+		initialValue = null,
+		finalValue = null,
 		hasNif = null,
 		hasFile = null,
 		projects = [],
@@ -205,12 +209,6 @@ class Transaction {
 		order = "DESC",
 		limit = null
 	) {
-		const initialMonthDate = new Date(initialMonth + "-01");
-
-		const finalMonthDate = new Date(finalMonth + "-01");
-		finalMonthDate.setMonth(finalMonthDate.getMonth() + 1);
-		finalMonthDate.setDate(0);
-
 		let query = `
 		SELECT
 			transactions.id,
@@ -227,22 +225,73 @@ class Transaction {
 			ON transactions.id = transaction_project.transaction_id
 		LEFT JOIN projects
 			ON projects.id = transaction_project.project_id
-		WHERE transactions.date >= $1::date
-			AND transactions.date <= $2::date
-			AND transactions.value BETWEEN $3::numeric AND $4::numeric
 		`;
 
-		let queryParams = [initialMonthDate, finalMonthDate, initialValue, finalValue];
+		let filterConditions = [];
+		let queryParams = [];
+
+		if (initialDate !== null) {
+			filterConditions.push(
+				`transactions.date >= $${queryParams.length + 1}::date`
+			);
+			queryParams.push(initialDate);
+		}
+
+		if (finalDate !== null) {
+			filterConditions.push(
+				`transactions.date <= $${queryParams.length + 1}::date`
+			);
+			queryParams.push(finalDate);
+		}
+
+		if (initialMonth !== null) {
+			filterConditions.push(
+				`transactions.date >= $${queryParams.length + 1}::date`
+			);
+			queryParams.push(new Date(initialMonth + "-01"));
+		}
+
+		if (finalMonth !== null) {
+			const finalMonthDate = new Date(finalMonth + "-01");
+			finalMonthDate.setMonth(finalMonthDate.getMonth() + 1);
+			finalMonthDate.setDate(0);
+
+			filterConditions.push(
+				`transactions.date <= $${queryParams.length + 1}::date`
+			);
+			queryParams.push(finalMonthDate);
+		}
+
+		if (initialValue !== null) {
+			filterConditions.push(
+				`transactions.value >= $${queryParams.length + 1}::numeric`
+			);
+			queryParams.push(initialValue);
+		}
+
+		if (finalValue !== null) {
+			filterConditions.push(
+				`transactions.value <= $${queryParams.length + 1}::numeric`
+			);
+			queryParams.push(finalValue);
+		}
 
 		if (hasNif !== null) {
-			query += ` AND transactions.has_nif = $${queryParams.length + 1}::boolean`;
+			filterConditions.push(
+				`transactions.has_nif = $${queryParams.length + 1}::boolean`
+			);
 			queryParams.push(hasNif);
 		}
 
 		if (hasFile !== null) {
-			query += ` AND transactions.has_file = $${queryParams.length + 1}::boolean`;
+			filterConditions.push(
+				`transactions.has_file = $${queryParams.length + 1}::boolean`
+			);
 			queryParams.push(hasFile);
 		}
+
+		query +=
+			filterConditions.length > 0 ? ` WHERE ${filterConditions.join(" AND ")}` : "";
 
 		query += " GROUP BY transactions.id";
 
