@@ -133,29 +133,6 @@
     margin-top: 0;
 }
 
-/* Transaction Options Menu */
-.transactions-options-menu {
-    background-color: var(--cinza-4);
-    border-radius: 0.5rem;
-}
-
-.transactions-options-menu .transaction-option {
-    color: white;
-    font-size: 0.9rem;
-    line-height: normal;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-}
-
-.transactions-options-menu .transaction-option svg {
-    font-size: 1.3rem;
-}
-
-.transactions-options-menu .transaction-option:hover {
-    background-color: var(--cinza-3);
-}
 
 /* Receipt download icon */
 .receipt-download-icon-container {

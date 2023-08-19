@@ -43,9 +43,6 @@ function NewReminderBtn({ refetch }) {
         const name = e.target.name;
         const value = e.target.value;
 
-        // Negative values are not allowed
-        if (name == "value" && value < 0) return;
-
         setFormData((oldFormData) => ({
             ...oldFormData,
             [name]: value

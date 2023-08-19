@@ -1,14 +1,32 @@
 import React from 'react';
+import MoreOptionsBtn from './MoreOptionsBtn';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-function Reminder({ date, title, desc }) {
+function Reminder({ reminder, openEditModal, openDeleteModal, hideOptions = false }) {
     return (
         <div className="reminder">
             <div className="date-title-container">
-                <div className="date-flag">{date}</div>
-                <h2>{title}</h2>
+                <div className="date-flag">{reminder.date}</div>
+                <h2>{reminder.title}</h2>
+                {!hideOptions && <MoreOptionsBtn
+                    className="reminder-more-options"
+                    options={[
+                        {
+                            icon: <EditIcon />,
+                            text: "Edit",
+                            callback: () => openEditModal(reminder)
+                        },
+                        {
+                            icon: <DeleteIcon />,
+                            text: "Delete",
+                            callback: () => openDeleteModal(reminder)
+                        }
+                    ]}
+                />}
             </div>
 
-            <div className="desc">{desc}</div>
+            <div className="desc">{reminder.description}</div>
         </div>
     );
 }

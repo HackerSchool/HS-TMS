@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios_instance from "../Axios";
-import TransactionsOptionsBtn from "./TransactionsOptionsBtn";
+import MoreOptionsBtn from "./MoreOptionsBtn";
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -17,6 +17,8 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import RequestPageIcon from '@mui/icons-material/RequestPage';
 import CircularProgress from '@mui/material/CircularProgress';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function TablePaginationActions(props) {
     const { count, page, rowsPerPage, onPageChange } = props;
@@ -107,7 +109,7 @@ export function DownloadIcon({id}) {
     )
 }
 
-export default function CustomTable({ data, refetch, openEditModal, openDeleteModal, loading }) {
+export default function CustomTable({ data, openEditModal, openDeleteModal, loading }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
@@ -189,11 +191,19 @@ export default function CustomTable({ data, refetch, openEditModal, openDeleteMo
                                     {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
                                 </TableCell>
                                 <TableCell align="center">
-                                    <TransactionsOptionsBtn
-                                        transaction={row}
-                                        refetch={refetch}
-                                        openEditModal={openEditModal}
-                                        openDeleteModal={openDeleteModal}
+                                    <MoreOptionsBtn
+                                        options={[
+                                            {
+                                                icon: <EditIcon />,
+                                                text: "Edit",
+                                                callback: () => openEditModal(row)
+                                            },
+                                            {
+                                                icon: <DeleteIcon />,
+                                                text: "Delete",
+                                                callback: () => openDeleteModal(row)
+                                            }
+                                        ]}
                                     />
                                 </TableCell>
                             </TableRow>

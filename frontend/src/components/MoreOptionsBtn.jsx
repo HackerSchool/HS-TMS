@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
@@ -9,7 +7,13 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 
-function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDeleteModal }) {
+/**
+ * 
+ * @interface Option = { icon, text, callback }
+ * @param {Array} options
+ * @param {String} className - classes to apply to the more-options button
+ */
+function MoreOptionsBtn({ options, className }) {
     const [open, setOpen] = useState(false);
     const handleToggle = () => setOpen(oldValue => !oldValue);
     const handleClose = (event) => setOpen(false);
@@ -18,7 +22,12 @@ function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDelet
     
     return (
         <>
-            <MoreHorizIcon ref={anchorRef} onClick={handleToggle} sx={{ cursor: 'pointer' }} />
+            <MoreHorizIcon
+                className={className}
+                ref={anchorRef}
+                onClick={handleToggle}
+                sx={{ cursor: 'pointer' }}
+            />
 
             <Popper
                 sx={{ zIndex: 1 }}
@@ -39,23 +48,20 @@ function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDelet
                     >
                         <Paper sx={{ backgroundColor: "transparent" }}>
                             <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList className='transactions-options-menu'>
-                                    <MenuItem
-                                        className='transaction-option'
-                                        onClick={(event) => openEditModal(transaction)}
-                                        tabIndex={0}
-                                    >
-                                        <EditIcon />
-                                        Edit
-                                    </MenuItem>
-                                    <MenuItem
-                                        className='transaction-option'
-                                        onClick={(event) => openDeleteModal(transaction)}
-                                        tabIndex={0}
-                                    >
-                                        <DeleteIcon />
-                                        Delete
-                                    </MenuItem>
+                                <MenuList className={`more-options-menu ${className}`}>
+                                    {options.map(option => {
+                                        return (
+                                            <MenuItem
+                                            className='option'
+                                            onClick={(event) => option.callback()}
+                                            tabIndex={0}
+                                            key={option.text}
+                                            >
+                                                {option.icon}
+                                                {option.text}
+                                            </MenuItem>
+                                        )
+                                    })}
                                 </MenuList>
                             </ClickAwayListener>
                         </Paper>
@@ -66,4 +72,4 @@ function TransactionsOptionsBtn({ transaction, refetch, openEditModal, openDelet
     );
 }
 
-export default TransactionsOptionsBtn;
+export default MoreOptionsBtn;

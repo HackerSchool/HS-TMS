@@ -195,7 +195,6 @@ function TransactionsPage() {
                 <div className="content">
                     <Table
                         data={transactions}
-                        refetch={refetchTransactions}
                         openEditModal={launchEditModal}
                         openDeleteModal={launchConfirmationModal}
                         loading={loading}

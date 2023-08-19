@@ -45,7 +45,6 @@
 
 /* treasury overview */
 #dashboard-treasury-overview {
-    flex-grow: 1;
     max-width: 600px;
 }
 
@@ -57,6 +56,7 @@
     flex-direction: column;
     gap: 2rem;
     box-shadow: none;
+    overflow: visible;
 }
 
 /* treasury overview dashboard card */
@@ -205,8 +205,12 @@
     gap: 3px;
 }
 
+.reminder .reminder-more-options {
+    margin-left: auto;
+}
+
 /* New reminder modal */
-#new-reminder-modal {
+.reminder-modal {
     margin: auto;
     max-width: 60%;
     max-height: 60%;

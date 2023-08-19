@@ -99,7 +99,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
     }
 
 
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
     // Create formData and send it to the backend
     function submitForm(event) {
@@ -157,7 +157,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
     useEffect(() => {
         if (open) reset();
 
-    }, [open])
+    }, [open]);
 
     function getChosenProjectsIds() {
         return formData.projects.map((value) => {

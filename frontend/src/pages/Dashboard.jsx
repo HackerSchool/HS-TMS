@@ -4,11 +4,13 @@ import axios_instance from '../Axios';
 import DashboardCard from '../components/DashboardCard';
 import RecentTransactionsTable from '../components/RecentTransactionsTable';
 import NewReminderBtn from '../components/NewReminderBtn';
+import ReminderEditModal from '../components/ReminderEditModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import Reminder from '../components/Reminder';
 import chart from '../assets/chart.png'
-import { CircularProgress } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress'
 
 // Format dates as "YYYY-MM"
 const formatDate = (date) => {
@@ -125,6 +127,45 @@ function DashboardPage() {
     }, []);
 
 
+    // Reminder Deletion
+    const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [reminderToDelete, setReminderToDelete] = useState();
+
+    function onDeleteCancelation() {
+        setOpenConfirmationModal(false);
+    }
+
+    function onDeleteConfirmation() {
+        axios_instance.delete(`reminders/${reminderToDelete.id}`)
+            .then(res => {
+                if (res.status === 204) {
+                    // showSuccessMsg("Transaction deleted successfully"); FIXME
+                    refetchReminders();
+                }
+                else throw new Error();
+            })
+            .catch(err => {
+                // showErrorMsg(`Couldn't delete reminder ${reminderToDelete.id}`); FIXME
+            });
+
+        setOpenConfirmationModal(false);
+    }
+
+    // Callback passed to the reminder to open its delete modal
+    const launchConfirmationModal = useCallback((reminder) => {
+        setReminderToDelete(reminder);
+        setOpenConfirmationModal(true);
+    });
+
+    // Reminder editing
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [reminderToEdit, setReminderToEdit] = useState();
+
+    // Callback passed to the reminder to open its edit modal
+    const launchEditModal = useCallback((reminder) => {
+        setReminderToEdit(reminder);
+        setOpenEditModal(true);
+    });
 
     return (
         <section className="page" id='DashboardPage'>
@@ -184,7 +225,11 @@ function DashboardPage() {
                                     return (
                                         <div className='reminder-container' key={idx}>
                                         {idx > 0 && <hr /> }
-                                        <Reminder date={reminder.date} title={reminder.title} desc={reminder.description} />
+                                        <Reminder
+                                            reminder={reminder}
+                                            openEditModal={launchEditModal}
+                                            openDeleteModal={launchConfirmationModal}
+                                        />
                                         </div>
                                     )
                                 }))
@@ -215,6 +260,24 @@ function DashboardPage() {
                 </div>
             </div>
             </div>
+
+            {reminderToEdit && <ReminderEditModal
+                open={openEditModal}
+                setOpen={setOpenEditModal}
+                reminder={reminderToEdit}
+                refetch={refetchReminders}
+                // showErrorMsg={showErrorMsg} FIXME
+                // showSuccessMsg={showSuccessMsg} FIXME
+            />}
+
+            {reminderToDelete && <ConfirmationModal
+                open={openConfirmationModal}
+                title={"Do you wish to permanently delete the following reminder?"}
+                content={<Reminder reminder={reminderToDelete} hideOptions />}
+                onCancel={onDeleteCancelation} 
+                onConfirm={onDeleteConfirmation}
+            />}
+
         </section>
     );
 }

@@ -345,6 +345,30 @@ input[type="file"] {
     background-color: var(--green-alpha-40);
 }
 
+/* More Options Menu */
+.more-options-menu {
+    background-color: var(--cinza-4);
+    border-radius: 0.5rem;
+}
+
+.more-options-menu .option {
+    color: white;
+    font-size: 0.9rem;
+    line-height: normal;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.more-options-menu .option svg {
+    font-size: 1.3rem;
+}
+
+.more-options-menu .option:hover {
+    background-color: var(--cinza-3);
+}
+
 /* Sidebar CSS */
 
 aside {
