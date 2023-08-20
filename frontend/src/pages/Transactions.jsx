@@ -4,7 +4,7 @@ import axios_instance from '../Axios';
 import '../styles/Transactions.css'
 import Table, { DownloadIcon } from '../components/Table'
 import NewTransactionBtn from '../components/NewTransactionBtn';
-import TransactionsSortButton from '../components/TransactionsSortBtn';
+import SortButton from '../components/SortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -176,10 +176,16 @@ function TransactionsPage() {
                 </div>
 
                 <div className="btn-group right">
-                    <TransactionsSortButton
+                    <SortButton
                         params={queryParams}
                         setParams={setQueryParams}
-                        refetch={refetchTransactions} 
+                        refetch={refetchTransactions}
+                        options={[
+                            {text: 'Newest first', orderBy: 'date', order: 'DESC'},
+                            {text: 'Oldest first', orderBy: 'date', order: 'ASC'},
+                            {text: 'Value Asc', orderBy: 'value', order: 'ASC'},
+                            {text: 'Value Desc', orderBy: 'value', order: 'DESC'}
+                        ]}
                     />
 
                     <TransactionsFilterBtn

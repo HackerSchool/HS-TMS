@@ -10,7 +10,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-function Sidebar({user}) {
+function Sidebar({ user }) {
 
     function logout() {
         axios_instance.post("auth/logout")
@@ -18,7 +18,7 @@ function Sidebar({user}) {
                 if (res.status == 200)
                     window.open('/login', "_self")
                 else throw new Error(`Logout failed. Response status code: ${res.status}`)
-                
+
             })
             .catch(err => console.log(err));
     }
@@ -30,36 +30,39 @@ function Sidebar({user}) {
                     <img src={hslogo} alt="HS-logo" id='logo-img' />
                     HS-TMS
                 </div>
-                <NavLink to='dashboard' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+
+                <div className="sidebar-routes-container">
+                    <NavLink to='dashboard' className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <DashboardIcon />
                         Dashboard
-                </NavLink>
+                    </NavLink>
 
-                <NavLink to='transactions' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                    <NavLink to='transactions' className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <AttachMoneyIcon />
                         Transactions
-                </NavLink>
-                <NavLink to='projects' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                    </NavLink>
+                    <NavLink to='projects' className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <HandymanIcon />
                         Projects
-                </NavLink>
-                <NavLink to='charts' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                    </NavLink>
+                    <NavLink to='charts' className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <BarChartIcon />
                         Charts
-                </NavLink>
-                <NavLink to='settings' className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+                    </NavLink>
+                    <NavLink to='settings' className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <SettingsIcon />
                         Settings
-                </NavLink>
+                    </NavLink>
+                </div>
 
                 <div className="nav-item" id='user'>
                     <div className="nav-item" id="user-info" >
-                            <ImageRenderer 
-                                imageData={[user.photo]}
-                                altText='Profile pic'
-                                className="profile-pic"
-                            />
-                            {user.name}
+                        <ImageRenderer
+                            imageData={[user.photo]}
+                            altText='Profile pic'
+                            className="profile-pic"
+                        />
+                        {user.name}
                     </div>
                     <a className="nav-item" id='logout' onClick={logout} >
                         <PowerSettingsNewIcon />
