@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import '../styles/Dashboard.css'
+import chart from '../assets/chart.png'
 import axios_instance from '../Axios';
 import DashboardCard from '../components/DashboardCard';
 import RecentTransactionsTable from '../components/RecentTransactionsTable';
 import NewReminderBtn from '../components/NewReminderBtn';
 import ReminderEditModal from '../components/ReminderEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
+import Reminder from '../components/Reminder';
+import FadingAlert from '../components/FadingAlert';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import Reminder from '../components/Reminder';
-import chart from '../assets/chart.png'
 import CircularProgress from '@mui/material/CircularProgress'
 
 // Format dates as "YYYY-MM-DD"
@@ -43,7 +44,12 @@ function DashboardPage() {
 
                 setActiveProjects(activeProjCount);
             })
-            .catch(err => console.log(err)); //FIXME
+            .catch(err => {
+                let msg = "Couldn't fetch active projects";
+                if (err.response) msg += `. Status code: ${err.response.status}`
+
+                showErrorMsg(msg);
+            });
     }, []);
 
     // Transactions last month
@@ -62,7 +68,12 @@ function DashboardPage() {
                 throw new Error();
             })
             .then(data => setTransactionsLastMonth(data.length))
-            .catch(err => console.log(err)); // FIXME
+            .catch(err => {
+                let msg = "Couldn't fetch transactions done in the last 30 days";
+                if (err.response) msg += `. Status code: ${err.response.status}`
+
+                showErrorMsg(msg);
+            });
     }, []);
     
     // Authorized members
@@ -73,7 +84,12 @@ function DashboardPage() {
                 throw new Error();
             })
             .then(data => setAuthorizedUsersNumber(data.length))
-            .catch(err => console.log(err));
+            .catch(err => {
+                let msg = "Couldn't fetch authorized users";
+                if (err.response) msg += `. Status code: ${err.response.status}`
+
+                showErrorMsg(msg);
+            });
     }, []);
 
     // Reminders
@@ -92,9 +108,12 @@ function DashboardPage() {
                     if (res.status === 200) return res.data;
                     else throw new Error();
                 })
-                .then(data => setReminders(data)) // FIXME
+                .then(data => setReminders(data))
                 .catch(err => {
-                    console.log(err); // FIXME
+                    let msg = "Couldn't fetch reminders";
+                    if (err.response) msg += `. Status code: ${err.response.status}`
+    
+                    showErrorMsg(msg);
                 })
                 .finally(() => setRemindersLoading(false));
 
@@ -122,7 +141,10 @@ function DashboardPage() {
                 setTotalBalance(data[0].balance ?? 0);
             })
             .catch(err => {
-                console.log(err); // FIXME
+                let msg = "Couldn't fetch latest transactions";
+                if (err.response) msg += `. Status code: ${err.response.status}`
+
+                showErrorMsg(msg);
             })
             .finally(() => setTransactionsLoading(false));
     }, []);
@@ -140,13 +162,13 @@ function DashboardPage() {
         axios_instance.delete(`reminders/${reminderToDelete.id}`)
             .then(res => {
                 if (res.status === 204) {
-                    // showSuccessMsg("Transaction deleted successfully"); FIXME
+                    showSuccessMsg("Reminder deleted successfully");
                     refetchReminders();
                 }
                 else throw new Error();
             })
             .catch(err => {
-                // showErrorMsg(`Couldn't delete reminder ${reminderToDelete.id}`); FIXME
+                showErrorMsg(`Couldn't delete reminder ${reminderToDelete.id}`);
             });
 
         setOpenConfirmationModal(false);
@@ -168,8 +190,40 @@ function DashboardPage() {
         setOpenEditModal(true);
     });
 
+    // Alerts to display
+    const [errorMsg, setErrorMsg] = useState("");
+    const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
+    const [errorAlertId, setErrorAlertId] = useState(0);
+    const [successMsg, setSuccessMsg] = useState("");
+    const [displaySuccessMsg, setDisplaySuccessMsg] = useState(false);
+    const [successAlertId, setSuccessAlertId] = useState(0);
+
+    const showErrorMsg = useCallback((errorMsg) => {
+        setErrorAlertId(oldId => oldId + 1);
+        setErrorMsg(errorMsg);
+        setDisplayErrorMsg(true);
+    })
+
+    const showSuccessMsg = useCallback((successMsg) => {
+        setSuccessAlertId(oldId => oldId + 1);
+        setSuccessMsg(successMsg);
+        setDisplaySuccessMsg(true);
+    })
+
     return (
         <section className="page" id='DashboardPage'>
+
+            <div className="alerts-container bottom-right">
+                <FadingAlert show={displayErrorMsg} className="alert" id={errorAlertId}
+                        onClose={() => setDisplayErrorMsg(false)} severity="error" >
+                    {errorMsg}
+                </FadingAlert>
+                <FadingAlert show={displaySuccessMsg} className="alert" id={successAlertId}
+                        onClose={() => setDisplaySuccessMsg(false)} severity="success" >
+                    {successMsg}
+                </FadingAlert>
+            </div>
+
             <div className="dashboard-container">
             <div className="dashboard-row">
                 <div className="dashboard-item" id='dashboard-treasury-overview'>
@@ -211,7 +265,11 @@ function DashboardPage() {
                 <div className="dashboard-item" id='dashboard-reminders'>
                     <div className="reminders-title-group">
                         <h3 className='dashboard-item-title'>Reminders</h3>
-                        <NewReminderBtn refetch={refetchReminders} />
+                        <NewReminderBtn 
+                            refetch={refetchReminders}
+                            showErrorMsg={showErrorMsg}
+                            showSuccessMsg={showSuccessMsg}
+                        />
                     </div>
                     <div className="dashboard-item-content">
                         <div className="reminders-container">
@@ -267,8 +325,8 @@ function DashboardPage() {
                 setOpen={setOpenEditModal}
                 reminder={reminderToEdit}
                 refetch={refetchReminders}
-                // showErrorMsg={showErrorMsg} FIXME
-                // showSuccessMsg={showSuccessMsg} FIXME
+                showErrorMsg={showErrorMsg}
+                showSuccessMsg={showSuccessMsg}
             />}
 
             {reminderToDelete && <ConfirmationModal

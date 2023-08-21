@@ -148,12 +148,12 @@ function TransactionsPage() {
     return (
         <section className="page" id='TransactionsPage'>
 
-            <div className="alerts-container">
-                <FadingAlert show={displayErrorMsg} className="transactions-alert" id={errorAlertId}
+            <div className="alerts-container bottom-right">
+                <FadingAlert show={displayErrorMsg} className="alert" id={errorAlertId}
                         onClose={() => setDisplayErrorMsg(false)} severity="error" >
                     {errorMsg}
                 </FadingAlert>
-                <FadingAlert show={displaySuccessMsg} className="transactions-alert" id={successAlertId}
+                <FadingAlert show={displaySuccessMsg} className="alert" id={successAlertId}
                         onClose={() => setDisplaySuccessMsg(false)} severity="success" >
                     {successMsg}
                 </FadingAlert>

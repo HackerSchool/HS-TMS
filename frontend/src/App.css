@@ -395,6 +395,22 @@ input[type="file"] {
     background-color: var(--cinza-3);
 }
 
+/* Alerts */
+.alerts-container.bottom-right {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.alert {
+    width: fit-content;
+    z-index: 100;
+}
+
 /* Sidebar CSS */
 
 aside {

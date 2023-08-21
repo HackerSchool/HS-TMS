@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 
-function ReminderEditModal({ open, setOpen, reminder, refetch }) {
+function ReminderEditModal({ open, setOpen, reminder, refetch, showErrorMsg, showSuccessMsg }) {
 
     const handleClose = (reason) => {
         if (loading) return;
@@ -78,7 +78,7 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
         })
             .then(res => {
                 if (res.status === 200) {
-                    // showSuccessMsg("Reminder updated successfully"); FIXME
+                    showSuccessMsg("Reminder updated successfully");
                     refetch();
                 }
                 else throw new Error();
@@ -87,7 +87,7 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
                 let msg = "Couldn't update Reminder";
                 if (err.response) msg += `. Status code: ${err.response.status}`
 
-                // showErrorMsg(msg); FIXME
+                showErrorMsg(msg);
             })
             .finally(() => {
                 setLoading(false);

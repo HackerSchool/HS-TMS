@@ -8,7 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 
 
-function NewReminderBtn({ refetch }) {
+function NewReminderBtn({ refetch, showErrorMsg, showSuccessMsg }) {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -81,7 +81,7 @@ function NewReminderBtn({ refetch }) {
         })
             .then(res => {
                 if (res.status === 201) {
-                    // showSuccessMsg("Reminder created successfully"); FIXME
+                    showSuccessMsg("Reminder created successfully");
                     refetch();
                 }
                 else throw new Error();
@@ -90,7 +90,7 @@ function NewReminderBtn({ refetch }) {
                 let msg = "Couldn't create reminder"
                 if (err.response) msg += `. Status code: ${err.response.status}`;
 
-                // showErrorMsg(msg); FIXME
+                showErrorMsg(msg);
             })
             .finally(() => {
                 setLoading(false);
