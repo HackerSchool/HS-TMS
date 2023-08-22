@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <BrowserRouter>
             <SnackbarProvider 
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                preventDuplicate
+                maxSnack={5}
             >
                 <App />
             </SnackbarProvider>

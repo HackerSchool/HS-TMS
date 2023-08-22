@@ -6,8 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
-import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
-
+import AddIcon from '@mui/icons-material/Add';
 
 function NewReminderBtn({ refetch }) {
 
@@ -108,8 +107,8 @@ function NewReminderBtn({ refetch }) {
 
     return (
         <>
-            <div onClick={handleOpen} style={{ cursor: 'pointer' }}>
-                <NotificationAddIcon />
+            <div onClick={handleOpen} style={{ cursor: 'pointer', display: 'inline-flex', maxHeight: "100%" }}>
+                <AddIcon htmlColor='var(--hs-logo)' sx={{ fontSize: 21.5 }} />
             </div>
 
             <Modal

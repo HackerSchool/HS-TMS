@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom"
 import '../styles/Transactions.css'
 import axios_instance from '../Axios';
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
-import Table, { DownloadIcon } from '../components/Table'
+import Table, { DownloadIcon } from '../components/TransactionsTable'
 import NewTransactionBtn from '../components/NewTransactionBtn';
 import SortButton from '../components/SortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';

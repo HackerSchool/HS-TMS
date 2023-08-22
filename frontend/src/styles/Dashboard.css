@@ -139,7 +139,8 @@
 
 .reminders-title-group {
     display: inline-flex;
-    gap: 1rem;
+    gap: 0.4rem;
+    width: 100%;
 }
 
 #dashboard-reminders .dashboard-item-content {
@@ -247,4 +248,5 @@ hr.vl {
     transform: rotate("90deg");
     height: 65%;
     align-self: center;
+    margin-top: calc(4rem - 21.5px);
 }

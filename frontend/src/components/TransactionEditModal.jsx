@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import MultipleSelect from './MultipleSelect';
-import { DownloadIcon } from './Table';
+import { DownloadIcon } from './TransactionsTable';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';

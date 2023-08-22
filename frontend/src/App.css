@@ -431,7 +431,8 @@ aside {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 50px;
+    margin-bottom: auto;
+    gap: 35px;
 }
 
 .nav-item {
