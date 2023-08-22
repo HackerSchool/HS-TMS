@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios_instance from "../Axios";
+import { showErrorMsg } from "../Alerts";
 import MoreOptionsBtn from "./MoreOptionsBtn";
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -84,8 +85,12 @@ export function DownloadIcon({id}) {
                     responseType: 'blob',
                 })
                 .then(res => {
+                    if (res.status === 200) return res.data;
+                    else throw new Error();
+                })
+                .then(data => {
                     // create file link in browser's memory
-                    const href = URL.createObjectURL(res.data);
+                    const href = URL.createObjectURL(data);
 
                     const link = document.createElement("a");
                     link.href = href;
@@ -97,7 +102,12 @@ export function DownloadIcon({id}) {
                     document.body.removeChild(link);
                     URL.revokeObjectURL(href)
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    let msg = "Couldn't download the receipt"
+                    if (err.response) msg += `. Status code: ${err.response.status}`;
+    
+                    showErrorMsg(msg);
+                })
                 .finally(() => setPending(false));
             }}
         >

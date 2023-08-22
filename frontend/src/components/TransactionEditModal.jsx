@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import MultipleSelect from './MultipleSelect';
 import { DownloadIcon } from './Table';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,7 +14,7 @@ import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 
-function TransactionEditModal({ open, setOpen, transaction, refetch, projectsList, showErrorMsg, showSuccessMsg }) {
+function TransactionEditModal({ open, setOpen, transaction, refetch, projectsList }) {
 
     const handleClose = (reason) => {
         if (loading) return;

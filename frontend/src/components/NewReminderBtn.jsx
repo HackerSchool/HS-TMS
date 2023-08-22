@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import Modal from '@mui/material/Modal';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
@@ -8,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 
 
-function NewReminderBtn({ refetch, showErrorMsg, showSuccessMsg }) {
+function NewReminderBtn({ refetch }) {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);

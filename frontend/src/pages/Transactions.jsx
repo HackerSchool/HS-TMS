@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom"
-import axios_instance from '../Axios';
 import '../styles/Transactions.css'
+import axios_instance from '../Axios';
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import Table, { DownloadIcon } from '../components/Table'
 import NewTransactionBtn from '../components/NewTransactionBtn';
 import SortButton from '../components/SortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
-import FadingAlert from '../components/FadingAlert';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 
 function TransactionsPage() {
@@ -57,26 +57,6 @@ function TransactionsPage() {
         </div>
         )
     }
-
-    // Alerts to display
-    const [errorMsg, setErrorMsg] = useState("");
-    const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
-    const [errorAlertId, setErrorAlertId] = useState(0);
-    const [successMsg, setSuccessMsg] = useState("");
-    const [displaySuccessMsg, setDisplaySuccessMsg] = useState(false);
-    const [successAlertId, setSuccessAlertId] = useState(0);
-
-    const showErrorMsg = useCallback((errorMsg) => {
-        setErrorAlertId(oldId => oldId + 1);
-        setErrorMsg(errorMsg);
-        setDisplayErrorMsg(true);
-    })
-
-    const showSuccessMsg = useCallback((successMsg) => {
-        setSuccessAlertId(oldId => oldId + 1);
-        setSuccessMsg(successMsg);
-        setDisplaySuccessMsg(true);
-    })
 
     // To show loading state while fetching transactions
     const [loading, setLoading] = useState(false);
@@ -147,26 +127,12 @@ function TransactionsPage() {
 
     return (
         <section className="page" id='TransactionsPage'>
-
-            <div className="alerts-container bottom-right">
-                <FadingAlert show={displayErrorMsg} className="alert" id={errorAlertId}
-                        onClose={() => setDisplayErrorMsg(false)} severity="error" >
-                    {errorMsg}
-                </FadingAlert>
-                <FadingAlert show={displaySuccessMsg} className="alert" id={successAlertId}
-                        onClose={() => setDisplaySuccessMsg(false)} severity="success" >
-                    {successMsg}
-                </FadingAlert>
-            </div>
-
             <header>
                 <h1>Transactions</h1>
                 <div className="btn-group left">
                     <NewTransactionBtn
                         projectsList={projectsList}
                         refetch={refetchTransactions}
-                        showErrorMsg={showErrorMsg}
-                        showSuccessMsg={showSuccessMsg}
                     />
 
                     <button className='btn icon-btn'>
@@ -214,8 +180,6 @@ function TransactionsPage() {
                 transaction={transactionToEdit}
                 refetch={refetchTransactions}
                 projectsList={projectsList}
-                showErrorMsg={showErrorMsg}
-                showSuccessMsg={showSuccessMsg}
             />}
 
             {transactionToDelete && <ConfirmationModal

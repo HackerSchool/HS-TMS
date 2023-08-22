@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
+import { showSuccessMsg, showErrorMsg } from '../Alerts';
 import Modal from '@mui/material/Modal';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 
-function ReminderEditModal({ open, setOpen, reminder, refetch, showErrorMsg, showSuccessMsg }) {
+function ReminderEditModal({ open, setOpen, reminder, refetch }) {
 
     const handleClose = (reason) => {
         if (loading) return;

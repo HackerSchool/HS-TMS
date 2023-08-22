@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import MultipleSelect from './MultipleSelect';
-import FadingAlert from './FadingAlert';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 
-export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg, showSuccessMsg }) {
+export default function NewTransactionBtn({ refetch, projectsList }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
@@ -31,19 +31,11 @@ export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg,
             hasNif: false,
             description: ""
         })
-        setErrorMsg("");
-        setDisplayErrorMsg(false);
-        setAlertId(0);
     }
     
     // refs
     const formRef = useRef();
     const fileRef = useRef();
-
-    // Alerts to display
-    const [errorMsg, setErrorMsg] = useState("");
-    const [displayErrorMsg, setDisplayErrorMsg] = useState(false);
-    const [alertId, setAlertId] = useState(0);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -113,9 +105,8 @@ export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg,
 
         // guarantee the receipt is a pdf
         if (fileRef.current.files[0] && fileRef.current.files[0].type !== "application/pdf") {
-            setAlertId(oldId => oldId + 1);
-            setErrorMsg("Receipt's file type needs to be \"pdf\"");
-            setDisplayErrorMsg(true);
+            showErrorMsg("Receipt's file type needs to be \"pdf\"",
+                        {anchorOrigin: {horizontal: 'center', vertical: 'top' }})
             return;
         }
 
@@ -198,11 +189,6 @@ export default function NewTransactionBtn({ refetch, projectsList, showErrorMsg,
                 <Grow in={open} easing={{ exit: "ease-in" }}>
                 <Box className="box transaction-box">
                 <form encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
-
-                    <FadingAlert show={displayErrorMsg} className="create-transaction-alert"
-                            onClose={() => setDisplayErrorMsg(false)} severity="error">
-                        {errorMsg}
-                    </FadingAlert>
 
                     <div className='form-header'>
                         <CloseIcon className='modal-close-btn' onClick={handleClose} />
