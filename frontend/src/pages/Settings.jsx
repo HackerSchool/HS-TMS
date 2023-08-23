@@ -65,7 +65,7 @@ function SettingsPage() {
             <div style={{ lineHeight: 1.5 }}>
                 <b>Name:</b> {userToDelete.name} <br />
                 <b>Username:</b> {userToDelete.username} <br />
-                <b>Status:</b> {userToDelete.status ? "Active" : "Pending activation"} <br />
+                <b>Status:</b> {userToDelete.active ? "Active" : "Pending activation"} <br />
             </div>
             )
     }
