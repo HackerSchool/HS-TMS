@@ -15,6 +15,7 @@ html {
     --cinza-placeholder: rgba(255, 255, 255, 0.30);
     --light-gray: #aeaeae;
     --dark-gray: #161616;
+    --separator-color: rgba(255, 255, 255, 0.2);
 }
 
 body {
@@ -24,7 +25,7 @@ body {
 }
 
 hr {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--separator-color);
 }
 
 .page {
@@ -518,7 +519,7 @@ tbody.MuiTableBody-root th.MuiTableCell-body,
 tbody.MuiTableBody-root td.MuiTableCell-body,
 tfoot.MuiTableFooter-root td.MuiTableCell-root {
     color: white;
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--separator-color);
 }
 
 /* Table footer icons */

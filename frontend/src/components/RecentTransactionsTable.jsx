@@ -8,10 +8,6 @@ import TableRow from '@mui/material/TableRow';
 import CircularProgress from '@mui/material/CircularProgress';
 
 export default function RecentTransactionsTable({ data, loading }) {
-    const rowsPerPage = 3;
-
-    // Fill with empty rows if there are less that "rowsPerPage" transactions
-    const emptyRows = Math.max(0, rowsPerPage - data.length);
 
     function formatString(str) {
         let newStr = str;
@@ -66,11 +62,6 @@ export default function RecentTransactionsTable({ data, loading }) {
                                 </TableCell>
                             </TableRow>
                         ))}
-                    {!loading && emptyRows > 0 && (
-                        <TableRow style={{ height: 30 * emptyRows }}>
-                            <TableCell colSpan={4} sx={{border:0}} />
-                        </TableRow>
-                    )}
                 </TableBody>
             </Table>
         </TableContainer>

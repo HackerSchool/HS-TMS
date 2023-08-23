@@ -119,7 +119,7 @@ export function DownloadIcon({id}) {
     )
 }
 
-export default function CustomTable({ data, openEditModal, openDeleteModal, loading }) {
+export default function TransactionsTable({ data, openEditModal, openDeleteModal, loading }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
