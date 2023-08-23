@@ -108,7 +108,7 @@ function NewReminderBtn({ refetch }) {
     return (
         <>
             <div onClick={handleOpen} style={{ cursor: 'pointer', display: 'inline-flex', maxHeight: "100%" }}>
-                <AddIcon htmlColor='var(--hs-logo)' sx={{ fontSize: 21.5 }} />
+                <AddIcon sx={{ fontSize: 21.5, transform: "scale(1.3)" }} />
             </div>
 
             <Modal

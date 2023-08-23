@@ -12,7 +12,6 @@ import Reminder from '../components/Reminder';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import CircularProgress from '@mui/material/CircularProgress'
-import NotificationsIcon from '@mui/icons-material/Notifications';
 
 // Format dates as "YYYY-MM-DD"
 const formatDate = (date) => {
@@ -139,7 +138,7 @@ function DashboardPage() {
             })
             .then(data => {
                 setTransactions(data);
-                setTotalBalance(data[0].balance ?? 0);
+                setTotalBalance(data[0]?.balance ?? 0);
             })
             .catch(err => {
                 let msg = "Couldn't fetch latest transactions";
@@ -235,7 +234,6 @@ function DashboardPage() {
                 <div className="dashboard-item" id='dashboard-reminders'>
                     <div className="reminders-title-group">
                         <h3 className='dashboard-item-title'>Reminders</h3>
-                        <NotificationsIcon fontSize='small' />
                         <NewReminderBtn refetch={refetchReminders} />
                     </div>
                     <div className="dashboard-item-content">
@@ -255,7 +253,7 @@ function DashboardPage() {
                                             openEditModal={launchEditModal}
                                             openDeleteModal={launchConfirmationModal}
                                             />
-                                        {idx < arr.length - 1 && <hr /> }
+                                        {(idx < arr.length - 1 || arr.length === 1) && <hr /> }
                                         </div>
                                     )
                                 }))
