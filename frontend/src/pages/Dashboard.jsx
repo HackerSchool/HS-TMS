@@ -75,7 +75,7 @@ function DashboardPage() {
                 showErrorMsg(msg);
             });
     }, []);
-    
+
     // Authorized members
     useEffect(() => {
         axios_instance.get("users")
@@ -112,7 +112,7 @@ function DashboardPage() {
                 .catch(err => {
                     let msg = "Couldn't fetch reminders";
                     if (err.response) msg += `. Status code: ${err.response.status}`
-    
+
                     showErrorMsg(msg);
                 })
                 .finally(() => setRemindersLoading(false));
@@ -123,7 +123,7 @@ function DashboardPage() {
 
     // Balance chart
     const [chartData, setChartData] = useState();
-    
+
     // Transactions to display on the recent transactions table
     const [transactions, setTransactions] = useState([]);
     const [transactionsLoading, setTransactionsLoading] = useState(true);
@@ -194,95 +194,101 @@ function DashboardPage() {
     return (
         <section className="page" id='DashboardPage'>
             <div className="dashboard-container">
-            <div className="dashboard-row">
-                <div className="dashboard-item" id='dashboard-treasury-overview'>
-                    <h3 className='dashboard-item-title'>Treasury Overview</h3>
-                    <div className="dashboard-item-content">
-                        <div className="dashboard-card-row">
-                            <DashboardCard
-                                mainText={`€ ${totalBalance ?? "?"}`}
-                                subText="Total balance"
-                                green
-                                bolderMain
-                            />
-                            <DashboardCard
-                                headingText={activeProjects ?? "?"}
-                                mainText="Active"
-                                subText="Projects"
-                                icon={<TaskAltIcon />}
-                            />
-                        </div>
-                        <div className="dashboard-card-row">
-                            <DashboardCard
-                                headingText={transactionsLastMonth ?? "?"}
-                                mainText="Transactions"
-                                subText='in the past 30 days'
-                                smallerMain
-                            />
-                            <DashboardCard
-                                headingText={authorizedUsersNumber ?? "?"}
-                                mainText={authorizedUsersNumber === 1 ? "Person" : "People"}
-                                subText="in the system"
-                                icon={<ManageAccountsIcon />}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <hr className='vl' />
-
-                <div className="dashboard-item" id='dashboard-reminders'>
-                    <div className="reminders-title-group">
-                        <h3 className='dashboard-item-title'>Reminders</h3>
-                        <NewReminderBtn refetch={refetchReminders} />
-                    </div>
-                    <div className="dashboard-item-content">
-                        <div className="reminders-container">
-                            {remindersLoading && 
-                                <CircularProgress 
-                                    className='loading-circle large'
-                                    sx={{ alignSelf: "center", m: "auto" }}
-                                />}
-
-                            {!remindersLoading && (reminders.length === 0 ? "No reminders found" :
-                                reminders.map((reminder, idx, arr) => {
-                                    return (
-                                        <div className='reminder-container' key={idx}>
-                                        <Reminder
-                                            reminder={reminder}
-                                            openEditModal={launchEditModal}
-                                            openDeleteModal={launchConfirmationModal}
-                                            />
-                                        {(idx < arr.length - 1 || arr.length === 1) && <hr /> }
-                                        </div>
-                                    )
-                                }))
-                            }
+                <div className="dashboard-row">
+                    <div className="dashboard-item" id='dashboard-treasury-overview'>
+                        <h3 className='dashboard-item-title'>Treasury Overview</h3>
+                        <div className="dashboard-item-content">
+                            <div className="dashboard-card-row">
+                                <DashboardCard
+                                    mainText={`€ ${totalBalance ?? "?"}`}
+                                    subText="Total balance"
+                                    green
+                                    bolderMain
+                                />
+                                <DashboardCard
+                                    headingText={activeProjects ?? "?"}
+                                    mainText="Active"
+                                    subText="Projects"
+                                    icon={<TaskAltIcon />}
+                                />
+                            </div>
+                            <div className="dashboard-card-row">
+                                <DashboardCard
+                                    headingText={transactionsLastMonth ?? "?"}
+                                    mainText="Transactions"
+                                    subText='in the past 30 days'
+                                    smallerMain
+                                />
+                                <DashboardCard
+                                    headingText={authorizedUsersNumber ?? "?"}
+                                    mainText={authorizedUsersNumber === 1 ? "Person" : "People"}
+                                    subText="in the system"
+                                    icon={<ManageAccountsIcon />}
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div className="dashboard-row last">
-                <div className="dashboard-item" id='dashboard-balance'>
-                    <h3 className='dashboard-item-title'>Balance over the last 30 days</h3>
-                    <div className="dashboard-item-content">
-                        <img src={chart} alt="Balance chart" style={{ maxHeight: "95%" }}/>
+                    <hr className='vl' />
+
+                    <div className="dashboard-item" id='dashboard-reminders'>
+                        <div className="reminders-title-group">
+                            <h3 className='dashboard-item-title'>Reminders</h3>
+                            <NewReminderBtn refetch={refetchReminders} />
+                        </div>
+                        <div className="dashboard-item-content">
+                            <div className="dashboard-item-content-container">
+                                <div className="reminders-container">
+                                    {remindersLoading &&
+                                        <CircularProgress
+                                            className='loading-circle large'
+                                            sx={{ alignSelf: "center", m: "auto" }}
+                                        />}
+
+                                    {!remindersLoading && (reminders.length === 0 ? "No reminders found" :
+                                        reminders.map((reminder, idx, arr) => {
+                                            return (
+                                                <div className='reminder-container' key={idx}>
+                                                    <Reminder
+                                                        reminder={reminder}
+                                                        openEditModal={launchEditModal}
+                                                        openDeleteModal={launchConfirmationModal}
+                                                    />
+                                                    {(idx < arr.length - 1 || arr.length === 1) && <hr />}
+                                                </div>
+                                            )
+                                        }))
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <hr className='vl' />
+                <div className="dashboard-row last">
+                    <div className="dashboard-item" id='dashboard-balance'>
+                        <h3 className='dashboard-item-title'>Balance over the last 30 days</h3>
+                        <div className="dashboard-item-content">
+                            <div className="dashboard-item-content-container">
+                                <img src={chart} alt="Balance chart" style={{ maxHeight: "95%" }} />
+                            </div>
+                        </div>
+                    </div>
 
-                <div className="dashboard-item" id='dashboard-latest-transactions'>
-                    <h3 className='dashboard-item-title'>Latest Transactions</h3>
-                    <div className="dashboard-item-content">
-                        <RecentTransactionsTable
-                            data={transactions}
-                            loading={transactionsLoading}
-                        />
+                    <hr className='vl' />
+
+                    <div className="dashboard-item" id='dashboard-latest-transactions'>
+                        <h3 className='dashboard-item-title'>Latest Transactions</h3>
+                        <div className="dashboard-item-content">
+                            <div className="dashboard-item-content-container">
+                                <RecentTransactionsTable
+                                    data={transactions}
+                                    loading={transactionsLoading}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
 
             {reminderToEdit && <ReminderEditModal
@@ -296,7 +302,7 @@ function DashboardPage() {
                 open={openConfirmationModal}
                 title={"Do you wish to permanently delete the following reminder?"}
                 content={<Reminder reminder={reminderToDelete} hideOptions />}
-                onCancel={onDeleteCancelation} 
+                onCancel={onDeleteCancelation}
                 onConfirm={onDeleteConfirmation}
             />}
 

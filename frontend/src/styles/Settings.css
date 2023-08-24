@@ -5,7 +5,13 @@
     width: 100%;
 }
 
-.settings-category > h2 {
+.settings-category-title-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.settings-category-title-container h2 {
     color: var(--hs-logo);
     width: fit-content;
     padding-right: 0.5rem;
@@ -14,6 +20,20 @@
 
 .setting {
     height: fit-content;
+}
+
+/* Authorized users */
+
+/* New User modal */
+.user-modal {
+    margin: auto;
+    max-width: 45%;
+    max-height: 50%;
+}
+
+.user-box {
+    border-radius: 2rem;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
 /* Users Table */

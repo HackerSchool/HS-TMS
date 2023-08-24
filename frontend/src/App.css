@@ -79,6 +79,17 @@ hr {
 	color: white;
 }
 
+.icon-btn.small {
+    padding: 0.15rem 0.9rem 0.15rem 0.6rem;
+    font-size: 0.95rem;
+    gap: 3px;
+}
+
+.icon-btn.small svg {
+    width: 20px;
+    height: 20px;
+}
+
 .btn-group {
     display: flex;
 	align-items: center;

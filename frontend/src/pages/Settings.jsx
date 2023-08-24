@@ -4,6 +4,7 @@ import axios_instance from '../Axios';
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import UsersTable from '../components/UsersTable';
 import ConfirmationModal from '../components/ConfirmationModal';
+import NewUserBtn from '../components/NewUserBtn';
 
 function SettingsPage() {
 
@@ -86,7 +87,12 @@ function SettingsPage() {
                 <div className="content">
 
                     <div className="settings-category">
-                        <h2>Authorized users</h2>
+                        <div className='settings-category-title-container'>
+                            <h2>Authorized users</h2>
+                            <NewUserBtn
+                                refetch={refetchUsers}
+                            />
+                        </div>
 
                         <div className="setting">
                             <UsersTable

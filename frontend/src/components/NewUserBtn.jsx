@@ -8,7 +8,7 @@ import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddIcon from '@mui/icons-material/Add';
 
-function NewReminderBtn({ refetch }) {
+function NewUserBtn({ refetch }) {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -20,9 +20,8 @@ function NewReminderBtn({ refetch }) {
 
     function reset() {
         setFormData({
-            date: "",
-            title: "",
-            description: ""
+            name: "",
+            username: "",
         })
     }
 
@@ -31,9 +30,8 @@ function NewReminderBtn({ refetch }) {
 
     // Form state
     const [formData, setFormData] = useState({
-        date: "",
-        title: "",
-        description: ""
+        name: "",
+        username: "",
     })
 
     // Handle form changes
@@ -66,28 +64,33 @@ function NewReminderBtn({ refetch }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
+        if (!formData.username.match(/ist[0-9]+/g)) {
+            showErrorMsg('The username has to be a "Técnico ID", that is, an expression like "ist123456"',
+                        { anchorOrigin: { horizontal: "center", vertical: "top" } });
+            return;
+        }
+
         const body = new FormData();
 
-        body.append("date", formData.date);
-        body.append("title", formData.title);
-        body.append("description", formData.description);
+        body.append("name", formData.name);
+        body.append("username", formData.username);
 
         setLoading(true);
 
-        axios_instance.post("reminders", body, {
+        axios_instance.post("users", body, {
             headers: {
                 'Content-Type': "multipart/form-data"
             }
         })
             .then(res => {
                 if (res.status === 201) {
-                    showSuccessMsg("Reminder created successfully");
+                    showSuccessMsg("User created successfully");
                     refetch();
                 }
                 else throw new Error();
             })
             .catch(err => {
-                let msg = "Couldn't create reminder"
+                let msg = "Couldn't create user"
                 if (err.response) msg += `. Status code: ${err.response.status}`;
 
                 showErrorMsg(msg);
@@ -107,57 +110,57 @@ function NewReminderBtn({ refetch }) {
 
     return (
         <>
-            <button className='btn icon-btn' id='new-reminder-btn' onClick={handleOpen}>
+            <button className='btn icon-btn small' id='new-user-btn' onClick={handleOpen}>
                 <AddIcon />
-                New
+                Add
             </button>
 
             <Modal
-                className="modal reminder-modal"
-                id="new-reminder-modal"
+                className="modal user-modal"
+                id="new-user-modal"
                 open={open}
                 disableRestoreFocus
                 onClose={(e, reason) => handleClose(reason)}
-                closeAfterTransition 
+                closeAfterTransition
                 slotProps={{ backdrop: { timeout: 500 } }}
             >
                 <Grow in={open} easing={{ exit: "ease-in" }}>
-                <Box className="box reminder-box">
-                <form encType='multipart/form-data' ref={formRef} id='create-reminder-form' onSubmit={submitForm}>
+                <Box className="box user-box">
+                <form encType='multipart/form-data' ref={formRef} id='create-user-form' onSubmit={submitForm}>
 
                     <div className='form-header'>
                         <CloseIcon className='modal-close-btn' onClick={handleClose} />
-                        <h1>New Reminder</h1>
+                        <h1>New User</h1>
                     </div>
 
                     <div className="form-body">
-                        <div className="form-row reminder-date-title-row">
-                            <div className="form-group reminder-date-group" id='create-reminder-date-group'>
-                                <label htmlFor="date">Date: *</label>
-                                <input type="date" name="date" className='reminder-date' id="create-reminder-date"
-                                    value={formData.date} onChange={handleChange} required />
+                        <div className="form-row user-name-username-row">
+                            <div className="form-group user-name-group" id='create-user-name-group'>
+                                <label htmlFor="name">Name: *</label>
+                                <input type="text" name="name" className='user-name' placeholder='First Last'
+                                    value={formData.name} onChange={handleChange} required />
                             </div>
 
-                            <div className="form-group reminder-title-group" id='create-reminder-title-group'>
-                                <label htmlFor="title">Title: *</label>
-                                <input type="text" name="title" className='reminder-title' id="create-reminder-title"
-                                    value={formData.title} onChange={handleChange}
-                                    placeholder='Title of the reminder' required />
+                            <div className="form-group user-username-group" id='create-user-username-group'>
+                                <label htmlFor="usernamae">Username: *</label>
+                                <input type="text" name='username' placeholder='ist1xxxxx'
+                                    value={formData.username} onChange={handleChange} required />
                             </div>
                         </div>
 
                         <div className="form-row">
-                            <div className="form-group reminder-description-group" id='create-reminder-description-group'>
-                                <label htmlFor="description">Description:</label>
-                                <input type="text" name='description' placeholder='Description of the reminder'
-                                    value={formData.description} onChange={handleChange} />
-                            </div>
+                            <p>
+                                <b style={{ color: 'var(--hs-logo)', fontSize: '1.2rem' }}>NOTE: </b>
+                                The provided name is temporary, as it will be replaced by the information retrieved from Fenix during the first login, which triggers the user activation.
+                                Until then, the user status will be <i style={{ color: "var(--light-gray)" }}>
+                                pending activation</i>.
+                            </p>
                         </div>
                     </div>
 
                     <hr />
                     <div className="form-row last">
-                        <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='create-reminder-btn' >
+                        <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='create-user-btn' >
                             {loading && <CircularProgress className='loading-circle' />}
                             {loading ? "Creating" : "Create"}
                         </button>
@@ -170,4 +173,4 @@ function NewReminderBtn({ refetch }) {
     );
 }
 
-export default NewReminderBtn;
+export default NewUserBtn;

@@ -13,6 +13,7 @@ import BlockIcon from '@mui/icons-material/Block';
 export default function UsersTable({ data, loading, openDeleteModal }) {
 
     return (
+        <div style={{ overflow: "hidden", borderRadius: "1rem" }}>
         <TableContainer>
             <Table sx={{ minWidth: 300, width: "100%" }} className="users-table" stickyHeader>
                 <TableHead>
@@ -74,5 +75,6 @@ export default function UsersTable({ data, loading, openDeleteModal }) {
                 </TableBody>
             </Table>
         </TableContainer>
+        </div>
     );
 }
