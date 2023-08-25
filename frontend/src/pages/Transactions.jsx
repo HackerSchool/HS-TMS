@@ -1,43 +1,105 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from "react-router-dom"
+import axios_instance from '../Axios';
 import '../styles/Transactions.css'
 import Table from '../components/Table'
-import AddIcon from '@mui/icons-material/Add';
+import NewTransactionBtn from '../components/NewTransactionBtn';
+import TransactionsSortButton from '../components/TransactionsSortBtn';
+import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
+import TransactionEditModal from '../components/TransactionEditModal';
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import SortIcon from '@mui/icons-material/Sort';
-import TuneIcon from '@mui/icons-material/Tune';
+import Alert from '@mui/material/Alert';
 
 function TransactionsPage() {
+    const [transactions, setTransactions] = useState([]);
+    const [fetchTransactions, setFetchTransactions] = useState(true);
+    const [queryParams, setQueryParams] = useSearchParams();
+
+    // Transaction Edit Modal
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [transactionToEdit, setTransactionToEdit] = useState();
+
+
+    // Alerts to display
+    const [errorMsg, setErrorMsg] = useState("");
+
+    useEffect(() => {
+        if (fetchTransactions) {
+            axios_instance.get("transactions", {
+                params: queryParams,
+            })
+                .then(res => {
+                    console.log(res);
+                    if (res.status == 200) return res.data;
+                    throw new Error("Couldn't fetch transactions")
+                })
+                .then(data => {
+
+                    if (data.length === 0 && queryParams.size > 0) 
+                        setErrorMsg("No transactions match the specified filters");
+                    else
+                        setErrorMsg("");
+
+                    setTransactions(data)
+                })
+                .catch(err => console.log(err));
+
+            setFetchTransactions(false);
+        }
+    }, [fetchTransactions]);
+
+    const refetchTransactions = useCallback(() => setFetchTransactions(true));
+
+    const launchEditModal = useCallback((transaction) => {
+        setTransactionToEdit(transaction);
+        setOpenEditModal(true);
+    });
+
     return (
         <section className="page" id='TransactionsPage'>
+            {errorMsg && <Alert className="transactions-alert" onClose={() => { setErrorMsg("") }} severity="error">{errorMsg}</Alert>}
+
             <header>
                 <h1>Transactions</h1>
                 <div className="btn-group left">
-                    <button className='btn icon-btn'>
-                        <AddIcon />
-                        New
-                    </button>
+                    <NewTransactionBtn refetch={refetchTransactions} />
+
                     <button className='btn icon-btn'>
                         <SummarizeIcon />
                         Report
                     </button>
                 </div>
                 <div className="btn-group right">
-                    <button className='btn icon-btn' id='sorted-by'>
-                        <SortIcon />
-                        Sorted by: Most Recent
-                    </button>
-                    <button className='btn icon-btn' id='filter'>
-                        <TuneIcon />
-                        Filter
-                    </button>
+                    <TransactionsSortButton
+                        params={queryParams}
+                        setParams={setQueryParams}
+                        refetch={refetchTransactions} 
+                    />
+
+                    <TransactionsFilterBtn
+                        params={queryParams}
+                        setParams={setQueryParams}
+                        refetch={refetchTransactions}
+                    />
                 </div>
             </header>
 
             <div className="content-container">
                 <div className="content">
-                    <Table />
+                    <Table
+                        data={transactions}
+                        refetch={refetchTransactions}
+                        openEditModal={launchEditModal}
+                    />
                 </div>
             </div>
+
+            {transactionToEdit && <TransactionEditModal
+                open={openEditModal}
+                setOpen={setOpenEditModal}
+                transaction={transactionToEdit}
+                refetch={refetchTransactions}
+            />}
 
         </section>
     );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import '../styles/Projects.css'
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import ProjectEditModal from "./ProjectsEditModal";
 
 
 function createData(name, ntransactions, balance, state) {
@@ -30,18 +31,22 @@ const projects = [
 ];
 
 
-export default function CustomProjectHolder() {
+export default function CustomProjectHolder({data, refetch}) {
     return (
         <div className="content">
-            {projects.map((project) => (
+            {data.map((project) => (
                     <div className="project_holder" key={`${project.name}`}>
                         <h1>{project.name}</h1>
                         <p>{project.ntransactions} transactions</p>
                         <p>Balance: {project.balance}</p>
                         <p>{project.state ? "Active" : "Inactive"}</p>
-                        <button id = 'edit_button'><ModeEditIcon /></button>
+                        
                     </div>
                 ))}
         </div>
     );
 }
+/*<ProjectEditModal
+                            data={project}
+                            refetch={refetch}
+                        />*/

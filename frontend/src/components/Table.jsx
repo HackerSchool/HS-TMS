@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios_instance from "../Axios";
+import TransactionsOptionsBtn from "./TransactionsOptionsBtn";
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -15,32 +17,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-
-function createData(date, description, value, projects, nif) {
-    return { date, description, value, projects, nif };
-}
-
-const rows = [
-    createData('01-01-2023', 'Purchase for some in day', 6.0, "Arquimedia/Sweats/MIDI", true),
-    createData('03-01-2023', 'Purchase for some in day', 9.0, "Arquimedia/Sweats", true),
-    createData('01-03-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", false),
-    createData('03-03-2023', 'Purchase for some in day', 3.7, "Arquimedia/Sweats/MIDI", true),
-    createData('01-04-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", false),
-    createData('03-04-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats", true),
-    createData('01-05-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-    createData('03-05-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-    createData('01-06-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-    createData('03-06-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats", true),
-    createData('01-07-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", false),
-    createData('03-07-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-    createData('01-08-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-    createData('03-08-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-    createData('01-09-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats", true),
-    createData('03-09-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", false),
-    createData('01-10-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats", true),
-    createData('03-10-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-    createData('01-11-2023', 'Purchase for some in day', 16.0, "Arquimedia/Sweats/MIDI", true),
-];
+import RequestPageIcon from '@mui/icons-material/RequestPage';
 
 function TablePaginationActions(props) {
     const { count, page, rowsPerPage, onPageChange } = props;
@@ -95,13 +72,39 @@ function TablePaginationActions(props) {
     );
 }
 
-export default function CustomTable() {
+function DownloadIcon({id}) {
+    return (
+        <RequestPageIcon
+            onClick={() => {
+                axios_instance.get(`transactions/download/${id}`, {
+                    responseType: 'blob',
+                }).then(res => {
+                    // create file link in browser's memory
+                    const href = URL.createObjectURL(res.data);
+
+                    const link = document.createElement("a");
+                    link.href = href;
+                    link.setAttribute('download', `receipt${id}.pdf`)
+                    link.style.display = "none";
+                    document.body.appendChild(link);
+                    link.click();
+
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(href)
+                }).catch(err => console.log(err));
+            }}
+            sx={{ cursor: "pointer" }}
+        />
+    )
+}
+
+export default function CustomTable({ data, refetch, openEditModal }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -112,42 +115,73 @@ export default function CustomTable() {
         setPage(0);
     };
 
+    function formatString(str) {
+        let newStr = str;
+
+        if (str.length > 40) {
+            newStr = str.slice(0,40);
+            newStr += "...";
+        }
+        return newStr;
+    }
 
     return (
         <TableContainer>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell align="center">Date</TableCell>
+                        <TableCell align="center" padding="none">Date</TableCell>
                         <TableCell align="center">Description</TableCell>
-                        <TableCell align="center">Value (€)</TableCell>
+                        <TableCell align="center">Value</TableCell>
+                        <TableCell align="center" padding="none">Balance</TableCell>
                         <TableCell align="center">Projects</TableCell>
-                        <TableCell align="center">NIF</TableCell>
+                        <TableCell align="center" padding="none">NIF</TableCell>
                         <TableCell align="center" padding="none">Receipt</TableCell>
                         <TableCell align="center" padding="none"></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
+                    {data.length === 0 && ( // display message when there's no data to display
+                        <TableRow>
+                            <TableCell colSpan={8} align="center" sx={{fontSize: 18}}>
+                                No transactions found
+                            </TableCell>
+                        </TableRow>
+                    )}
+
                     {(rowsPerPage > 0
-                        ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        : rows).map((row) => (
+                        ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        : data).map((row) => (
                             <TableRow
                                 key={`${row.date}+${row.value}+${Math.random()}`}
                             >
                                 <TableCell component="th" scope="row" align="center">
                                     {row.date}
                                 </TableCell>
-                                <TableCell align="center">{row.description}</TableCell>
-                                <TableCell align="center">{row.value}</TableCell>
-                                <TableCell align="center">{row.projects}</TableCell>
-                                <TableCell align="center">{row.nif ? "Yes" : "No"}</TableCell>
-                                <TableCell align="center">{row.nif ? <CloudDownloadIcon /> : "-"}</TableCell>
-                                <TableCell align="center"><MoreHorizIcon /></TableCell>
+                                <TableCell align="center">
+                                    {row.description ? formatString(row.description) : "-"}
+                                </TableCell>
+                                <TableCell align="center">{`${row.value}€`}</TableCell>
+                                <TableCell align="center">{`${row.balance}€`}</TableCell>
+                                <TableCell align="center">
+                                    {row.projects ? formatString(row.projects) : "-"}
+                                </TableCell>
+                                <TableCell align="center">{row.has_nif ? "Yes" : "No"}</TableCell>
+                                <TableCell align="center">
+                                    {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
+                                </TableCell>
+                                <TableCell align="center">
+                                    <TransactionsOptionsBtn
+                                        transaction={row}
+                                        refetch={refetch}
+                                        openEditModal={openEditModal}
+                                    />
+                                </TableCell>
                             </TableRow>
                         ))}
                     {emptyRows > 0 && (
                         <TableRow style={{ height: 62.18 * emptyRows }}>
-                            <TableCell colSpan={7} />
+                            <TableCell colSpan={8} />
                         </TableRow>
                     )}
                 </TableBody>
@@ -155,8 +189,8 @@ export default function CustomTable() {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[15, 20, 25, { label: 'All', value: -1 }]}
-                            colSpan={7}
-                            count={rows.length}
+                            colSpan={8}
+                            count={data.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             SelectProps={{

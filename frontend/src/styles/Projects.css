@@ -45,3 +45,177 @@ html {
 .edit_button {
   float: right;
 }
+
+/*************************************************************/
+/* New Project Modal */
+.project-modal {
+  margin: auto;
+  max-width: 50%;
+  max-height: 45%;
+}
+
+.project-box {
+
+  border-radius: 2rem;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+.project-active-group {
+  flex-direction: row;
+  align-items: center;
+}
+
+.project-modal input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--green);
+  border: none;
+  border-radius: 0.5rem;
+  height: 1.5rem;
+  margin-top: 0.2rem;
+}
+
+.project-name-group {
+  width: 50%;
+}
+
+.project-submit-btn {
+  font-size: 1.2rem;
+  margin: 0 auto;
+}
+
+/* Transactions Sort button */
+#transactions-sort-btn {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-right: 0.5rem;
+}
+
+.sort-arrow-btn {
+  padding: 0 0.5rem 0 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.sort-menu {
+  background-color: var(--green);
+  border-radius: 0.5rem;
+  top: 0.3rem;
+}
+
+.sort-menu .sort-option {
+  color: white;
+  justify-content: center;
+}
+
+.sort-menu .sort-option.Mui-selected {
+  background-color: var(--hs-logo);
+}
+
+.sort-menu .sort-option:hover,
+.sort-menu .sort-option.Mui-selected:hover {
+  background-color: var(--green-hover);
+}
+
+/* Projects Filter Modal */
+#projects-filter-modal {
+  margin-left: auto;
+  height: 50svh;
+  max-width: 35%;
+}
+
+.filters-box {
+  border-radius: 2rem 0 0 2rem;
+  box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+.projects-filter-value {
+  width: 11.5rem;
+}
+
+#projects-filter-modal .value-help {
+  position: relative;
+  display: inline-block;
+  color: var(--light-gray);
+  content: "(?)";
+  margin-left: 5px;
+  cursor: help;
+}
+
+#projects-filter-modal .value-help:hover::after, 
+#projects-filter-modal .value-help:focus::after {
+  display: block;
+  position: absolute;
+  left: -4.75rem;
+  top: 25px;
+  width: 9.5rem;
+  height: fit-content;
+  font-size: 0.8rem;
+  background-color: var(--cinza-4);
+  color: white;
+  content: "Negative values for costs";
+  border: 1px solid white;
+  border-radius: 0.25rem;
+  padding: 0.9rem;
+  z-index: 1400;
+}
+
+#projects-filter-active-group {
+  flex-direction: row;
+}
+
+#projects-filter-projects-group {
+  width: 100%;
+}
+
+#projects-filter-save-btn {
+  font-size: 1.2rem;
+  margin-right: auto;
+}
+
+#projects-filter-clear-btn {
+  font-size: 1.2rem;
+  margin-left: auto;
+}
+
+#projects-filter-modal .form-row.last {
+  margin-top: 0;
+}
+
+/* Transaction Options Menu */
+.transactions-options-menu {
+  background-color: var(--cinza-4);
+  border-radius: 0.5rem;
+}
+
+.transactions-options-menu .transaction-option {
+  color: white;
+  font-size: 0.9rem;
+  line-height: normal;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.transactions-options-menu .transaction-option svg {
+  font-size: 1.3rem;
+}
+
+.transactions-options-menu .transaction-option:hover {
+  background-color: var(--cinza-3);
+}
+
+/* Alerts */
+.transactions-alert,
+.create-transaction-alert,
+.edit-transaction-alert,
+.transactions-filter-alert {
+  position: absolute;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  width: fit-content;
+}
+
+.loading {
+  border-radius: 1rem;
+}

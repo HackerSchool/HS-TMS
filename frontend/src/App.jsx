@@ -34,7 +34,7 @@ function App() {
 
     return (
         <div className="App">
-            {errorMsg && <Alert onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
+            {errorMsg && <Alert className="login-alert" onClose={()=>{setErrorMsg("")}} severity="error">{errorMsg}</Alert>}
 
             {user != undefined && <Routes>
                 {!user && <Route path="/login" element={<LoginPage />} />}
