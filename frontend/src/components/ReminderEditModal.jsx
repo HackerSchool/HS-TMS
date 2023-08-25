@@ -86,7 +86,8 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
             })
             .catch(err => {
                 let msg = "Couldn't update Reminder";
-                if (err.response) msg += `. Status code: ${err.response.status}`
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             })

@@ -50,6 +50,10 @@
     overflow: auto;
 }
 
+.dashboard-item-content-container::-webkit-scrollbar {
+	background: #6161613a;
+}
+
 /* treasury overview */
 #dashboard-treasury-overview {
     max-width: 600px;

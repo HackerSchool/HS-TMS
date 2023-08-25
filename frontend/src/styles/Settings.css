@@ -43,6 +43,15 @@
     max-height: 20rem;
 }
 
+.MuiTableContainer-root:has(.users-table)::-webkit-scrollbar-thumb {
+    border: 7px solid transparent;
+    background-clip: content-box;
+}
+
+.MuiTableContainer-root:has(.users-table)::-webkit-scrollbar {
+	width: 20px;
+}
+
 .users-table thead.MuiTableHead-root th.MuiTableCell-head {
     color: white;
     background-color: var(--cinza-1);
@@ -69,7 +78,10 @@
 }
 
 .users-table span.pending {
-    color: var(--light-gray);
+    color: white;
+    background-color:  var(--cinza-4);
+    border-radius: 0.5rem;
+    padding: 0.2rem 0.8rem;
 }
 
 .users-table td {

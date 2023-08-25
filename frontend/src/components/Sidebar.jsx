@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import ImageRenderer from './ImageRenderer';
 import axios_instance from '../Axios';
+import { showErrorMsg } from '../Alerts';
 import hslogo from '../assets/hs-logo.png'
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -17,10 +18,15 @@ function Sidebar({ user }) {
             .then(res => {
                 if (res.status == 200)
                     window.open('/login', "_self")
-                else throw new Error(`Logout failed. Response status code: ${res.status}`)
-
+                else throw new Error();
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                let msg = "Logout failed";
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
+            });
     }
 
     return (

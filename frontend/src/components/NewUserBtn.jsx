@@ -91,7 +91,8 @@ function NewUserBtn({ refetch }) {
             })
             .catch(err => {
                 let msg = "Couldn't create user"
-                if (err.response) msg += `. Status code: ${err.response.status}`;
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             })
@@ -112,7 +113,7 @@ function NewUserBtn({ refetch }) {
         <>
             <button className='btn icon-btn small' id='new-user-btn' onClick={handleOpen}>
                 <AddIcon />
-                Add
+                New
             </button>
 
             <Modal
@@ -137,7 +138,7 @@ function NewUserBtn({ refetch }) {
                         <div className="form-row user-name-username-row">
                             <div className="form-group user-name-group" id='create-user-name-group'>
                                 <label htmlFor="name">Name: *</label>
-                                <input type="text" name="name" className='user-name' placeholder='First Last'
+                                <input type="text" name="name" className='user-name' placeholder='First and last name'
                                     value={formData.name} onChange={handleChange} required />
                             </div>
 

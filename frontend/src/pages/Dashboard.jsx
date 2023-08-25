@@ -46,7 +46,8 @@ function DashboardPage() {
             })
             .catch(err => {
                 let msg = "Couldn't fetch active projects";
-                if (err.response) msg += `. Status code: ${err.response.status}`
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             });
@@ -70,7 +71,8 @@ function DashboardPage() {
             .then(data => setTransactionsLastMonth(data.length))
             .catch(err => {
                 let msg = "Couldn't fetch transactions done in the last 30 days";
-                if (err.response) msg += `. Status code: ${err.response.status}`
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             });
@@ -86,7 +88,8 @@ function DashboardPage() {
             .then(data => setAuthorizedUsersNumber(data.length))
             .catch(err => {
                 let msg = "Couldn't fetch authorized users";
-                if (err.response) msg += `. Status code: ${err.response.status}`
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             });
@@ -111,7 +114,8 @@ function DashboardPage() {
                 .then(data => setReminders(data))
                 .catch(err => {
                     let msg = "Couldn't fetch reminders";
-                    if (err.response) msg += `. Status code: ${err.response.status}`
+                    if (err.response)
+                        msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                     showErrorMsg(msg);
                 })
@@ -142,7 +146,8 @@ function DashboardPage() {
             })
             .catch(err => {
                 let msg = "Couldn't fetch latest transactions";
-                if (err.response) msg += `. Status code: ${err.response.status}`
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             })

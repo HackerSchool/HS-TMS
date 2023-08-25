@@ -143,7 +143,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
             })
             .catch(err => {
                 let msg = "Couldn't update Transaction";
-                if (err.response) msg += `. Status code: ${err.response.status}`
+                if (err.response)
+                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             })
