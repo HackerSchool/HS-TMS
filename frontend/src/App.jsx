@@ -16,6 +16,26 @@ function App() {
     const [user, setUser] = useState();
 
     useEffect(() => {
+
+        // Add a response interceptor to logout user when unauthorized
+        axios_instance.interceptors.response.use((response) => {
+            // Any status code that lie within the range of 2xx cause this function to trigger
+            return response;
+        }, (error) => {
+            // Any status codes that falls outside the range of 2xx cause this function to trigger
+
+            if (error.response.status === 403 || error.response.status === 401) {
+                if (window.location.pathname.match(/\/home\//g))
+                    showErrorMsg("Session expired or no longer authorized");
+                
+                setUser(false);
+            }
+            
+            return Promise.reject(error);
+        });
+
+
+        // Check if user is logged in
         axios_instance.get("auth/user")
             .then(res => {
                 if (res.status === 200) return res.data;
@@ -23,8 +43,6 @@ function App() {
             })
             .then(data => setUser(data))
             .catch(err => {
-                setUser(false);
-
                 if (!err.response) { // Thrown error above
                     showErrorMsg(err.message);
                 }
