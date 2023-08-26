@@ -191,7 +191,7 @@ class Transaction {
 	 * @param {Array<integer>} [projects=[]]
 	 * @param {string} [orderBy="date"]
 	 * @param {string} [order="DESC"]
-	 * @param {integer} [order=null]
+	 * @param {integer} [limit=null]
 	 * @returns {Array<Object>}
 	 */
 	async getAll(
