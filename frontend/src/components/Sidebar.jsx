@@ -23,7 +23,7 @@ function Sidebar({ user }) {
             .catch(err => {
                 let msg = "Logout failed";
                 if (err.response)
-                    msg += `. ${err.response.status / 100 === 4 ? "Bad client request" : "Internal server error"}`;
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
             });
