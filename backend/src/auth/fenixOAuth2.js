@@ -26,13 +26,11 @@ passport.use(
 					let { username, name, photo } = response.data;
 
 					if (
-						!(await User.getOne(
+						await User.getOne(
 							require("../middleware/selectPool").pool,
 							username
-						))
+						)
 					) {
-						username = "forbidden";
-					} else {
 						const fullName = name.split(" ");
 						name = `${fullName[0]} ${fullName[fullName.length - 1]}`;
 						photo = photo.data;

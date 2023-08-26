@@ -5,6 +5,7 @@ const passport = require("passport");
 const cors = require("cors");
 require("./auth/fenixOAuth2");
 require("dotenv").config();
+const isLoggedIn = require("./middleware/isLoggedIn");
 
 const app = express();
 
@@ -29,10 +30,10 @@ app.use(require("./middleware/convertBodyToJSON"));
 app.use(require("./middleware/selectPool").selectPool);
 app.use(require("./middleware/error").errorHandler);
 
-app.use("/projects", require("./routes/projectRoutes"));
-app.use("/reminders", require("./routes/reminderRoutes"));
-app.use("/transactions", require("./routes/transactionRoutes"));
-app.use("/users", require("./routes/userRoutes"));
+app.use("/projects", isLoggedIn, require("./routes/projectRoutes"));
+app.use("/reminders", isLoggedIn, require("./routes/reminderRoutes"));
+app.use("/transactions", isLoggedIn, require("./routes/transactionRoutes"));
+app.use("/users", isLoggedIn, require("./routes/userRoutes"));
 app.use("/auth", require("./routes/authRoutes"));
 
 app.get("/health", (req, res) => {
