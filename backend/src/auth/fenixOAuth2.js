@@ -25,16 +25,16 @@ passport.use(
 				.then(async (response) => {
 					let { username, name, photo } = response.data;
 
+					const fullName = name.split(" ");
+					name = `${fullName[0]} ${fullName[fullName.length - 1]}`;
+					photo = photo.data;
+
 					if (
 						await User.getOne(
 							require("../middleware/selectPool").pool,
 							username
 						)
 					) {
-						const fullName = name.split(" ");
-						name = `${fullName[0]} ${fullName[fullName.length - 1]}`;
-						photo = photo.data;
-
 						await User.updateOne(
 							require("../middleware/selectPool").pool,
 							username,

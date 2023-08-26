@@ -19,7 +19,7 @@ router.get(
 );
 
 router.get("/fenix/success", (req, res) => {
-	res.redirect(`${process.env.CLIENT_ADDRESS}/home`);
+	res.redirect(`${process.env.CLIENT_ADDRESS}/`);
 });
 
 router.get("/fenix/failure", (req, res) => {
