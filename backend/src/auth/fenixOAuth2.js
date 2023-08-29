@@ -23,17 +23,28 @@ passport.use(
 					}
 				})
 				.then(async (response) => {
-					const user = response.data;
+					let { username, name, photo } = response.data;
+
+					const fullName = name.split(" ");
+					name = `${fullName[0]} ${fullName[fullName.length - 1]}`;
+					photo = photo.data;
+
 					if (
 						await User.getOne(
 							require("../middleware/selectPool").pool,
-							user.username
+							username
 						)
 					) {
-						cb(null, user);
-					} else {
-						cb(null, null);
+						await User.updateOne(
+							require("../middleware/selectPool").pool,
+							username,
+							true,
+							name,
+							photo
+						);
 					}
+
+					cb(null, { username, name, photo });
 				})
 				.catch((error) => {
 					cb(error, null);
@@ -43,12 +54,7 @@ passport.use(
 );
 
 passport.serializeUser(function (user, done) {
-	const fullName = user.name.split(" ");
-	done(null, {
-		username: user.username,
-		name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
-		photo: user.photo.data
-	});
+	done(null, user);
 });
 
 passport.deserializeUser(function (user, done) {

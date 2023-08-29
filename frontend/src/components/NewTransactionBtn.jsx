@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import MultipleSelect from './MultipleSelect';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
@@ -8,15 +9,16 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
+import CircularProgress from '@mui/material/CircularProgress';
 
-export default function NewTransactionBtn({ refetch }) {
+export default function NewTransactionBtn({ refetch, projectsList }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        if (createdTransaction) refetch();
+        if (loading) return;
+        
         setOpen(false)
     };
 
@@ -29,20 +31,11 @@ export default function NewTransactionBtn({ refetch }) {
             hasNif: false,
             description: ""
         })
-        setErrorMsg("");
-        setSuccessMsg("");
     }
     
     // refs
     const formRef = useRef();
     const fileRef = useRef();
-
-    // Alerts to display
-    const [errorMsg, setErrorMsg] = useState("");
-    const [successMsg, setSuccessMsg] = useState("");
-
-    // to know whether it's necessary to refetch transactions or not
-    const [createdTransaction, setCreatedTransaction] = useState(false);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -56,6 +49,8 @@ export default function NewTransactionBtn({ refetch }) {
 
     // Handle form changes
     function handleChange(e) {
+        if (loading) return;
+
         const name = e.target.name;
         const value = e.target.value;
 
@@ -69,6 +64,8 @@ export default function NewTransactionBtn({ refetch }) {
     }
 
     function handleCostChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -78,6 +75,8 @@ export default function NewTransactionBtn({ refetch }) {
     }
 
     function handleNifChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -94,10 +93,22 @@ export default function NewTransactionBtn({ refetch }) {
         // stop all the default form submission behaviour
         event.preventDefault();
 
+        // to remove the focus highlight while this fn is running
+        document.activeElement.blur();
+
+        if (loading) return;
+
         const form = formRef.current;
 
         // check form requirements
         if (!form.reportValidity()) return;
+
+        // guarantee the receipt is a pdf
+        if (fileRef.current.files[0] && fileRef.current.files[0].type !== "application/pdf") {
+            showErrorMsg("Receipt's file type needs to be \"pdf\"",
+                        {anchorOrigin: {horizontal: 'center', vertical: 'top' }})
+            return;
+        }
 
         const body = new FormData();
 
@@ -108,8 +119,6 @@ export default function NewTransactionBtn({ refetch }) {
         body.append("description", formData.description);
         body.append("receipt", fileRef.current.files[0]);
 
-        console.log(Array.from(body.entries()))
-
         setLoading(true);
 
         axios_instance.post("transactions", body, {
@@ -118,39 +127,28 @@ export default function NewTransactionBtn({ refetch }) {
             }
         })
             .then(res => {
-                console.log(res)
-                if (res.status == 201) {
-                    setSuccessMsg("Transaction created successfully");
-                    setCreatedTransaction(true)
+                if (res.status === 201) {
+                    showSuccessMsg("Transaction created successfully");
+                    refetch();
                 }
                 else throw new Error();
             })
             .catch(err => {
-                console.log(err)
-                setErrorMsg("Couldn't create Transaction");
+                let msg = "Couldn't create transaction"
+                if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setLoading(false);
+                setOpen(false);
+            });
 
     }
 
-    // Projects to choose
-    const [projectsList, setProjectsList] = useState([]);
-
+    // Reset form data
     useEffect(() => {
-        // Fetch projects on first open
-        if (projectsList.length == 0 && open) { // FIXME
-            console.log("fetching projects...");
-
-            axios_instance.get("projects")
-                .then(res => {
-                    if (res.status == 200) return res.data;
-                    throw new Error("Couldn't fetch projects");
-                })
-                .then(data => { setProjectsList(data); console.log(data) })
-                .catch(err => console.log(err));
-        }
-
-        // Reset form data
         if (open) reset();
 
     }, [open])
@@ -162,6 +160,8 @@ export default function NewTransactionBtn({ refetch }) {
     }
 
     function handleProjectsChange(event) {
+        if (loading) return;
+
         const value = event.target.value;
 
         setFormData((oldFormData) => ({
@@ -182,16 +182,14 @@ export default function NewTransactionBtn({ refetch }) {
                 className="modal transaction-modal"
                 id="new-transaction-modal"
                 open={open}
-                disableEnforceFocus
+                disableRestoreFocus
                 onClose={(e, reason) => handleClose(reason)}
                 closeAfterTransition 
                 slotProps={{ backdrop: { timeout: 500 } }}
             >
                 <Grow in={open} easing={{ exit: "ease-in" }}>
                 <Box className="box transaction-box">
-                <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
-                    {errorMsg && <Alert className="create-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
-                    {successMsg && <Alert className="create-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
+                <form encType='multipart/form-data' ref={formRef} id='create-transaction-form' onSubmit={submitForm}>
 
                     <div className='form-header'>
                         <CloseIcon className='modal-close-btn' onClick={handleClose} />
@@ -275,8 +273,9 @@ export default function NewTransactionBtn({ refetch }) {
 
                     <hr />
                     <div className="form-row last">
-                        <button type='submit' className="btn transaction-submit-btn" id='create-transaction-btn' >
-                            Create
+                        <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='create-transaction-btn' >
+                            {loading && <CircularProgress className='loading-circle' />}
+                            {loading ? "Creating" : "Create"}
                         </button>
                     </div>
                 </form>

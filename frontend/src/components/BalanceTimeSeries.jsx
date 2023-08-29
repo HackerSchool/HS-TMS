@@ -19,8 +19,6 @@ function BalanceTimeSeries({title, typeOfYear}){
                   console.log("No transactions found.");
               }
               else {
-                  console.log(response.data.map((transaction)=> transaction["date"]))
-
                   setDates(response.data.map((transaction)=> transaction["date"]));
                   setBalanceVal(response.data.map( (transaction) => transaction["balance"]));
                   setFetchTransactions(false);
@@ -77,14 +75,14 @@ function BalanceTimeSeries({title, typeOfYear}){
                       stepmode:"backward"
                     },
                     {
-                      count: 3, 
-                      label: "3m",
+                      count: 6, 
+                      label: "6m",
                       step: "month",
                       stepmode:"backward"
                     },
                     {
-                      count: 6, 
-                      label: "6m",
+                      count: 12, 
+                      label: "1y",
                       step: "month",
                       stepmode:"backward"
                     },

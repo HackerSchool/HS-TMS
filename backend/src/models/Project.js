@@ -7,12 +7,14 @@ class Project {
 	 * @returns {Object}
 	 */
 	async createOne(pool, name, active) {
-		const res = await pool.query(
-			`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean) RETURNING *;`,
-			[name, active]
-		);
+		const projectId = (
+			await pool.query(
+				`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean) RETURNING *;`,
+				[name, active]
+			)
+		).rows[0].id;
 
-		return await this.getOne(pool, res.rows[0].id);
+		return await this.getOne(pool, projectId);
 	}
 
 	/**
@@ -22,11 +24,38 @@ class Project {
 	 * @returns {Object}
 	 */
 	async getOne(pool, id) {
-		const res = await pool.query(`SELECT * FROM projects WHERE id = $1::integer`, [
-			id
-		]);
-
-		return res.rows[0];
+		return (
+			await pool.query(
+				`
+			SELECT
+				*
+			FROM (
+				SELECT
+					p.*,
+					COUNT(tp.transaction_id)::integer AS transaction_count,
+					ROUND(COALESCE(SUM(t.value / project_count), 0), 2)::float AS balance
+				FROM
+					projects p
+				LEFT JOIN
+					transaction_project tp ON p.id = tp.project_id
+				LEFT JOIN
+					transactions t ON tp.transaction_id = t.id
+				LEFT JOIN (
+					SELECT
+						tp2.transaction_id,
+						COUNT(tp2.project_id) AS project_count
+					FROM
+						transaction_project tp2
+					GROUP BY
+						tp2.transaction_id
+				) AS num_projects ON t.id = num_projects.transaction_id
+				GROUP BY p.id
+			) AS projects
+			WHERE id = $1::integer
+			`,
+				[id]
+			)
+		).rows[0];
 	}
 
 	/**
@@ -40,12 +69,11 @@ class Project {
 	async updateOne(pool, id, name, active) {
 		await pool.query(
 			`
-		UPDATE projects
-		SET name = $2::text,
-			active = $3::boolean
-		WHERE id = $1::integer
-		RETURNING *;
-	`,
+			UPDATE projects
+			SET name = $2::text,
+				active = $3::boolean
+			WHERE id = $1::integer;
+			`,
 			[id, name, active]
 		);
 
@@ -63,7 +91,7 @@ class Project {
 			`
 		DELETE FROM projects
 		WHERE id = $1::integer;
-	`,
+		`,
 			[id]
 		);
 	}
@@ -71,12 +99,78 @@ class Project {
 	/**
 	 * @async
 	 * @param {pg.Pool} pool
+	 * @param {float} [initialBalance=null]
+	 * @param {float} [finalBalance=null]
+	 * @param {boolean} [active=null]
+	 * @param {string} [orderBy="name"]
+	 * @param {string} [order="ASC"]
 	 * @returns {Array<Object>}
 	 */
-	async getAll(pool) {
-		const res = await pool.query(`SELECT * FROM projects ORDER BY id`);
+	async getAll(
+		pool,
+		initialBalance = null,
+		finalBalance = null,
+		active = null,
+		orderBy = "name",
+		order = "ASC"
+	) {
+		let query = `
+		SELECT
+			*
+		FROM (
+			SELECT
+				p.*,
+				COUNT(tp.transaction_id)::integer AS transaction_count,
+				ROUND(COALESCE(SUM(t.value / project_count), 0), 2)::float AS balance
+			FROM
+				projects p
+			LEFT JOIN
+				transaction_project tp ON p.id = tp.project_id
+			LEFT JOIN
+				transactions t ON tp.transaction_id = t.id
+			LEFT JOIN (
+				SELECT
+					tp2.transaction_id,
+					COUNT(tp2.project_id) AS project_count
+				FROM
+					transaction_project tp2
+				GROUP BY
+					tp2.transaction_id
+			) AS num_projects ON t.id = num_projects.transaction_id
+			GROUP BY p.id
+		) AS projects
+		`;
 
-		return res.rows;
+		let filterConditions = [];
+		let queryParams = [];
+
+		if (initialBalance !== null) {
+			filterConditions.push(`balance >= $${queryParams.length + 1}::numeric`);
+			queryParams.push(initialBalance);
+		}
+
+		if (finalBalance !== null) {
+			filterConditions.push(`balance <= $${queryParams.length + 1}::numeric`);
+			queryParams.push(finalBalance);
+		}
+
+		if (active !== null) {
+			filterConditions.push(`active = $${queryParams.length + 1}::boolean`);
+			queryParams.push(active);
+		}
+
+		query +=
+			filterConditions.length > 0 ? ` WHERE ${filterConditions.join(" AND ")}` : "";
+
+		if (orderBy === "name" && (order === "ASC" || order === "DESC")) {
+			query += ` ORDER BY name ${order}`;
+		} else if (orderBy === "balance" && (order === "ASC" || order === "DESC")) {
+			query += ` ORDER BY balance ${order}, name ASC`;
+		} else {
+			query += ` ORDER BY name ASC`;
+		}
+
+		return (await pool.query(query, queryParams)).rows;
 	}
 }
 

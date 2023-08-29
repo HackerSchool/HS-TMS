@@ -34,7 +34,18 @@ async function deleteProject(req, res) {
 async function getAllProjects(req, res) {
 	const pool = req.pool;
 
-	res.status(200).send(await Project.getAll(pool));
+	const { initialBalance, finalBalance, active, orderBy, order } = req.query;
+
+	res.status(200).send(
+		await Project.getAll(
+			pool,
+			initialBalance && parseFloat(initialBalance),
+			finalBalance && parseFloat(finalBalance),
+			active && JSON.parse(active),
+			orderBy,
+			order
+		)
+	);
 }
 
 module.exports = {

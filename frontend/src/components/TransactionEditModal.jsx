@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import MultipleSelect from './MultipleSelect';
+import { DownloadIcon } from './TransactionsTable';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -8,20 +10,19 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CheckIcon from '@mui/icons-material/Check';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
+import CircularProgress from '@mui/material/CircularProgress';
 
-function TransactionEditModal({ open, setOpen, transaction, refetch }) {
+function TransactionEditModal({ open, setOpen, transaction, refetch, projectsList }) {
 
     const handleClose = (reason) => {
-        if (editedTransaction) refetch();
+        if (loading) return;
+
         setOpen(false)
     };
 
     function reset() {
-        setErrorMsg("");
-        setSuccessMsg("");
         // Update the form data everytime the transaction being edited changes
         setFormData({
             date: transaction.date,
@@ -43,13 +44,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     // refs
     const formRef = useRef();
 
-    // Alerts to display
-    const [errorMsg, setErrorMsg] = useState("");
-    const [successMsg, setSuccessMsg] = useState("");
-
-    // to know whether it's necessary to refetch transactions or not
-    const [editedTransaction, setEditedTransaction] = useState(false);
-
     // Form state
     const [formData, setFormData] = useState({
         date: transaction.date,
@@ -69,6 +63,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
 
     // Handle form changes
     function handleChange(e) {
+        if (loading) return;
+
         const name = e.target.name;
         const value = e.target.value;
 
@@ -82,6 +78,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     }
 
     function handleCostChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -91,6 +89,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     }
 
     function handleNifChange(newValue) {
+        if (loading) return;
+
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
@@ -100,12 +100,17 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     }
 
 
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
     // Create formData and send it to the backend
     function submitForm(event) {
         // stop all the default form submission behaviour
         event.preventDefault();
+
+        // to remove the focus highlight while this fn is running
+        document.activeElement.blur();
+
+        if (loading) return;
 
         const form = formRef.current;
 
@@ -122,8 +127,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
         // the receipt can't be changed so just send back the hasFile flag
         body.append("hasFile", transaction.has_file)
 
-        console.log(Array.from(body.entries()))
-
         setLoading(true);
 
         axios_instance.put(`transactions/${transaction.id}`, body, {
@@ -132,45 +135,31 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
             }
         })
             .then(res => {
-                console.log(res)
-                if (res.status == 200) {
-                    setSuccessMsg("Transaction updated successfully");
-                    setEditedTransaction(true)
+                if (res.status === 200) {
+                    showSuccessMsg("Transaction updated successfully");
+                    refetch();
                 }
                 else throw new Error();
             })
             .catch(err => {
-                console.log(err)
-                setErrorMsg("Couldn't update Transaction");
+                let msg = "Couldn't update Transaction";
+                if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setLoading(false);
+                setOpen(false)
+            });
 
     }
 
-    // Projects to choose
-    const [projectsList, setProjectsList] = useState([]);
-
+    // Reset form data
     useEffect(() => {
-        // Fetch projects on first open
-        if (projectsList.length == 0 && open) { // FIXME
-            console.log("fetching projects...");
-
-            axios_instance.get("projects")
-                .then(res => {
-                    if (res.status == 200) return res.data;
-                    throw new Error("Couldn't fetch projects");
-                })
-                .then(data => {
-                    setProjectsList(data);
-                    console.log(data) 
-                })
-                .catch(err => console.log(err));
-        }
-
-        // Reset form data
         if (open) reset();
 
-    }, [open])
+    }, [open]);
 
     function getChosenProjectsIds() {
         return formData.projects.map((value) => {
@@ -179,6 +168,8 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
     }
 
     function handleProjectsChange(event) {
+        if (loading) return;
+
         const value = event.target.value;
 
         setFormData((oldFormData) => ({
@@ -194,16 +185,14 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
             className="modal transaction-modal"
             id="edit-transaction-modal"
             open={open}
-            disableEnforceFocus
+            disableRestoreFocus
             onClose={(e, reason) => handleClose(reason)}
             closeAfterTransition 
             slotProps={{ backdrop: { timeout: 500 } }}
         >
             <Grow in={open} easing={{ exit: "ease-in" }} >
             <Box className="box transaction-box" >
-            <form className={`${loading ? "loading" : ""}`} encType='multipart/form-data' ref={formRef} id='edit-transaction-form' onSubmit={submitForm}>
-                {errorMsg && <Alert className="edit-transaction-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
-                {successMsg && <Alert className="edit-transaction-alert" onClose={() => setSuccessMsg("")} severity="success">{successMsg}</Alert>}
+            <form encType='multipart/form-data' ref={formRef} id='edit-transaction-form' onSubmit={submitForm}>
 
                 <div className='form-header'>
                     <CloseIcon className='modal-close-btn' onClick={handleClose} />
@@ -279,19 +268,21 @@ function TransactionEditModal({ open, setOpen, transaction, refetch }) {
                                 value={formData.description} onChange={handleChange} />
                         </div>
                         <div className="form-group transaction-file-group" id='edit-transaction-file-group'>
-                            <label htmlFor="file">Has receipt:</label>
+                            <label htmlFor="file">Receipt:</label>
                             <div className={`toggle-button left right ${transaction.has_file ? "active" : ""}`}>
                                 {transaction.has_file ? <CheckIcon /> : <CloseIcon />}
                                 {transaction.has_file ? "Yes" : "No"}
                             </div>
+                            {transaction.has_file && <DownloadIcon id={transaction.id} />}
                         </div>
                     </div>
                 </div>
 
                 <hr />
                 <div className="form-row last">
-                    <button type='submit' className="btn transaction-submit-btn" id='edit-transaction-btn' >
-                        Save
+                    <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='edit-transaction-btn' >
+                        {loading && <CircularProgress className='loading-circle' />}
+                        {loading ? "Saving" : "Save"}
                     </button>
                 </div>
             </form>

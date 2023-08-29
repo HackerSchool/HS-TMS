@@ -46,43 +46,6 @@
     margin-top: 1rem;
 }
 
-.transaction-submit-btn {
-    font-size: 1.2rem;
-    margin: 0 auto;
-}
-
-/* Transactions Sort button */
-#transactions-sort-btn {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    padding-right: 0.5rem;
-}
-
-.sort-arrow-btn {
-    padding: 0 0.5rem 0 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.sort-menu {
-    background-color: var(--green);
-    border-radius: 0.5rem;
-    top: 0.3rem;
-}
-
-.sort-menu .sort-option {
-    color: white;
-    justify-content: center;
-}
-
-.sort-menu .sort-option.Mui-selected {
-    background-color: var(--hs-logo);
-}
-
-.sort-menu .sort-option:hover,
-.sort-menu .sort-option.Mui-selected:hover {
-    background-color: var(--green-hover);
-}
 
 /* Transactions Filter Modal */
 #transactions-filter-modal {
@@ -145,42 +108,31 @@
     margin-top: 0;
 }
 
-/* Transaction Options Menu */
-.transactions-options-menu {
-    background-color: var(--cinza-4);
-    border-radius: 0.5rem;
-}
 
-.transactions-options-menu .transaction-option {
-    color: white;
-    font-size: 0.9rem;
-    line-height: normal;
+/* Receipt download icon */
+.receipt-download-icon-container {
+    height: min-content;
+    width: min-content;
+    margin: auto;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 6px;
 }
 
-.transactions-options-menu .transaction-option svg {
-    font-size: 1.3rem;
-}
-
-.transactions-options-menu .transaction-option:hover {
-    background-color: var(--cinza-3);
-}
-
-/* Alerts */
-.transactions-alert,
-.create-transaction-alert,
-.edit-transaction-alert,
-.transactions-filter-alert {
+.receipt-download-icon-container:hover::after {
+    display: block;
     position: absolute;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 5%);
     width: fit-content;
-}
-
-.loading {
-    border-radius: 1rem;
+    height: fit-content;
+    font-size: 0.8rem;
+    background-color: var(--cinza-4);
+    color: white;
+    content: "Download";
+    border-radius: 0.25rem;
+    padding: 0.7rem 0.4rem 0.2rem 0.4rem;
+    z-index: 1400;
+    cursor: default;
+    clip-path: polygon(50% 0%, 65% 25%, 100% 25%, 100% 100%, 0 100%, 0 25%, 35% 25%);
 }

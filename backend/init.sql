@@ -1,12 +1,15 @@
 CREATE TABLE reminders (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "date" DATE
+    "description" TEXT,
+    "date" DATE NOT NULL
 );
 
 CREATE TABLE users (
-    username TEXT PRIMARY KEY CHECK (username LIKE 'ist%')
+    username TEXT PRIMARY KEY CHECK (username LIKE 'ist%'),
+    active BOOLEAN NOT NULL,
+    "name" TEXT NOT NULL,
+    photo TEXT
 );
 
 CREATE TABLE projects (
@@ -56,3 +59,14 @@ CREATE TRIGGER update_balance_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON transactions
 FOR EACH ROW
 EXECUTE PROCEDURE update_balance();
+
+CREATE PROCEDURE create_user(
+   p_username TEXT,
+   p_name TEXT
+)
+AS $$
+BEGIN
+   INSERT INTO users (username, active, "name")
+   VALUES (p_username, false, p_name);
+END;
+$$ LANGUAGE plpgsql;

@@ -3,17 +3,19 @@ version: "3"
 services:
 
   postgres:
+    container_name: postgres
     image: postgres
     restart: always
     ports:
       - 5432:5432
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
   backend:
+    container_name: backend
     build: ./backend
     restart: always
     depends_on:
@@ -24,6 +26,7 @@ services:
       - ./backend/src:/usr/src/app/backend/src
 
   frontend:
+    container_name: frontend
     build: ./frontend
     restart: always
     depends_on:
