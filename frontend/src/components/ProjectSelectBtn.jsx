@@ -25,6 +25,7 @@ export default function ProjectSelectBtn({setProjectID,refetch, idx}){
             .then((response)=>{
                 //Only active projects are shown on the menu
                 setOptions(response.data.filter((project)=>project.active===true))
+
                 setFetchProjects(false)
             })
             .catch((error)=>{
@@ -51,52 +52,53 @@ export default function ProjectSelectBtn({setProjectID,refetch, idx}){
 
     return (
         <>
-            <ButtonGroup ref={anchorRef} >
-                <button className='btn icon-btn' id='select-btn' onClick={handleToggle}>
-                    <SortIcon />
-                    {`${options[selectedIndex].name}`}
-                </button>
-                <button className='btn icon-btn select-arrow-btn' onClick={handleToggle} >
-                    <ArrowDropDownIcon />
-                </button>
-            </ButtonGroup>
-
-            <Popper
-                sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
-                open={open}
-                anchorEl={anchorRef.current}
-                placement='bottom'
-                role={undefined}
-                transition
-                disablePortal
-            >
-                {({ TransitionProps, placement }) => (
-                    <Grow
-                        {...TransitionProps}
-                        style={{
-                            transformOrigin:
-                                placement = 'center top',
-                        }}
+            {options.length === 0 ? <></> :
+                <> 
+                    <ButtonGroup ref={anchorRef}>
+                        <button className='btn icon-btn' id='select-btn' onClick={handleToggle}>
+                            <SortIcon />
+                            {`${options[selectedIndex].name}`}
+                        </button>
+                        <button className='btn icon-btn select-arrow-btn' onClick={handleToggle}>
+                            <ArrowDropDownIcon />
+                        </button>
+                    </ButtonGroup><Popper
+                        sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
+                        open={open}
+                        anchorEl={anchorRef.current}
+                        placement='bottom'
+                        role={undefined}
+                        transition
+                        disablePortal
                     >
-                        <Paper sx={{ backgroundColor: "transparent" }}>
-                            <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList className='select-menu' id="select-menu" autoFocusItem>
-                                    {options.map((option, index) => (
-                                        <MenuItem
-                                            key={option.name}
-                                            className='select-option'
-                                            selected={index === selectedIndex}
-                                            onClick={(event) => handleMenuItemClick(event, index)}
-                                        >
-                                            {option.name}
-                                        </MenuItem>
-                                    ))}
-                                </MenuList>
-                            </ClickAwayListener>
-                        </Paper>
-                    </Grow>
-                )}
-            </Popper>
+                            {({ TransitionProps, placement }) => (
+                                <Grow
+                                    {...TransitionProps}
+                                    style={{
+                                        transformOrigin: placement = 'center top',
+                                    }}
+                                >
+                                    <Paper sx={{ backgroundColor: "transparent" }}>
+                                        <ClickAwayListener onClickAway={handleClose}>
+                                            <MenuList className='select-menu' id="select-menu" autoFocusItem>
+                                                {options.map((option, index) => (
+                                                    <MenuItem
+                                                        key={option.name}
+                                                        className='select-option'
+                                                        selected={index === selectedIndex}
+                                                        onClick={(event) => handleMenuItemClick(event, index)}
+                                                    >
+                                                        {option.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </MenuList>
+                                        </ClickAwayListener>
+                                    </Paper>
+                                </Grow>
+                            )}
+                        </Popper> 
+                </>
+            }
         </>
     );
 

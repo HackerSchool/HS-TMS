@@ -163,7 +163,7 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
                     },
                     width: 680,
                     height:450,
-                    margin: {t: 60, b: 30, l: 30, r: 30},
+                    margin: {t: 60, b: 50, l: 50, r: 50},
                     autosize: false,
                     plot_bgcolor: "#333333",
                     paper_bgcolor: "#333333",

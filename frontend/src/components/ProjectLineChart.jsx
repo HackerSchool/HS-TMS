@@ -11,6 +11,7 @@ import ProjectSelectBtn from "./ProjectSelectBtn";
 
 function ProjectLineChart({title, typeOfYear, disableProjectSelectBtn}) {
     const [fetchTransactions, setFetchTransactions]= useState(true)
+    //Checkar se o ID do projeto é 0 ou não para saber se há projetos ativos
     const [projectID, setProjectID]=useState(0)
     //perguntar
     const refetchTransactions = useCallback(() => setFetchTransactions(true));
