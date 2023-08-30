@@ -6,7 +6,7 @@ const today = new Date().toISOString().slice(0,10);
 const monthAgo = new Date();
 monthAgo.setMonth(monthAgo.getMonth()-1);
 
-function BalanceTimeSeries({title, typeOfYear, disableRange}){
+function BalanceTimeSeries({title, typeOfYear, disableRange, inDashboard}){
     const [fetchTransactions, setFetchTransactions] = useState(true)
     const [dates, setDates] = useState([])
     const [balanceVal, setBalanceVal]=useState([])
@@ -94,11 +94,6 @@ function BalanceTimeSeries({title, typeOfYear, disableRange}){
       }
     })
     return (
-    <div className="chart-box">
-        <div className="chart-header">
-            <div className="chartTitle">{title}</div>
-        </div>
-        <div className="chart">
           <Plot
             data={[
               {
@@ -125,18 +120,16 @@ function BalanceTimeSeries({title, typeOfYear, disableRange}){
               },
               xaxis: xaxisconfig,
               width: 680,
-              height:450,
-              margin: {t: 60, b:20, l: 50, r: 50},
+              height:inDashboard ? 350 : 450,
+              margin: {t: inDashboard ? 20 : 60, b:20, l: inDashboard ? 40 : 50, r: inDashboard ? 40 : 50},
               autosize: false,
-              plot_bgcolor: "#333333",
-              paper_bgcolor: "#333333",
+              plot_bgcolor: inDashboard ? "#252525":"#333333",
+              paper_bgcolor: inDashboard ? "#252525":"#333333",
               font: {
                   color: "#ffffff"
               },
             }}
           />
-        </div>
-    </div>
     );
 }
 

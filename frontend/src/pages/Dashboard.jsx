@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import '../styles/Dashboard.css'
-import chart from '../assets/chart.png'
+import BalanceTimeSeries from '../components/BalanceTimeSeries';
 import axios_instance from '../Axios';
 import { showErrorMsg, showSuccessMsg } from "../Alerts"
 import DashboardCard from '../components/DashboardCard';
@@ -275,7 +275,9 @@ function DashboardPage() {
                         <h3 className='dashboard-item-title'>Balance over the last 30 days</h3>
                         <div className="dashboard-item-content">
                             <div className="dashboard-item-content-container">
-                                <img src={chart} alt="Balance chart" style={{ maxHeight: "95%" }} />
+                                <BalanceTimeSeries 
+                                    disableRange={true}
+                                    inDashboard={true}/>
                             </div>
                         </div>
                     </div>
