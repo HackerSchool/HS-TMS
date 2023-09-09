@@ -247,7 +247,6 @@ function DashboardPage() {
                                     {remindersLoading &&
                                         <CircularProgress
                                             className='loading-circle large'
-                                            sx={{ alignSelf: "center", m: "auto" }}
                                         />}
 
                                     {!remindersLoading && (reminders.length === 0 ? "No reminders found" :
