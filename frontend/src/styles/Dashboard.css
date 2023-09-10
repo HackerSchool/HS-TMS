@@ -186,6 +186,13 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.reminders-container:has(.reminder-container) {
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .reminder-container {
