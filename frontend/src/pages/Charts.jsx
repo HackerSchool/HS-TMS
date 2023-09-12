@@ -5,6 +5,7 @@ import MonthHistogram from '../components/MonthHistogram';
 import TransactionsSortButton from '../components/TypeOfYearBtn';
 import ProjectLineChart from '../components/ProjectLineChart';
 import BalanceTimeSeries from '../components/BalanceTimeSeries';
+import StackedBarChart from '../components/StackedBarChart';
 //time series da evolução do balance
 //gráfico de earnings com a data real em vez de ser por mês?
 //Talvez fazer comparação dos gastos dos projetos com os gastos médios de todos os projetos?
@@ -44,7 +45,7 @@ function ChartsPage() {
                             <BalanceTimeSeries title="Balance" disableRange={false} inDashboard={false}/>
                         </div>
                     </div>                    
-                    <ProjectLineChart title="Expenses"/>
+                    <StackedBarChart title="Transactions Distribution"/>
                     <ProjectLineChart title="Project Transactions 1"/>
                     <ProjectLineChart title="Project Transactions 2"/>
                     <ProjectLineChart title="Project Transactions 3"/>
