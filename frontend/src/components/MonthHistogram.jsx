@@ -41,13 +41,12 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
                     //If there are no transactions, 2023 is chosen as default year
                     return ["2023"]
                 } else {
-                    //If typeOfYear is civic then the first year is automatically the first year seen. If typeOfYear is academic we need to check if the month is lesser than 9 (september): if it is the first academic year is firstYear-1/firstYear.
-                    //if it isn't the first academic year is firstYear/firstYear+1 (we only return the first year of the academic year). The same check is done for lastYear.
+                    //If typeOfYear is civic then the first year is automatically the first year seen. If typeOfYear is academic we need to check if the month is lesser than 9 (september): if it is the first, academic year is firstYear-1/firstYear.
+                    //if it isn't the first academic year, is firstYear/firstYear+1 (we only return the first year of the academic year). The same check is done for lastYear.
                     const firstYear= typeOfYear==="civic" ? parseInt(transactions[transactions.length-1].date.substring(0,4)) : 
                         parseInt(transactions[transactions.length-1].date.substring(5,7)) < 9 ? parseInt(transactions[transactions.length-1].date.substring(0,4))-1 : parseInt(transactions[transactions.length-1].date.substring(0,4));
                     const lastYear=typeOfYear==="civic" ? parseInt(transactions[0].date.substring(0,4)) : 
                         parseInt(transactions[0].date.substring(5,7)) < 9 ? parseInt(transactions[0].date.substring(0,4))-1 : parseInt(transactions[0].date.substring(0,4));
-                    console.log(firstYear, lastYear)
                     return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
                 }
             })
@@ -59,7 +58,7 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
 
     useEffect(() => {
         if(fetchTransactions){
-            const months= typeOfYear=== "civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
+            const months = typeOfYear=== "civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
             const years_promise = fetchYears();
             Promise.all([years_promise])
                 .then((result)=> {
@@ -128,6 +127,7 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
                     console.error(error)
                 })
     }}, [fetchTransactions]);
+    
     return (
         <div className="chart-box">
             <div className="chartTitle">{title}</div>
@@ -179,7 +179,7 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
                             return {
                                 method:"restyle",
                                 args:["visible", visibleArray],
-                                label: typeOfYear==="civic"? year : [String(year), "/", String(year+1)].join("")
+                                label: typeOfYear==="civic" ? year : [String(year), "/", String(year+1)].join("")
                             }
                         }),
                         type:"dropdown",

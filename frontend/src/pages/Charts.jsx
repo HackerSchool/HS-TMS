@@ -45,7 +45,7 @@ function ChartsPage() {
                             <BalanceTimeSeries title="Balance" disableRange={false} inDashboard={false}/>
                         </div>
                     </div>                    
-                    <StackedBarChart title="Transactions Distribution"/>
+                    <StackedBarChart title="Transactions Distribution" typeOfYear={typeOfYear} fetchTransactions={fetchTransactions} setFetchTransactions={setFetchTransactions}/>
                     <ProjectLineChart title="Project Transactions 1"/>
                     <ProjectLineChart title="Project Transactions 2"/>
                     <ProjectLineChart title="Project Transactions 3"/>
