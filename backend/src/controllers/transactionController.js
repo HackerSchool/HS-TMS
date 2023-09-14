@@ -101,6 +101,7 @@ async function getAllTransactions(req, res) {
 		hasNif,
 		hasFile,
 		projects,
+		balanceBy,
 		orderBy,
 		order,
 		limit
@@ -118,6 +119,7 @@ async function getAllTransactions(req, res) {
 			hasNif && JSON.parse(hasNif),
 			hasFile && JSON.parse(hasFile),
 			projects && JSON.parse(projects),
+			balanceBy,
 			orderBy,
 			order,
 			limit
