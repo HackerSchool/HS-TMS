@@ -102,8 +102,10 @@ class Transaction {
 			)
 		).rows[0];
 
-		res.date = dateUtils.convertToLocalTimezone(res.date);
-		res.value = parseFloat(res.value);
+        if (res) {
+            res.date = dateUtils.convertToLocalTimezone(res.date);
+            res.value = parseFloat(res.value);
+        }
 		return res;
 	}
 

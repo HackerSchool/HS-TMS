@@ -6,7 +6,32 @@ async function createTransaction(req, res) {
 	const pool = req.pool;
 	const { date, description, value, hasNif, projects } = req.body;
 
+    let invalid = false;
+
+    if (date === undefined || typeof date !== 'string' || !date.match(/^\d{4}-\d{2}-\d{2}$/g))
+        invalid = true;
+
+    if (value === undefined || typeof value !== 'number') invalid = true;
+
+    if (hasNif === undefined || typeof hasNif !== 'boolean') invalid = true;
+
+    if (description !== undefined && typeof description !== 'string') invalid = true;
+
+    if (projects !== undefined && (
+        !Array.isArray(projects) || !projects.every(v => parseFloat(v) % 1 === 0)
+    )) invalid = true;
+
+    if (invalid)
+        return res.status(400).send("Invalid params");
+
+
 	if (req.files && Object.keys(req.files).length !== 0) {
+        const uploadedFile = req.files.receipt;
+
+        // Assure receipt file type is pdf
+        if (uploadedFile.mimetype !== "application/pdf")
+            return res.status(400).send("Invalid params")
+
 		const transaction = await Transaction.createOne(
 			pool,
 			date,
@@ -16,12 +41,12 @@ async function createTransaction(req, res) {
 			hasNif,
 			projects
 		);
-		const uploadedFile = req.files.receipt;
 
 		uploadedFile.mv(
 			fileUtils.generateTransactionFilePath(transaction.id),
-			function (err) {
+			async function (err) {
 				if (err) {
+					await Transaction.deleteOne(pool, transaction.id);
 					res.status(500).send("File upload failed");
 				} else res.status(201).send(transaction);
 			}
@@ -45,13 +70,24 @@ async function getTransaction(req, res) {
 	const pool = req.pool;
 	const { id } = req.params;
 
-	res.status(200).send(await Transaction.getOne(pool, id));
+    if (parseFloat(id) % 1 !== 0)
+        return res.status(400).send("Invalid params");
+
+    const transaction = await Transaction.getOne(pool, parseInt(id));
+
+    if (transaction === undefined)
+        return res.status(404).send("Transaction not found");
+
+	res.status(200).send(transaction);
 }
 
 async function downloadTransaction(req, res) {
 	const { id } = req.params;
 
-	res.download(fileUtils.generateTransactionFilePath(id), function (err) {
+    if (parseFloat(id) % 1 !== 0)
+        return res.status(400).send("Invalid params");
+
+	res.download(fileUtils.generateTransactionFilePath(parseInt(id)), function (err) {
 		if (err) {
 			res.status(404).end();
 		}
@@ -63,25 +99,53 @@ async function updateTransaction(req, res) {
 	const { id } = req.params;
 	const { date, description, value, hasFile, hasNif, projects } = req.body;
 
-	res.status(200).send(
-		await Transaction.updateOne(
-			pool,
-			id,
-			date,
-			description,
-			value,
-			hasFile,
-			hasNif,
-			projects
-		)
-	);
+    let invalid = false;
+
+    if (date === undefined || typeof date !== 'string' || !date.match(/^\d{4}-\d{2}-\d{2}$/g))
+        invalid = true;
+
+    if (value === undefined || typeof value !== 'number') invalid = true;
+
+    if (hasNif === undefined || typeof hasNif !== 'boolean') invalid = true;
+
+    if (hasFile === undefined || typeof hasFile !== 'boolean') invalid = true;
+
+    if (description !== undefined && typeof description !== 'string') invalid = true;
+
+    if (projects !== undefined && (
+        !Array.isArray(projects) || !projects.every(v => parseFloat(v) % 1 === 0)
+    )) invalid = true;
+
+    if (parseFloat(id) % 1 !== 0) invalid = true;
+
+    if (invalid)
+        return res.status(400).send("Invalid params");
+
+    const transaction = await Transaction.updateOne(
+        pool,
+        parseInt(id),
+        date,
+        description,
+        value,
+        hasFile,
+        hasNif,
+        projects
+    );
+
+    if (transaction === undefined)
+        return res.status(404).send("Transaction not found");
+
+	res.status(200).send(transaction);
 }
 
 async function deleteTransaction(req, res) {
 	const pool = req.pool;
 	const { id } = req.params;
 
-	await Transaction.deleteOne(pool, id);
+    if (parseFloat(id) % 1 !== 0)
+        return res.status(400).send("Invalid params");
+
+	await Transaction.deleteOne(pool, parseInt(id));
 
 	fs.unlink(fileUtils.generateTransactionFilePath(id), (err) => {});
 
@@ -106,6 +170,31 @@ async function getAllTransactions(req, res) {
 		order,
 		limit
 	} = req.query;
+
+    let invalid = false;
+
+    // FIXME: dates
+
+    if (initialValue !== undefined && isNaN(parseFloat(initialValue))) invalid = true;
+    if (finalValue !== undefined && isNaN(parseFloat(finalValue))) invalid = true;
+
+    if (hasNif !== undefined && hasNif !== 'true' && hasNif !== 'false') invalid = true;
+    if (hasFile !== undefined && hasFile !== 'true' && hasFile !== 'false') invalid = true;
+
+    if (projects !== undefined && (
+        !Array.isArray(projects) || !projects.every(v => parseFloat(v) % 1 === 0)
+    )) invalid = true;
+
+    if (balanceBy !== undefined && parseFloat(balanceBy) % 1 !== 0) invalid = true;
+
+    // HELP: faz sentido checkar aqui os hardcoded values para orders? 
+    if (orderBy !== undefined && orderBy === "") invalid = true;
+    if (order !== undefined && order === "") invalid = true;
+
+    if (limit !== undefined && parseFloat(limit) % 1 !== 0) invalid = true;
+
+    if (invalid)
+        return res.status(400).send("Invalid params");
 
 	res.status(200).send(
 		await Transaction.getAll(

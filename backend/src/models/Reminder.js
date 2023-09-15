@@ -32,7 +32,7 @@ class Reminder {
 			await pool.query(`SELECT * FROM reminders WHERE id = $1::integer`, [id])
 		).rows[0];
 
-		res.date = dateUtils.convertToLocalTimezone(res.date);
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
 		return res;
 	}
 
@@ -59,8 +59,8 @@ class Reminder {
 				[id, title, description, date]
 			)
 		).rows[0];
-
-		res.date = dateUtils.convertToLocalTimezone(res.date);
+        
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
 		return res;
 	}
 
