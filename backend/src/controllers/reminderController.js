@@ -4,6 +4,7 @@ async function createReminder(req, res) {
 	const pool = req.pool;
 	const { title, description, date } = req.body;
 
+    // input validation
     if (title === undefined || typeof title !== 'string' || title === "" ||
         date === undefined || typeof date !== 'string' ||
         !date.match(/^\d{4}-\d{2}-\d{2}$/g) ||
@@ -17,7 +18,8 @@ async function getReminder(req, res) {
 	const pool = req.pool;
 	const { id } = req.params;
 
-    if (parseFloat(id) % 1 !== 0) // assure id is an integer
+    // input validation
+    if (!Number.isInteger(parseFloat(id))) // assure id is an integer
         return res.status(400).send("Invalid params");
 
     const reminder = await Reminder.getOne(pool, parseInt(id));
@@ -33,11 +35,12 @@ async function updateReminder(req, res) {
 	const { id } = req.params;
 	const { title, description, date } = req.body;
 
+    // input validation
     if (title === undefined || typeof title !== 'string' || title === "" ||
         date === undefined || typeof date !== 'string' ||
         !date.match(/^\d{4}-\d{2}-\d{2}$/g) ||
         (description !== undefined && typeof description !== 'string') ||
-        parseFloat(id) % 1 !== 0)
+        !Number.isInteger(parseFloat(id)))
         return res.status(400).send("Invalid params");
 
     const reminder = await Reminder.updateOne(pool, parseInt(id), title, description, date);
@@ -52,10 +55,14 @@ async function deleteReminder(req, res) {
 	const pool = req.pool;
 	const { id } = req.params;
 
-    if (parseFloat(id) % 1 !== 0)
+    // input validation
+    if (!Number.isInteger(parseFloat(id)))
         return res.status(400).send("Invalid params");
 
-	await Reminder.deleteOne(pool, parseInt(id));
+	const deletedReminder = await Reminder.deleteOne(pool, parseInt(id));
+
+    if (deletedReminder === undefined)
+        return res.status(404).send("Reminder not found");
 
 	res.status(204).end();
 }

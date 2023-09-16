@@ -64,7 +64,7 @@ function NewUserBtn({ refetch }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
-        if (!formData.username.match(/ist[0-9]+/g)) {
+        if (!formData.username.match(/^ist[0-9]+$/g)) {
             showErrorMsg('The username has to be a "Técnico ID", that is, an expression like "ist123456"',
                         { anchorOrigin: { horizontal: "center", vertical: "top" } });
             return;

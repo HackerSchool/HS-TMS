@@ -84,16 +84,17 @@ class Project {
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {integer} id
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		await pool.query(
+		return (await pool.query(
 			`
 		DELETE FROM projects
-		WHERE id = $1::integer;
+		WHERE id = $1::integer
+        RETURNING *;
 		`,
 			[id]
-		);
+		)).rows[0];
 	}
 
 	/**
