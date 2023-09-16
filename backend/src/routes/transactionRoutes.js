@@ -5,8 +5,9 @@ const { asyncHandler } = require("../middleware/error");
 const router = express.Router();
 
 router.get("/", asyncHandler(transactionController.getAllTransactions));
+router.get("/report", asyncHandler(transactionController.generateReport));
 router.get("/:id", asyncHandler(transactionController.getTransaction));
-router.get("/download/:id", asyncHandler(transactionController.downloadTransaction));
+router.get("/download/:id", asyncHandler(transactionController.downloadReceipt));
 router.post("/", asyncHandler(transactionController.createTransaction));
 router.put("/:id", asyncHandler(transactionController.updateTransaction));
 router.delete("/:id", asyncHandler(transactionController.deleteTransaction));

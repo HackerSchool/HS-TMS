@@ -18,14 +18,11 @@ async function createTransaction(req, res) {
 		);
 		const uploadedFile = req.files.receipt;
 
-		uploadedFile.mv(
-			fileUtils.generateTransactionFilePath(transaction.id),
-			function (err) {
-				if (err) {
-					res.status(500).send("File upload failed");
-				} else res.status(201).send(transaction);
-			}
-		);
+		uploadedFile.mv(fileUtils.generateReceiptPath(transaction.id), function (err) {
+			if (err) {
+				res.status(500).send("File upload failed");
+			} else res.status(201).send(transaction);
+		});
 	} else {
 		res.status(201).send(
 			await Transaction.createOne(
@@ -48,10 +45,10 @@ async function getTransaction(req, res) {
 	res.status(200).send(await Transaction.getOne(pool, id));
 }
 
-async function downloadTransaction(req, res) {
+async function downloadReceipt(req, res) {
 	const { id } = req.params;
 
-	res.download(fileUtils.generateTransactionFilePath(id), function (err) {
+	res.download(fileUtils.generateReceiptPath(id), function (err) {
 		if (err) {
 			res.status(404).end();
 		}
@@ -83,7 +80,7 @@ async function deleteTransaction(req, res) {
 
 	await Transaction.deleteOne(pool, id);
 
-	fs.unlink(fileUtils.generateTransactionFilePath(id), (err) => {});
+	fs.unlink(fileUtils.generateReceiptPath(id), (err) => {});
 
 	res.status(204).end();
 }
@@ -127,11 +124,65 @@ async function getAllTransactions(req, res) {
 	);
 }
 
+async function generateReport(req, res) {
+	const pool = req.pool;
+
+	const {
+		initialDate,
+		finalDate,
+		initialMonth,
+		finalMonth,
+		initialValue,
+		finalValue,
+		hasNif,
+		hasFile,
+		projects,
+		balanceBy,
+		orderBy,
+		order,
+		limit
+	} = req.query;
+
+	const transactions = await Transaction.getAll(
+		pool,
+		initialDate,
+		finalDate,
+		initialMonth,
+		finalMonth,
+		initialValue && parseFloat(initialValue),
+		finalValue && parseFloat(finalValue),
+		hasNif && JSON.parse(hasNif),
+		hasFile && JSON.parse(hasFile),
+		projects && JSON.parse(projects),
+		balanceBy,
+		orderBy,
+		order,
+		limit
+	);
+
+	// Generating an empty report
+	// Replace with a function that generates the actual report
+	const reportPath = fileUtils.generateReportPath();
+
+	fs.writeFile(reportPath, "", (err) => {
+		if (err) {
+			return res.status(500).send("Report generation failed");
+		}
+	});
+
+	res.download(reportPath, function (err) {
+		if (err) {
+			res.status(500).send("Report download failed");
+		}
+	});
+}
+
 module.exports = {
 	createTransaction,
 	getTransaction,
-	downloadTransaction,
+	downloadReceipt,
 	updateTransaction,
 	deleteTransaction,
-	getAllTransactions
+	getAllTransactions,
+	generateReport
 };
