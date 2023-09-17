@@ -1,4 +1,5 @@
 const Reminder = require("../models/Reminder");
+const { isValidDate } = require("../utils/dateUtils")
 
 async function createReminder(req, res) {
 	const pool = req.pool;
@@ -6,8 +7,7 @@ async function createReminder(req, res) {
 
     // input validation
     if (title === undefined || typeof title !== 'string' || title === "" ||
-        date === undefined || typeof date !== 'string' ||
-        !date.match(/^\d{4}-\d{2}-\d{2}$/g) ||
+        !isValidDate(date) ||
         (description !== undefined && typeof description !== 'string'))
         return res.status(400).send("Invalid params");
 
@@ -37,8 +37,7 @@ async function updateReminder(req, res) {
 
     // input validation
     if (title === undefined || typeof title !== 'string' || title === "" ||
-        date === undefined || typeof date !== 'string' ||
-        !date.match(/^\d{4}-\d{2}-\d{2}$/g) ||
+        !isValidDate(date) ||
         (description !== undefined && typeof description !== 'string') ||
         !Number.isInteger(parseFloat(id)))
         return res.status(400).send("Invalid params");
