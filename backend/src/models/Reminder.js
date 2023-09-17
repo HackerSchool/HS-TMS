@@ -32,7 +32,7 @@ class Reminder {
 			await pool.query(`SELECT * FROM reminders WHERE id = $1::integer`, [id])
 		).rows[0];
 
-		res.date = dateUtils.convertToLocalTimezone(res.date);
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
 		return res;
 	}
 
@@ -59,8 +59,8 @@ class Reminder {
 				[id, title, description, date]
 			)
 		).rows[0];
-
-		res.date = dateUtils.convertToLocalTimezone(res.date);
+        
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
 		return res;
 	}
 
@@ -68,16 +68,17 @@ class Reminder {
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {integer} id
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		await pool.query(
+		return (await pool.query(
 			`
 		DELETE FROM reminders
-		WHERE id = $1::integer;
-	`,
+		WHERE id = $1::integer
+        RETURNING *;
+	    `,
 			[id]
-		);
+		)).rows[0];
 	}
 
 	/**

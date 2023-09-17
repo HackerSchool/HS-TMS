@@ -40,7 +40,7 @@ class Transaction {
 				)
 			).rows[0].id;
 
-			await Promise.all(
+			if (projects) await Promise.all(
 				projects.map(async (projectId) => {
 					await client.query(
 						`INSERT INTO transaction_project (
@@ -102,8 +102,10 @@ class Transaction {
 			)
 		).rows[0];
 
-		res.date = dateUtils.convertToLocalTimezone(res.date);
-		res.value = parseFloat(res.value);
+        if (res) {
+            res.date = dateUtils.convertToLocalTimezone(res.date);
+            res.value = parseFloat(res.value);
+        }
 		return res;
 	}
 
@@ -149,7 +151,7 @@ class Transaction {
 				[id]
 			);
 
-			await Promise.all(
+			if (projects) await Promise.all(
 				projects.map(async (projectId) => {
 					await client.query(
 						`
@@ -183,16 +185,17 @@ class Transaction {
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {integer} id
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		await pool.query(
+		return (await pool.query(
 			`
 		DELETE FROM transactions
-		WHERE id = $1::integer;
-	`,
+		WHERE id = $1::integer
+        RETURNING *;
+	    `,
 			[id]
-		);
+		)).rows[0];
 	}
 
 	/**

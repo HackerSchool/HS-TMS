@@ -4,29 +4,25 @@ async function createUser(req, res) {
 	const pool = req.pool;
 	const { username, name } = req.body;
 
+    if (username === undefined || typeof username !== 'string' ||
+        !username.match(/^ist[0-9]+$/g) ||
+        name === undefined || typeof name !== 'string')
+        return res.status(400).send("Invalid params");
+
 	res.status(201).send(await User.createOne(pool, username, name));
-}
-
-async function getUser(req, res) {
-	const pool = req.pool;
-	const { username } = req.params;
-
-	res.status(200).send(await User.getOne(pool, username));
-}
-
-async function updateUser(req, res) {
-	const pool = req.pool;
-	const { username } = req.params;
-	const { active, name, photo } = req.body;
-
-	res.status(200).send(await User.updateOne(pool, username, active, name, photo));
 }
 
 async function deleteUser(req, res) {
 	const pool = req.pool;
 	const { username } = req.params;
 
-	await User.deleteOne(pool, username);
+    if (!username.match(/^ist[0-9]+$/g))
+        return res.status(400).send("Invalid params");
+
+	const deletedUser = await User.deleteOne(pool, username);
+
+    if (deletedUser === undefined)
+        return res.status(404).send("User not found");
 
 	res.status(204).end();
 }
@@ -39,8 +35,6 @@ async function getAllUsers(req, res) {
 
 module.exports = {
 	createUser,
-	getUser,
-	updateUser,
 	deleteUser,
 	getAllUsers
 };

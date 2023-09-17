@@ -117,23 +117,19 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
         // check form requirements
         if (!form.reportValidity()) return;
 
-        const body = new FormData();
-
-        body.append("date", formData.date);
-        body.append("value", formData.isCost ? formData.value * -1 : formData.value);
-        body.append("projects", JSON.stringify(getChosenProjectsIds()));
-        body.append("hasNif", formData.hasNif);
-        body.append("description", formData.description);
-        // the receipt can't be changed so just send back the hasFile flag
-        body.append("hasFile", transaction.has_file)
+        const body = {
+            date: formData.date,
+            value: formData.isCost ? formData.value * -1 : formData.value,
+            projects: getChosenProjectsIds(),
+            hasNif: formData.hasNif,
+            description: formData.description,
+            // the receipt can't be changed so just send back the hasFile flag
+            hasFile: transaction.has_file
+        };
 
         setLoading(true);
 
-        axios_instance.put(`transactions/${transaction.id}`, body, {
-            headers: {
-                'Content-Type': "multipart/form-data"
-            }
-        })
+        axios_instance.put(`transactions/${transaction.id}`, body)
             .then(res => {
                 if (res.status === 200) {
                     showSuccessMsg("Transaction updated successfully");

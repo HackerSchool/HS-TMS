@@ -21,7 +21,7 @@ CREATE TABLE projects (
 CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     "date" DATE NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "value" NUMERIC NOT NULL,
     has_file BOOLEAN NOT NULL,
     has_nif BOOLEAN NOT NULL

@@ -84,16 +84,17 @@ class Project {
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {integer} id
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		await pool.query(
+		return (await pool.query(
 			`
 		DELETE FROM projects
-		WHERE id = $1::integer;
+		WHERE id = $1::integer
+        RETURNING *;
 		`,
 			[id]
-		);
+		)).rows[0];
 	}
 
 	/**
@@ -172,6 +173,27 @@ class Project {
 
 		return (await pool.query(query, queryParams)).rows;
 	}
+
+    /**
+     * @async
+     * @param {pg.pool} pool 
+     * @param {Array<integer>} ids 
+     * @returns {boolean}
+     */
+    async assertAllExist(pool, ids) {
+        const missingIds = (
+            await pool.query(
+                `
+            SELECT unnest($1::int[]) AS project_id
+            FROM unnest($1::int[]) AS project_ids(project_id)
+            WHERE project_id NOT IN (SELECT id FROM projects);
+            `,
+                [ids]
+            )
+        ).rows[0];
+
+        return missingIds === undefined;
+    }
 }
 
 module.exports = new Project();
