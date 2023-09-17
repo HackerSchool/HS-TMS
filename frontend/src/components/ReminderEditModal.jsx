@@ -64,19 +64,15 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
-        const body = new FormData();
-
-        body.append("date", formData.date);
-        body.append("title", formData.title);
-        body.append("description", formData.description);
+        const body = {
+            date: formData.date,
+            title: formData.title,
+            description: formData.description
+        };
 
         setLoading(true);
 
-        axios_instance.put(`reminders/${reminder.id}`, body, {
-            headers: {
-                'Content-Type': "multipart/form-data"
-            }
-        })
+        axios_instance.put(`reminders/${reminder.id}`, body)
             .then(res => {
                 if (res.status === 200) {
                     showSuccessMsg("Reminder updated successfully");

@@ -66,19 +66,15 @@ function NewReminderBtn({ refetch }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
-        const body = new FormData();
-
-        body.append("date", formData.date);
-        body.append("title", formData.title);
-        body.append("description", formData.description);
+        const body = {
+            date: formData.date,
+            title: formData.title,
+            description: formData.description
+        };
 
         setLoading(true);
 
-        axios_instance.post("reminders", body, {
-            headers: {
-                'Content-Type': "multipart/form-data"
-            }
-        })
+        axios_instance.post("reminders", body)
             .then(res => {
                 if (res.status === 201) {
                     showSuccessMsg("Reminder created successfully");

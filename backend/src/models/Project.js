@@ -181,8 +181,18 @@ class Project {
      * @returns {boolean}
      */
     async assertAllExist(pool, ids) {
-        const results = await Promise.all(ids.map(async (id) => await this.getOne(pool, id)));
-        return results.every(project => project !== undefined);
+        const missingIds = (
+            await pool.query(
+                `
+            SELECT unnest($1::int[]) AS project_id
+            FROM unnest($1::int[]) AS project_ids(project_id)
+            WHERE project_id NOT IN (SELECT id FROM projects);
+            `,
+                [ids]
+            )
+        ).rows[0];
+
+        return missingIds === undefined;
     }
 }
 

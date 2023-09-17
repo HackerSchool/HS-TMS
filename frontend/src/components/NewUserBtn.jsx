@@ -70,18 +70,14 @@ function NewUserBtn({ refetch }) {
             return;
         }
 
-        const body = new FormData();
-
-        body.append("name", formData.name);
-        body.append("username", formData.username);
+        const body = {
+            name: formData.name,
+            username: formData.username
+        };
 
         setLoading(true);
 
-        axios_instance.post("users", body, {
-            headers: {
-                'Content-Type': "multipart/form-data"
-            }
-        })
+        axios_instance.post("users", body)
             .then(res => {
                 if (res.status === 201) {
                     showSuccessMsg("User created successfully");
