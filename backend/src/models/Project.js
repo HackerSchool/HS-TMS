@@ -173,6 +173,17 @@ class Project {
 
 		return (await pool.query(query, queryParams)).rows;
 	}
+
+    /**
+     * @async
+     * @param {pg.pool} pool 
+     * @param {Array<integer>} ids 
+     * @returns {boolean}
+     */
+    async assertAllExist(pool, ids) {
+        const results = await Promise.all(ids.map(async (id) => await this.getOne(pool, id)));
+        return results.every(project => project !== undefined);
+    }
 }
 
 module.exports = new Project();

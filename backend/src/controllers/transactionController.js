@@ -1,7 +1,8 @@
 const fs = require("fs");
 const Transaction = require("../models/Transaction");
+const Project = require("../models/Project");
 const fileUtils = require("../utils/fileUtils");
-const { isValidDate } = require("../utils/dateUtils")
+const { isValidDate } = require("../utils/dateUtils");
 
 async function createTransaction(req, res) {
 	const pool = req.pool;
@@ -18,7 +19,9 @@ async function createTransaction(req, res) {
         if (description !== undefined && typeof description !== 'string') throw Error();
     
         if (projects !== undefined && (
-            !Array.isArray(projects) || !projects.every(v => Number.isInteger(parseFloat(v)))
+            !Array.isArray(projects) ||
+            !projects.every(v => Number.isInteger(parseFloat(v))) ||
+            !(await Project.assertAllExist(pool, projects))
         )) throw Error();
     } catch (err) {
         return res.status(400).send("Invalid params");
@@ -117,7 +120,9 @@ async function updateTransaction(req, res) {
         if (description !== undefined && typeof description !== 'string') throw Error();
 
         if (projects !== undefined && (
-            !Array.isArray(projects) || !projects.every(v => Number.isInteger(parseFloat(v)))
+            !Array.isArray(projects) ||
+            !projects.every(v => Number.isInteger(parseFloat(v))) ||
+            !(await Project.assertAllExist(pool, projects))
         )) throw Error();
     } catch (err) {
         return res.status(400).send("Invalid params");
@@ -192,7 +197,8 @@ async function getAllTransactions(req, res) {
     
         if (projects !== undefined && (
             !Array.isArray(JSON.parse(projects)) ||
-            !JSON.parse(projects).every(v => Number.isInteger(parseFloat(v)))
+            !JSON.parse(projects).every(v => Number.isInteger(parseFloat(v))) ||
+            !(await Project.assertAllExist(pool, JSON.parse(projects)))
         )) throw Error();
     
         if (balanceBy !== undefined && !Number.isInteger(parseFloat(balanceBy))) throw Error();
