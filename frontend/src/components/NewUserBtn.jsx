@@ -64,24 +64,20 @@ function NewUserBtn({ refetch }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
-        if (!formData.username.match(/ist[0-9]+/g)) {
+        if (!formData.username.match(/^ist[0-9]+$/g)) {
             showErrorMsg('The username has to be a "Técnico ID", that is, an expression like "ist123456"',
                         { anchorOrigin: { horizontal: "center", vertical: "top" } });
             return;
         }
 
-        const body = new FormData();
-
-        body.append("name", formData.name);
-        body.append("username", formData.username);
+        const body = {
+            name: formData.name,
+            username: formData.username
+        };
 
         setLoading(true);
 
-        axios_instance.post("users", body, {
-            headers: {
-                'Content-Type': "multipart/form-data"
-            }
-        })
+        axios_instance.post("users", body)
             .then(res => {
                 if (res.status === 201) {
                     showSuccessMsg("User created successfully");
