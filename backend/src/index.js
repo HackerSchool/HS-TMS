@@ -26,7 +26,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(require("./middleware/convertBodyToJSON"));
+app.use(require("./middleware/parseMultipartFormData"));
 app.use(require("./middleware/selectPool").selectPool);
 app.use(require("./middleware/error").errorHandler);
 

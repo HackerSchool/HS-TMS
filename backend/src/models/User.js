@@ -56,10 +56,10 @@ class User {
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {string} username
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async deleteOne(pool, username) {
-		await pool.query(`DELETE FROM users WHERE username = $1::text;`, [username]);
+		return (await pool.query(`DELETE FROM users WHERE username = $1::text RETURNING *;`, [username])).rows[0]
 	}
 
 	/**

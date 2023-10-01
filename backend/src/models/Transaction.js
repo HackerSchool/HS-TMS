@@ -13,51 +13,62 @@ class Transaction {
 	 * @returns {Object}
 	 */
 	async createOne(pool, date, description, value, hasFile, hasNif, projects) {
-		const transactionId = (
-			await pool.query(
-				`INSERT INTO transactions (
-            date,
-            description,
-            value,
-            has_file,
-            has_nif
-        )
-        VALUES
-            (
-                $1::date,
-                $2::text,
-                $3::numeric,
-                $4::boolean,
-                $5::boolean
-            )
-		RETURNING *;`,
-				[date, description, value, hasFile, hasNif]
-			)
-		).rows[0].id;
+		const client = await pool.connect();
 
-		await Promise.all(
-			projects.map(async (projectId) => {
-				await pool.query(
-					`INSERT INTO transaction_project (
-                    transaction_id,
-                    project_id
-                )
-                VALUES
-                    (
-                        $1::integer,
-                        $2::integer
-                        
-                    )
-                ON CONFLICT DO NOTHING;
-                `,
-					[transactionId, projectId]
-				);
-			})
-		);
+		try {
+			await client.query("BEGIN");
 
-		await this.#triggerUpdateBalance(pool);
+			const transactionId = (
+				await client.query(
+					`INSERT INTO transactions (
+						date,
+						description,
+						value,
+						has_file,
+						has_nif
+					)
+					VALUES
+						(
+							$1::date,
+							$2::text,
+							$3::numeric,
+							$4::boolean,
+							$5::boolean
+						)
+					RETURNING *;`,
+					[date, description, value, hasFile, hasNif]
+				)
+			).rows[0].id;
 
-		return await this.getOne(pool, transactionId);
+			if (projects) await Promise.all(
+				projects.map(async (projectId) => {
+					await client.query(
+						`INSERT INTO transaction_project (
+							transaction_id,
+							project_id
+						)
+						VALUES
+							(
+								$1::integer,
+								$2::integer
+								
+							)
+						ON CONFLICT DO NOTHING;
+					`,
+						[transactionId, projectId]
+					);
+				})
+			);
+
+			await client.query("COMMIT");
+
+			return await this.getOne(client, transactionId);
+		} catch (error) {
+			await client.query("ROLLBACK");
+			throw error;
+		} finally {
+			client.release();
+		}
 	}
 
 	/**
@@ -75,7 +86,6 @@ class Transaction {
             transactions.date,
             transactions.description,
             transactions.value,
-            transactions.balance,
             transactions.has_file,
             transactions.has_nif,
             string_agg(projects.name, ' / ') AS projects
@@ -92,9 +102,10 @@ class Transaction {
 			)
 		).rows[0];
 
-		res.date = dateUtils.convertToLocalTimezone(res.date);
-		res.value = parseFloat(res.value);
-		res.balance = parseFloat(res.balance);
+        if (res) {
+            res.date = dateUtils.convertToLocalTimezone(res.date);
+            res.value = parseFloat(res.value);
+        }
 		return res;
 	}
 
@@ -111,70 +122,80 @@ class Transaction {
 	 * @returns {Object}
 	 */
 	async updateOne(pool, id, date, description, value, hasFile, hasNif, projects) {
-		await pool.query(
-			`
-        UPDATE transactions 
-        SET 
-            date = $2::date,
-            description = $3::text,
-            value = $4::numeric,
-            has_file = $5::boolean,
-            has_nif = $6::boolean
-        WHERE
-            id = $1::integer;
-        `,
-			[id, date, description, value, hasFile, hasNif]
-		);
+		const client = await pool.connect();
 
-		await pool.query(
-			`
-        DELETE FROM transaction_project 
-        WHERE
-            transaction_id = $1::integer;
-        `,
-			[id]
-		);
+		try {
+			await client.query("BEGIN");
 
-		await Promise.all(
-			projects.map(async (projectId) => {
-				await pool.query(
-					`
-                INSERT INTO transaction_project (
-                    transaction_id,
-                    project_id
-                )
-                VALUES
-                    (
-                        $1::integer,
-                        $2::integer
-                    )
-                ON CONFLICT DO NOTHING;`,
-					[id, projectId]
-				);
-			})
-		);
+			await client.query(
+				`
+			UPDATE transactions 
+			SET 
+				date = $2::date,
+				description = $3::text,
+				value = $4::numeric,
+				has_file = $5::boolean,
+				has_nif = $6::boolean
+			WHERE
+				id = $1::integer;
+			`,
+				[id, date, description, value, hasFile, hasNif]
+			);
 
-		await this.#triggerUpdateBalance(pool);
+			await client.query(
+				`
+			DELETE FROM transaction_project 
+			WHERE
+				transaction_id = $1::integer;
+			`,
+				[id]
+			);
 
-		return await this.getOne(pool, id);
+			if (projects) await Promise.all(
+				projects.map(async (projectId) => {
+					await client.query(
+						`
+					INSERT INTO transaction_project (
+						transaction_id,
+						project_id
+					)
+					VALUES
+						(
+							$1::integer,
+							$2::integer
+						)
+					ON CONFLICT DO NOTHING;`,
+						[id, projectId]
+					);
+				})
+			);
+
+			await client.query("COMMIT");
+
+			return await this.getOne(client, id);
+		} catch (error) {
+			await client.query("ROLLBACK");
+			throw error;
+		} finally {
+			client.release();
+		}
 	}
 
 	/**
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {integer} id
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		await pool.query(
+		return (await pool.query(
 			`
 		DELETE FROM transactions
-		WHERE id = $1::integer;
-	`,
+		WHERE id = $1::integer
+        RETURNING *;
+	    `,
 			[id]
-		);
-
-		await this.#triggerUpdateBalance(pool);
+		)).rows[0];
 	}
 
 	/**
@@ -189,6 +210,7 @@ class Transaction {
 	 * @param {boolean} [hasNif=null]
 	 * @param {boolean} [hasFile=null]
 	 * @param {Array<integer>} [projects=[]]
+	 * @param {integer} [balanceBy=null]
 	 * @param {string} [orderBy="date"]
 	 * @param {string} [order="DESC"]
 	 * @param {integer} [limit=null]
@@ -205,49 +227,61 @@ class Transaction {
 		hasNif = null,
 		hasFile = null,
 		projects = [],
+		balanceBy = null,
 		orderBy = "date",
 		order = "DESC",
 		limit = null
 	) {
 		let query = `
 		SELECT
-			transactions.id,
-			transactions.date,
-			transactions.description,
-			transactions.value,
-			transactions.balance,
-			transactions.has_file,
-			transactions.has_nif,
-			string_agg(projects.name, ' / ') AS projects
+			*
 		FROM
-			transactions
-		LEFT JOIN transaction_project
-			ON transactions.id = transaction_project.transaction_id
-		LEFT JOIN projects
-			ON projects.id = transaction_project.project_id
+			(
+			SELECT
+				transactions.id,
+				transactions.date,
+				transactions.description,
+				transactions.value,
+				SUM(transactions.value) OVER (ORDER BY transactions.date ASC, transactions.id ASC) AS balance,
+				transactions.has_file,
+				transactions.has_nif,
+				string_agg(projects.name, ' / ') AS projects
+			FROM
+				transactions
+			LEFT JOIN transaction_project
+				ON transactions.id = transaction_project.transaction_id
+			LEFT JOIN projects
+				ON projects.id = transaction_project.project_id
+			{ where }
+			GROUP BY transactions.id
+			) AS subquery
 		`;
 
 		let filterConditions = [];
 		let queryParams = [];
 
-		if (initialDate !== null) {
-			filterConditions.push(
-				`transactions.date >= $${queryParams.length + 1}::date`
+		if (balanceBy !== null) {
+			query = query.replace(
+				"{ where }",
+				`WHERE projects.id = $${queryParams.length + 1}::integer`
 			);
+			queryParams.push(balanceBy);
+		} else {
+			query = query.replace("{ where }", "");
+		}
+
+		if (initialDate !== null) {
+			filterConditions.push(`date >= $${queryParams.length + 1}::date`);
 			queryParams.push(initialDate);
 		}
 
 		if (finalDate !== null) {
-			filterConditions.push(
-				`transactions.date <= $${queryParams.length + 1}::date`
-			);
+			filterConditions.push(`date <= $${queryParams.length + 1}::date`);
 			queryParams.push(finalDate);
 		}
 
 		if (initialMonth !== null) {
-			filterConditions.push(
-				`transactions.date >= $${queryParams.length + 1}::date`
-			);
+			filterConditions.push(`date >= $${queryParams.length + 1}::date`);
 			queryParams.push(new Date(initialMonth + "-01"));
 		}
 
@@ -256,51 +290,42 @@ class Transaction {
 			finalMonthDate.setMonth(finalMonthDate.getMonth() + 1);
 			finalMonthDate.setDate(0);
 
-			filterConditions.push(
-				`transactions.date <= $${queryParams.length + 1}::date`
-			);
+			filterConditions.push(`date <= $${queryParams.length + 1}::date`);
 			queryParams.push(finalMonthDate);
 		}
 
 		if (initialValue !== null) {
-			filterConditions.push(
-				`transactions.value >= $${queryParams.length + 1}::numeric`
-			);
+			filterConditions.push(`value >= $${queryParams.length + 1}::numeric`);
 			queryParams.push(initialValue);
 		}
 
 		if (finalValue !== null) {
-			filterConditions.push(
-				`transactions.value <= $${queryParams.length + 1}::numeric`
-			);
+			filterConditions.push(`value <= $${queryParams.length + 1}::numeric`);
 			queryParams.push(finalValue);
 		}
 
 		if (hasNif !== null) {
-			filterConditions.push(
-				`transactions.has_nif = $${queryParams.length + 1}::boolean`
-			);
+			filterConditions.push(`has_nif = $${queryParams.length + 1}::boolean`);
 			queryParams.push(hasNif);
 		}
 
 		if (hasFile !== null) {
-			filterConditions.push(
-				`transactions.has_file = $${queryParams.length + 1}::boolean`
-			);
+			filterConditions.push(`has_file = $${queryParams.length + 1}::boolean`);
 			queryParams.push(hasFile);
+		}
+
+		if (projects !== null && projects.length !== 0) {
+			filterConditions.push(`EXISTS (
+				SELECT 1
+				FROM transaction_project
+				WHERE transaction_project.transaction_id = id
+					AND transaction_project.project_id = ANY($${queryParams.length + 1}::int[])
+			)`);
+			queryParams.push(projects);
 		}
 
 		query +=
 			filterConditions.length > 0 ? ` WHERE ${filterConditions.join(" AND ")}` : "";
-
-		query += " GROUP BY transactions.id";
-
-		if (projects.length !== 0) {
-			query += ` HAVING bool_or(projects.id = ANY($${
-				queryParams.length + 1
-			}::int[]))`;
-			queryParams.push(projects);
-		}
 
 		if (orderBy === "date" && (order === "ASC" || order === "DESC")) {
 			query += ` ORDER BY date ${order}, id ${order}`;
@@ -325,20 +350,6 @@ class Transaction {
 				balance: parseFloat(row.balance)
 			};
 		});
-	}
-
-	/**
-	 * @async
-	 * @param {pg.Pool} pool
-	 * @returns {void}
-	 */
-	async #triggerUpdateBalance(pool) {
-		await pool.query(
-			`
-		UPDATE transactions
-		SET id = id
-	`
-		);
 	}
 }
 
