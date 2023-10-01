@@ -113,7 +113,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
         const body = new FormData();
 
         body.append("date", JSON.stringify(formData.date));
-        body.append("value", JSON.stringify(formData.isCost ? formData.value * -1 : formData.value));
+        body.append("value", JSON.stringify(formData.isCost ? formData.value * -1 : formData.value * 1));
         body.append("projects", JSON.stringify(getChosenProjectsIds()));
         body.append("hasNif", JSON.stringify(formData.hasNif));
         body.append("description", JSON.stringify(formData.description));
