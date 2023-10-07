@@ -3,7 +3,9 @@ import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
 import TransactionTypeBtn from "./TransactionTypeBtn";
 
-const projects = [-1,6,7,8];
+//[-1,6,7,8]
+//[-1,9,10,11]
+const projects = [-1,9,10,11];
 const project_names = ["Projects", "Bank", "HS", "Other"];
 const bars_color = ["#7FA8FD","#FFDC82","#6BBA75","#FF787C"];
 const bar_lines_color = ["#4274C4", "#CEA54E", "#0E9553", "#9F5C5C"];
