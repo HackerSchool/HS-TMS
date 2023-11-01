@@ -210,6 +210,7 @@ hr {
 
 .form-row.last {
     margin-top: 1rem;
+    justify-content: center;
 }
 
 .form-group {

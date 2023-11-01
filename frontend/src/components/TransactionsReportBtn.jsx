@@ -1,33 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { showErrorMsg } from '../Alerts';
-import TuneIcon from '@mui/icons-material/Tune';
-import MultipleSelect from './MultipleSelect';
+import React, { useState, useEffect, useRef } from 'react';
+import axios_instance from '../Axios'
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import Modal from '@mui/material/Modal';
+import MultipleSelect from './MultipleSelect';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckIcon from '@mui/icons-material/Check';
 import Box from '@mui/material/Box';
-import Slide from '@mui/material/Slide';
+import Grow from '@mui/material/Grow';
+import CircularProgress from '@mui/material/CircularProgress';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
-function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
+function TransactionsReportBtn({ params, projectsList }) {
+
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-        setOpen(false);
+        if (loading) return;
+        
+        setOpen(false)
+    };
+
+    function reset() {
+        // In case the URL params have project IDs specified, we need to
+        // translate the IDs to their corresponding names
+        const chosenProjectsIds = JSON.parse(params.get("projects")) ?? [];
+
+        setFormData({
+            initialMonth: params.get("initialMonth") ?? "",
+            finalMonth: params.get("finalMonth") ?? "",
+            initialValue: params.get("initialValue") ?? "",
+            finalValue: params.get("finalValue") ?? "",
+            projects: getChosenProjectsNames(chosenProjectsIds) ?? [],
+            hasNif: params.get("hasNif") ?? "any",
+            hasFile: params.get("hasFile") ?? "any",
+            includeReceipts: false,
+        })
     }
 
-    const defaultFilters = {
-        initialMonth: "",
-        finalMonth: "",
-        initialValue: "",
-        finalValue: "",
-        projects: [],
-        hasNif: "any",
-        hasFile: "any",
-    }
+    // Refs
+    const formRef = useRef();
 
+    // Form state
     const [formData, setFormData] = useState({
         initialMonth: params.get("initialMonth") ?? "",
         finalMonth: params.get("finalMonth") ?? "",
@@ -36,10 +51,13 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         projects: [],
         hasNif: params.get("hasNif") ?? "any",
         hasFile: params.get("hasFile") ?? "any",
+        includeReceipts: false,
     })
 
     // Handle form changes
     function handleChange(e) {
+        if (loading) return;
+
         const name = e.target.name;
         const value = e.target.value;
 
@@ -47,6 +65,17 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
             ...oldFormData,
             [name]: value
         }))
+    }
+
+    const [loading, setLoading] = useState(false);
+
+    function handleIncludeReceiptsChange(newValue) {
+        // so there's always a button selected
+        if (newValue !== null)
+            setFormData((oldFormData) => ({
+                ...oldFormData,
+                includeReceipts: newValue
+            }));
     }
 
     function handleNifChange(newValue) {
@@ -69,18 +98,38 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
 
     function clearFilters(event) {
         event.preventDefault();
-        setFormData(defaultFilters);
+        setFormData(oldFormData => ({
+            ...oldFormData,
+            initialMonth: "",
+            finalMonth: "",
+            initialValue: "",
+            finalValue: "",
+            projects: [],
+            hasNif: "any",
+            hasFile: "any",
+        }));
     }
 
-    function updateFilters(event) {
+    // Create formData and send it to the backend
+    function submitForm(event) {
         // stop all the default form submission behaviour
         event.preventDefault();
+
+        // to remove the focus highlight while this fn is running
+        document.activeElement.blur();
+
+        if (loading) return;
+
+        const form = formRef.current;
+
+        // check form requirements
+        if (!form.reportValidity()) return;
 
         // Check date
         if (formData.initialMonth && formData.finalMonth &&
             (formData.initialMonth > formData.finalMonth)) {
             showErrorMsg("Final month can't precede Initial month",
-                        { anchorOrigin: {horizontal:"right", vertical: "top"} });
+                        { anchorOrigin: {horizontal:"center", vertical: "top"} });
             return;
         }
 
@@ -88,7 +137,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         if (formData.initialValue && formData.finalValue &&
             (parseFloat(formData.initialValue) > parseFloat(formData.finalValue))) {
             showErrorMsg("Max value can't be lower than the Min value",
-                        { anchorOrigin: {horizontal:"right", vertical: "top"} });
+                        { anchorOrigin: {horizontal:"center", vertical: "top"} });
             return;
         }
 
@@ -102,7 +151,9 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         if (formData.hasFile !== "any") filters.push(["hasFile", formData.hasFile]);
         if (formData.projects.length > 0) filters.push(["projects", `[${getChosenProjectsIds(formData.projects)}]`]);
 
-        let queryParams = {};
+        let queryParams = {
+            includeReceipts: formData.includeReceipts
+        };
 
         for (const el of filters) {
             queryParams = {
@@ -111,32 +162,43 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
             }
         }
 
-        setParams(oldParams => {
-            if (oldParams.get("orderBy") && oldParams.get("order")) {
-                queryParams = {
-                    ...queryParams,
-                    "orderBy": oldParams.get("orderBy"),
-                    "order": oldParams.get("order")
-                }
-            }
+        setLoading(true);
 
-            return queryParams;
-        });
-        refetch();
-        setOpen(false);
+        axios_instance.get("transactions/report", {
+            params: queryParams,
+            responseType: 'blob',
+        })
+            .then(res => {
+                if (res.status === 200) return res.data;
+                else throw new Error();
+            })
+            .then(data => {
+                // create file link in browser's memory
+                const href = URL.createObjectURL(data);
+
+                const link = document.createElement("a");
+                link.href = href;
+                link.setAttribute('download', `report.pdf`)
+                link.style.display = "none";
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                URL.revokeObjectURL(href)
+            })
+            .catch(err => {
+                let msg = "Couldn't generate report"
+                if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
+            })
+            .finally(() => {
+                setLoading(false);
+                setOpen(false);
+            });
+
     }
-
-    // In case the URL params have project IDs specified, we need to translate
-    // the IDs to their corresponding names
-    useEffect(() => {
-        const chosenProjectsIds = JSON.parse(params.get("projects")) ?? [];
-        if (chosenProjectsIds.length > 0) {
-            setFormData((oldFormData) => ({
-                ...oldFormData,
-                projects: getChosenProjectsNames(chosenProjectsIds) ?? []
-            }))
-        }
-    }, [projectsList]);
 
     function getChosenProjectsNames(chosenProjectsIds) {
         if (projectsList.length > 0)
@@ -162,33 +224,66 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         }));
     }
 
+    // Reset form data everytime the modal is opened, to sync with the current
+    // filters used
+    useEffect(() => {
+        if (open) reset();
+
+    }, [open, projectsList])
 
     return (
         <>
-            <button className="btn icon-btn" id='transactions-filter-btn' onClick={handleOpen} >
-                <TuneIcon />
-                Filter
+            <button className='btn icon-btn' id='generate-report-btn' onClick={handleOpen}>
+                    <SummarizeIcon />
+                    Report
             </button>
 
             <Modal
-                className="modal"
-                id="transactions-filter-modal"
+                className="modal transaction-modal"
+                id="generate-report-modal"
                 open={open}
                 disableRestoreFocus
                 onClose={(e, reason) => handleClose(reason)}
                 closeAfterTransition 
                 slotProps={{ backdrop: { timeout: 500 } }}
             >
-                <Slide in={open} direction='left' >
-                <Box className="box filters-box" >
-                <form id='transactions-filter-form' onSubmit={updateFilters}>
+                <Grow in={open} easing={{ exit: "ease-in" }}>
+                <Box className="box transaction-box">
+                <form encType='multipart/form-data' ref={formRef} id='generate-report-form' onSubmit={submitForm}>
 
                     <div className='form-header'>
-                        <ArrowBackIcon className='modal-close-btn' onClick={handleClose} />
-                        <h1>Filters</h1>
+                        <CloseIcon className='modal-close-btn' onClick={handleClose} />
+                        <h1>Generate Report</h1>
                     </div>
 
                     <div className="form-body">
+                        <div className="generate-report-group">
+
+                        <h2>Generation options</h2>
+                        <div className="form-row">
+                            <div className="form-group" id='transactions-filter-nif-group'>
+                                <label htmlFor="include-receipts">Include receipts?</label>
+                                <ToggleButtonGroup
+                                    value={formData.includeReceipts}
+                                    exclusive
+                                    onChange={(e, value) => handleIncludeReceiptsChange(value)}
+                                    id='transactions-report-include-receipts-buttons'
+                                >
+                                    <ToggleButton className='toggle-button left' value={false}>
+                                        <CloseIcon />
+                                        No
+                                    </ToggleButton>
+                                    <ToggleButton className='toggle-button right' value={true}>
+                                        <CheckIcon />
+                                        Yes
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div className="generate-report-group">
+                        <h2>Applied filters to transactions:</h2>
                         <div className="form-row">
                             <div className="form-group" id='transactions-filter-initial-month-group'>
                                 <label htmlFor="date">Initial month:</label>
@@ -202,9 +297,6 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                                     value={formData.finalMonth} onChange={handleChange} />
                             </div>
 
-                        </div>
-
-                        <div className="form-row">
                             <div className="form-group" id='transactions-filter-initial-value-group'>
                                 <div className="transactions-filter-label-group">
                                     <label htmlFor="value" className='transactions-filter-value-label'>Min value:</label>
@@ -225,8 +317,18 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                                     value={formData.finalValue} onChange={handleChange} />
                             </div>
                         </div>
+                        </div>
 
-                        <div className="form-row">
+                        <div className="form-row" id='generate-report-projects-row'>
+                            <div className="form-group" id='transactions-filter-projects-group'>
+                                <label htmlFor="projects">Projects:</label>
+                                <MultipleSelect
+                                    options={projectsList}
+                                    selectedOptions={formData.projects}
+                                    handleChange={handleProjectsChange}
+                                />
+                            </div>
+
                             <div className="form-group" id='transactions-filter-nif-group'>
                                 <label htmlFor="nif">Has NIF:</label>
                                 <ToggleButtonGroup
@@ -270,35 +372,26 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                                     </ToggleButton>
                                 </ToggleButtonGroup>
                             </div>
-                        </div>
 
-                        <div className="form-row">
-                            <div className="form-group" id='transactions-filter-projects-group'>
-                                <label htmlFor="projects">Projects:</label>
-                                <MultipleSelect
-                                    options={projectsList}
-                                    selectedOptions={formData.projects}
-                                    handleChange={handleProjectsChange}
-                                />
-                            </div>
                         </div>
                     </div>
 
                     <hr />
                     <div className="form-row last">
                         <button className="btn transactions-filter-clear-btn" onClick={clearFilters} >
-                            Clear
+                            Clear filters
                         </button>
-                        <button type='submit' className="btn" id='transactions-filter-save-btn' >
-                            Save
+                        <button type='submit' className={`btn ${loading && "icon-btn"}`} id='create-report-btn' >
+                            {loading && <CircularProgress className='loading-circle' />}
+                            {loading ? "Generating" : "Generate"}
                         </button>
                     </div>
                 </form>
                 </Box>
-                </Slide>
+                </Grow>
             </Modal>
         </>
     );
 }
 
-export default TransactionsFilterBtn;
+export default TransactionsReportBtn;

@@ -5,11 +5,11 @@ import axios_instance from '../Axios';
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import Table, { DownloadIcon } from '../components/TransactionsTable'
 import NewTransactionBtn from '../components/NewTransactionBtn';
+import TransactionsReportBtn from '../components/TransactionsReportBtn';
 import SortButton from '../components/SortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
-import SummarizeIcon from '@mui/icons-material/Summarize';
 
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
@@ -137,10 +137,10 @@ function TransactionsPage() {
                         refetch={refetchTransactions}
                     />
 
-                    <button className='btn icon-btn'>
-                        <SummarizeIcon />
-                        Report
-                    </button>
+                    <TransactionsReportBtn
+                        params={queryParams}
+                        projectsList={projectsList}
+                    />
                 </div>
 
                 <div className="btn-group right">
