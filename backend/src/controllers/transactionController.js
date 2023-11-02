@@ -257,6 +257,8 @@ async function generateReport(req, res) {
 		limit
 	} = req.query;
 
+	// TODO: input validation
+
 	const transactions = await Transaction.getAll(
 		pool,
 		initialDate,

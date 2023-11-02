@@ -87,14 +87,16 @@ class Project {
 	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		return (await pool.query(
-			`
-		DELETE FROM projects
-		WHERE id = $1::integer
-        RETURNING *;
-		`,
-			[id]
-		)).rows[0];
+		return (
+			await pool.query(
+				`
+				DELETE FROM projects
+				WHERE id = $1::integer
+				RETURNING *;
+				`,
+				[id]
+			)
+		).rows[0];
 	}
 
 	/**
@@ -174,26 +176,49 @@ class Project {
 		return (await pool.query(query, queryParams)).rows;
 	}
 
-    /**
-     * @async
-     * @param {pg.pool} pool 
-     * @param {Array<integer>} ids 
-     * @returns {boolean}
-     */
-    async assertAllExist(pool, ids) {
-        const missingIds = (
-            await pool.query(
-                `
+	/**
+	 * @async
+	 * @param {pg.pool} pool
+	 * @param {Array<integer>} ids
+	 * @returns {string}
+	 */
+	async getNamesByIds(pool, ids) {
+		let query = `
+		SELECT
+			string_agg(name, ' / ') AS projects
+		FROM
+			projects
+		`;
+		let queryParams = [];
+
+		if (ids !== null && ids.length !== 0) {
+			query += ` WHERE id = ANY($1::int[])`;
+			queryParams.push(ids);
+		}
+
+		return (await pool.query(query, queryParams)).rows[0].projects;
+	}
+
+	/**
+	 * @async
+	 * @param {pg.pool} pool
+	 * @param {Array<integer>} ids
+	 * @returns {boolean}
+	 */
+	async assertAllExist(pool, ids) {
+		const missingIds = (
+			await pool.query(
+				`
             SELECT unnest($1::int[]) AS project_id
             FROM unnest($1::int[]) AS project_ids(project_id)
             WHERE project_id NOT IN (SELECT id FROM projects);
             `,
-                [ids]
-            )
-        ).rows[0];
+				[ids]
+			)
+		).rows[0];
 
-        return missingIds === undefined;
-    }
+		return missingIds === undefined;
+	}
 }
 
 module.exports = new Project();
