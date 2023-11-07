@@ -103,6 +103,13 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
+        // guarantee description is non-empty
+        if (formData.description.trim() === "") {
+            showErrorMsg("You must provide a non-empty description",
+                        {anchorOrigin: {horizontal: 'center', vertical: 'top' }})
+            return;
+        }
+
         // guarantee the receipt is a pdf
         if (fileRef.current.files[0] && fileRef.current.files[0].type !== "application/pdf") {
             showErrorMsg("Receipt's file type needs to be \"pdf\"",
@@ -266,9 +273,9 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
 
                         <div className="form-row">
                             <div className="form-group transaction-description-group" id='create-transaction-description-group'>
-                                <label htmlFor="description">Description:</label>
+                                <label htmlFor="description">Description: *</label>
                                 <input type="text" name='description' placeholder='Description of the transaction'
-                                    value={formData.description} onChange={handleChange} />
+                                    value={formData.description} onChange={handleChange} required />
                             </div>
                             <div className="form-group transaction-file-group" id='create-transaction-file-group'>
                                 <label htmlFor="file">Receipt:</label>

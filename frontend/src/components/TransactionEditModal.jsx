@@ -117,6 +117,13 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
         // check form requirements
         if (!form.reportValidity()) return;
 
+        // guarantee description is non-empty
+        if (formData.description.trim() === "") {
+            showErrorMsg("You must provide a non-empty description",
+                        {anchorOrigin: {horizontal: 'center', vertical: 'top' }})
+            return;
+        }
+
         const body = {
             date: formData.date,
             value: formData.isCost ? formData.value * -1 : formData.value,
@@ -264,9 +271,9 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
 
                     <div className="form-row">
                         <div className="form-group transaction-description-group" id='edit-transaction-description-group'>
-                            <label htmlFor="description">Description:</label>
+                            <label htmlFor="description">Description: *</label>
                             <input type="text" name='description' placeholder='Description of the transaction'
-                                value={formData.description} onChange={handleChange} />
+                                value={formData.description} onChange={handleChange} required />
                         </div>
                         <div className="form-group transaction-file-group" id='edit-transaction-file-group'>
                             <label htmlFor="file">Receipt:</label>

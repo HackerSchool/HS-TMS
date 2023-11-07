@@ -17,7 +17,9 @@ async function createTransaction(req, res) {
 
 		if (hasNif === undefined || typeof hasNif !== "boolean") throw Error();
 
-		if (description !== undefined && typeof description !== "string") throw Error();
+		if (description === undefined || typeof description !== "string" ||
+            description.trim() === "")
+            throw Error();
 
 		if (
 			projects !== undefined &&
@@ -119,7 +121,9 @@ async function updateTransaction(req, res) {
 
 		if (hasFile === undefined || typeof hasFile !== "boolean") throw Error();
 
-		if (description !== undefined && typeof description !== "string") throw Error();
+		if (description === undefined || typeof description !== "string" ||
+            description.trim() === "")
+            throw Error();
 
 		if (
 			projects !== undefined &&
