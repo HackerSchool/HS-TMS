@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios_instance from '../Axios'
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import Modal from '@mui/material/Modal';
-import MultipleSelect from './MultipleSelect';
+import SelectDropdown from './SelectDropdown';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
@@ -12,7 +12,7 @@ import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 
-function TransactionsReportBtn({ params, projectsList }) {
+function TransactionsReportBtn({ params, projectsList, sortOptions }) {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -36,6 +36,7 @@ function TransactionsReportBtn({ params, projectsList }) {
             hasNif: params.get("hasNif") ?? "any",
             hasFile: params.get("hasFile") ?? "any",
             includeReceipts: false,
+            selectedSortOptionIdx: findSelectedOptionIdx(),
         })
     }
 
@@ -52,7 +53,33 @@ function TransactionsReportBtn({ params, projectsList }) {
         hasNif: params.get("hasNif") ?? "any",
         hasFile: params.get("hasFile") ?? "any",
         includeReceipts: false,
+        selectedSortOptionIdx: findSelectedOptionIdx(),
     })
+
+    function findSelectedOptionIdx(selectedOptionText = null) {
+        let idx = -1;
+        if (selectedOptionText === null) {
+            if (params.get("orderBy") && params.get("order")) {
+                idx = sortOptions.findIndex((option) => option.orderBy === params.get("orderBy") &&
+                    option.order === params.get("order"));
+            }
+        } else {
+            idx = sortOptions.findIndex((option) => option.text === selectedOptionText);
+        }
+        return idx === -1 ? 0 : idx;
+    }
+
+    function handleSortOptionsChange(event) {
+        const value = event.target.value;
+
+        setFormData((oldFormData) => ({
+            ...oldFormData,
+            selectedSortOptionIdx: findSelectedOptionIdx(value)
+        }));
+    }
+
+    // Memoize sort options text to avoid computing them in every re-render
+    const sortOptionsText = useMemo(() => sortOptions.map(opt => opt.text), [sortOptions])
 
     // Handle form changes
     function handleChange(e) {
@@ -150,6 +177,11 @@ function TransactionsReportBtn({ params, projectsList }) {
         if (formData.hasNif !== "any") filters.push(["hasNif", formData.hasNif]);
         if (formData.hasFile !== "any") filters.push(["hasFile", formData.hasFile]);
         if (formData.projects.length > 0) filters.push(["projects", `[${getChosenProjectsIds(formData.projects)}]`]);
+        if (!(sortOptions[formData.selectedSortOptionIdx].orderBy === "date" &&
+                sortOptions[formData.selectedSortOptionIdx].order === "DESC")) {
+            filters.push(["orderBy", sortOptions[formData.selectedSortOptionIdx].orderBy]);
+            filters.push(["order", sortOptions[formData.selectedSortOptionIdx].order]);
+        }
 
         let queryParams = {
             includeReceipts: formData.includeReceipts
@@ -199,6 +231,9 @@ function TransactionsReportBtn({ params, projectsList }) {
             });
 
     }
+
+    // Memoize project names to avoid computing them in every re-render
+    const projectsNames = useMemo(() => projectsList.map(p => p.name), [projectsList])
 
     function getChosenProjectsNames(chosenProjectsIds) {
         if (projectsList.length > 0)
@@ -257,11 +292,115 @@ function TransactionsReportBtn({ params, projectsList }) {
                     </div>
 
                     <div className="form-body">
-                        <div className="generate-report-group">
 
-                        <h2>Generation options</h2>
+                        <div className="generate-report-group">
+                        <h2>Applied filters to transactions</h2>
                         <div className="form-row">
-                            <div className="form-group" id='transactions-filter-nif-group'>
+                            <div className="form-group" id='transactions-report-initial-month-group'>
+                                <label htmlFor="date">Initial month:</label>
+                                <input type="month" name="initialMonth" id="transactions-report-initial-month"
+                                    value={formData.initialMonth} onChange={handleChange} />
+                            </div>
+
+                            <div className="form-group" id='transactions-report-final-month-group'>
+                                <label htmlFor="date">Final month:</label>
+                                <input type="month" name="finalMonth" id="transactions-report-final-month"
+                                    value={formData.finalMonth} onChange={handleChange} />
+                            </div>
+
+                            <div className="form-group" id='transactions-report-initial-value-group'>
+                                <div className="transactions-filter-label-group">
+                                    <label htmlFor="value" className='transactions-filter-value-label'>Min value:</label>
+                                    <span className='value-help'>(?)</span>
+                                </div>
+                                <input className='transactions-filter-value' type="number" name="initialValue"
+                                    placeholder='0' step={0.01} id="transactions-report-initial-value"
+                                    value={formData.initialValue} onChange={handleChange} />
+                            </div>
+
+                            <div className="form-group" id='transactions-report-final-value-group'>
+                                <div className="transactions-filter-label-group">
+                                    <label htmlFor="value" className='transactions-filter-value-label'>Max value:</label>
+                                    <span className='value-help'>(?)</span>
+                                </div>
+                                <input className='transactions-filter-value' type="number" name="finalValue"
+                                    placeholder='0' step={0.01} id="transactions-report-final-value"
+                                    value={formData.finalValue} onChange={handleChange} />
+                            </div>
+                        </div>
+
+                        <div className="form-row" id='generate-report-projects-row'>
+                            <div className="form-group" id='transactions-report-projects-group'>
+                                <label htmlFor="projects">Projects:</label>
+                                <SelectDropdown
+                                    options={projectsNames}
+                                    selectedOptions={formData.projects}
+                                    handleChange={handleProjectsChange}
+                                    nullOption={"None"}
+                                    multiple={true}
+                                />
+                            </div>
+
+                            <div className="form-group" id='transactions-report-nif-group'>
+                                <label htmlFor="nif">Has NIF:</label>
+                                <ToggleButtonGroup
+                                    value={formData.hasNif}
+                                    exclusive
+                                    onChange={(e, value) => handleNifChange(value)}
+                                    id='transactions-report-nif-buttons'
+                                >
+                                    <ToggleButton className='toggle-button left' value={"false"}>
+                                        <CloseIcon />
+                                        No
+                                    </ToggleButton>
+                                    <ToggleButton className='toggle-button' value={"any"}>
+                                        Any
+                                    </ToggleButton>
+                                    <ToggleButton className='toggle-button right' value={"true"}>
+                                        <CheckIcon />
+                                        Yes
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </div>
+
+                            <div className="form-group" id="transactions-report-file-group">
+                                <label htmlFor="file">Has receipt:</label>
+                                <ToggleButtonGroup
+                                    value={formData.hasFile}
+                                    exclusive
+                                    onChange={(e, value) => handleHasFileChange(value)}
+                                    id='transactions-report-nif-buttons'
+                                >
+                                    <ToggleButton className='toggle-button left' value={"false"}>
+                                        <CloseIcon />
+                                        No
+                                    </ToggleButton>
+                                    <ToggleButton className='toggle-button' value={"any"}>
+                                        Any
+                                    </ToggleButton>
+                                    <ToggleButton className='toggle-button right' value={"true"}>
+                                        <CheckIcon />
+                                        Yes
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div className="generate-report-group">
+                        <h2>Generation options</h2>
+                        <div className="form-row" id='generate-report-options-row'>
+
+                            <div className="form-group" id='transactions-report-sort-group'>
+                                <label htmlFor="sort">Sort transactions by:</label>
+                                <SelectDropdown
+                                    options={sortOptionsText}
+                                    selectedOptions={sortOptions[formData.selectedSortOptionIdx].text}
+                                    handleChange={handleSortOptionsChange}
+                                />
+                            </div>
+
+                            <div className="form-group" id='transactions-report-include-receipts-group'>
                                 <label htmlFor="include-receipts">Include receipts?</label>
                                 <ToggleButtonGroup
                                     value={formData.includeReceipts}
@@ -279,100 +418,8 @@ function TransactionsReportBtn({ params, projectsList }) {
                                     </ToggleButton>
                                 </ToggleButtonGroup>
                             </div>
+
                         </div>
-                        </div>
-
-                        <div className="generate-report-group">
-                        <h2>Applied filters to transactions:</h2>
-                        <div className="form-row">
-                            <div className="form-group" id='transactions-filter-initial-month-group'>
-                                <label htmlFor="date">Initial month:</label>
-                                <input type="month" name="initialMonth" id="transactions-filter-initial-month"
-                                    value={formData.initialMonth} onChange={handleChange} />
-                            </div>
-
-                            <div className="form-group" id='transactions-filter-final-month-group'>
-                                <label htmlFor="date">Final month:</label>
-                                <input type="month" name="finalMonth" id="transactions-filter-final-month"
-                                    value={formData.finalMonth} onChange={handleChange} />
-                            </div>
-
-                            <div className="form-group" id='transactions-filter-initial-value-group'>
-                                <div className="transactions-filter-label-group">
-                                    <label htmlFor="value" className='transactions-filter-value-label'>Min value:</label>
-                                    <span className='value-help'>(?)</span>
-                                </div>
-                                <input className='transactions-filter-value' type="number" name="initialValue"
-                                    placeholder='0' step={0.01} id="transactions-filter-initial-value"
-                                    value={formData.initialValue} onChange={handleChange} />
-                            </div>
-
-                            <div className="form-group" id='transactions-filter-final-value-group'>
-                                <div className="transactions-filter-label-group">
-                                    <label htmlFor="value" className='transactions-filter-value-label'>Max value:</label>
-                                    <span className='value-help'>(?)</span>
-                                </div>
-                                <input className='transactions-filter-value' type="number" name="finalValue"
-                                    placeholder='0' step={0.01} id="transactions-filter-final-value"
-                                    value={formData.finalValue} onChange={handleChange} />
-                            </div>
-                        </div>
-                        </div>
-
-                        <div className="form-row" id='generate-report-projects-row'>
-                            <div className="form-group" id='transactions-filter-projects-group'>
-                                <label htmlFor="projects">Projects:</label>
-                                <MultipleSelect
-                                    options={projectsList}
-                                    selectedOptions={formData.projects}
-                                    handleChange={handleProjectsChange}
-                                />
-                            </div>
-
-                            <div className="form-group" id='transactions-filter-nif-group'>
-                                <label htmlFor="nif">Has NIF:</label>
-                                <ToggleButtonGroup
-                                    value={formData.hasNif}
-                                    exclusive
-                                    onChange={(e, value) => handleNifChange(value)}
-                                    id='transactions-filter-nif-buttons'
-                                >
-                                    <ToggleButton className='toggle-button left' value={"false"}>
-                                        <CloseIcon />
-                                        No
-                                    </ToggleButton>
-                                    <ToggleButton className='toggle-button' value={"any"}>
-                                        Any
-                                    </ToggleButton>
-                                    <ToggleButton className='toggle-button right' value={"true"}>
-                                        <CheckIcon />
-                                        Yes
-                                    </ToggleButton>
-                                </ToggleButtonGroup>
-                            </div>
-
-                            <div className="form-group" id="transactions-filter-file-group">
-                                <label htmlFor="file">Has receipt:</label>
-                                <ToggleButtonGroup
-                                    value={formData.hasFile}
-                                    exclusive
-                                    onChange={(e, value) => handleHasFileChange(value)}
-                                    id='transactions-filter-nif-buttons'
-                                >
-                                    <ToggleButton className='toggle-button left' value={"false"}>
-                                        <CloseIcon />
-                                        No
-                                    </ToggleButton>
-                                    <ToggleButton className='toggle-button' value={"any"}>
-                                        Any
-                                    </ToggleButton>
-                                    <ToggleButton className='toggle-button right' value={"true"}>
-                                        <CheckIcon />
-                                        Yes
-                                    </ToggleButton>
-                                </ToggleButtonGroup>
-                            </div>
-
                         </div>
                     </div>
 

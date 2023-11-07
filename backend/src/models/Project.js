@@ -182,7 +182,7 @@ class Project {
 	 * @param {Array<integer>} ids
 	 * @returns {string}
 	 */
-	async getNamesByIds(pool, ids) {
+	async getNamesByIds(pool, ids = null) {
 		let query = `
 		SELECT
 			string_agg(name, ' / ') AS projects

@@ -63,7 +63,7 @@
     width: 11.5rem;
 }
 
-.transaction-modal .value-help {
+:is(.transaction-modal, #transactions-filter-modal) .value-help {
     position: relative;
     display: inline-block;
     color: var(--light-gray);
@@ -72,12 +72,12 @@
     cursor: help;
 }
 
-.transaction-modal .value-help:hover::after, 
-.transaction-modal .value-help:focus::after {
+:is(.transaction-modal, #transactions-filter-modal) .value-help:hover::after, 
+:is(.transaction-modal, #transactions-filter-modal) .value-help:focus::after {
     display: block;
     position: absolute;
     left: -4.75rem;
-    top: 25px;
+    top: -50px;
     width: 9.5rem;
     height: fit-content;
     font-size: 0.8rem;
@@ -107,15 +107,25 @@
 }
 
 /* Transactions report generation modal */
-#generate-report-modal {
-    max-height: 90%;
+.generate-report-group .form-row:not(:last-child) {
+    margin-bottom: 1rem;
 }
 #generate-report-modal h2 {
     font-weight: 300;
     margin-bottom: 1rem;
 }
 #generate-report-projects-row {
-    align-items: center;
+    align-items: flex-start;
+    gap: 3rem;
+}
+
+#transactions-report-projects-group {
+    width: 100%;
+}
+
+#generate-report-options-row {
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 3rem;
 }
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios_instance from '../Axios'
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
-import MultipleSelect from './MultipleSelect';
+import SelectDropdown from './SelectDropdown';
 import { DownloadIcon } from './TransactionsTable';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
@@ -157,6 +157,9 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
 
     }, [open]);
 
+    // Memoize project names to avoid computing them in every re-render
+    const projectsNames = useMemo(() => projectsList.map(p => p.name), [projectsList])
+
     function getChosenProjectsIds() {
         return formData.projects.map((value) => {
             return projectsList.find(el => el.name == value)?.id;
@@ -230,10 +233,12 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                     <div className="form-row">
                         <div className="form-group transaction-projects-group" id='edit-transaction-projects-group'>
                             <label htmlFor="projects">Projects:</label>
-                            <MultipleSelect
-                                options={projectsList}
+                            <SelectDropdown
+                                options={projectsNames}
                                 selectedOptions={formData.projects}
                                 handleChange={handleProjectsChange}
+                                nullOption={"None"}
+                                multiple={true}
                             />
 
 

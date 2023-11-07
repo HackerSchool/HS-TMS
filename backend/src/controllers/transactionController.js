@@ -3,6 +3,7 @@ const Transaction = require("../models/Transaction");
 const Project = require("../models/Project");
 const fileUtils = require("../utils/fileUtils");
 const { isValidDate } = require("../utils/dateUtils");
+const report = require("../modules/report")
 
 async function createTransaction(req, res) {
 	const pool = req.pool;
@@ -241,9 +242,7 @@ async function getAllTransactions(req, res) {
 async function generateReport(req, res) {
 	const pool = req.pool;
 
-	const {
-		initialDate,
-		finalDate,
+	let queryParams = {
 		initialMonth,
 		finalMonth,
 		initialValue,
@@ -251,42 +250,87 @@ async function generateReport(req, res) {
 		hasNif,
 		hasFile,
 		projects,
-		balanceBy,
 		orderBy,
 		order,
-		limit
+        includeReceipts,
 	} = req.query;
 
-	// TODO: input validation
+	// input validation
+	try {
+		if (initialMonth !== undefined && !isValidDate(initialMonth, true)) throw Error();
+		if (finalMonth !== undefined && !isValidDate(finalMonth, true)) throw Error();
+
+		if (initialValue !== undefined && isNaN(parseFloat(initialValue))) throw Error();
+		if (finalValue !== undefined && isNaN(parseFloat(finalValue))) throw Error();
+
+		if (hasNif !== undefined && hasNif !== "true" && hasNif !== "false")
+			throw Error();
+		if (hasFile !== undefined && hasFile !== "true" && hasFile !== "false")
+			throw Error();
+
+		if (
+			projects !== undefined &&
+			(!Array.isArray(JSON.parse(projects)) ||
+				!JSON.parse(projects).every((v) => Number.isInteger(parseFloat(v))) ||
+				!(await Project.assertAllExist(pool, JSON.parse(projects))))
+		)
+			throw Error();
+
+		if (orderBy !== undefined && !(orderBy === "date" || orderBy === "value"))
+			throw Error();
+		if (order !== undefined && !(order === "ASC" || order === "DESC")) throw Error();
+
+        if (includeReceipts !== undefined && includeReceipts !== "true"
+                && includeReceipts !== "false")
+            throw Error()
+	} catch (err) {
+		return res.status(400).send("Invalid params");
+	}
+
+    // Parse the params
+    queryParams = {
+        ...queryParams,
+        includeReceipts: includeReceipts && JSON.parse(includeReceipts),
+		initialValue: initialValue && parseFloat(initialValue),
+		finalValue: finalValue && parseFloat(finalValue),
+		hasNif: hasNif && JSON.parse(hasNif),
+		hasFile: hasFile && JSON.parse(hasFile),
+		projects: projects && JSON.parse(projects),
+    }
 
 	const transactions = await Transaction.getAll(
 		pool,
-		initialDate,
-		finalDate,
-		initialMonth,
-		finalMonth,
-		initialValue && parseFloat(initialValue),
-		finalValue && parseFloat(finalValue),
-		hasNif && JSON.parse(hasNif),
-		hasFile && JSON.parse(hasFile),
-		projects && JSON.parse(projects),
-		balanceBy,
-		orderBy,
-		order,
-		limit
+		undefined,
+		undefined,
+		queryParams.initialMonth,
+		queryParams.finalMonth,
+		queryParams.initialValue,
+		queryParams.finalValue,
+		queryParams.hasNif,
+		queryParams.hasFile,
+		queryParams.projects,
+		undefined,
+		queryParams.orderBy,
+		queryParams.order,
+		undefined
 	);
 
-	// Generating an empty report
-	// Replace with a function that generates the actual report
-	const reportPath = fileUtils.generateReportPath();
+    let pdfsToAttach;
+    if (includeReceipts === "true") {
+        pdfsToAttach = transactions.filter(t => t.has_file)
+                                .map(t => ({
+                                    path: fileUtils.generateReceiptPath(t.id),
+                                    title: `Transaction ${t.id}'s receipt`
+                                }));
+    }
 
-	fs.writeFile(reportPath, "", (err) => {
-		if (err) {
-			return res.status(500).send("Report generation failed");
-		}
-	});
+    // map project id's to their corresponding names to display in the report
+    if (queryParams.projects !== undefined)
+        queryParams.projects = await Project.getNamesByIds(pool, queryParams.projects);
 
-	res.download(reportPath, function (err) {
+    const pathToReport = await report(transactions, queryParams, pdfsToAttach)
+
+	res.download(pathToReport, function (err) {
 		if (err) {
 			res.status(500).send("Report download failed");
 		}

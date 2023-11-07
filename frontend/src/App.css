@@ -322,21 +322,21 @@ input[type="file"] {
 }
 
 /* multiple select */
-.multiple-select svg {
+.select-dropdown svg {
     color: white;
 }
 
-.multiple-select {
+.select-dropdown {
     width: 100%;
 }
 
-.multiple-select .MuiSelect-multiple {
+.select-dropdown .MuiSelect-multiple {
     border-radius: 0.25rem;
     font-family: 'Roboto', sans-serif;
     color: var(--cinza-placeholder);
 }
 
-.multiple-select .MuiOutlinedInput-notchedOutline {
+.select-dropdown .MuiOutlinedInput-notchedOutline {
     border: 1px solid var(--cinza-4);
 }
 
@@ -344,7 +344,7 @@ input[type="file"] {
     border-color: var(--cinza-4) !important;
 }
 
-.multiple-select .MuiChip-root {
+.select-dropdown .MuiChip-root {
     background-color: var(--green);
     color: white;
     height: 1.5rem;

@@ -15,6 +15,12 @@ function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
     const [queryParams, setQueryParams] = useSearchParams();
+    const sortOptions = [
+        {text: 'Newest first', orderBy: 'date', order: 'DESC'},
+        {text: 'Oldest first', orderBy: 'date', order: 'ASC'},
+        {text: 'Value Asc', orderBy: 'value', order: 'ASC'},
+        {text: 'Value Desc', orderBy: 'value', order: 'DESC'}
+    ]
 
     // Transaction Edit Modal
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -140,6 +146,7 @@ function TransactionsPage() {
                     <TransactionsReportBtn
                         params={queryParams}
                         projectsList={projectsList}
+                        sortOptions={sortOptions}
                     />
                 </div>
 
@@ -148,12 +155,7 @@ function TransactionsPage() {
                         params={queryParams}
                         setParams={setQueryParams}
                         refetch={refetchTransactions}
-                        options={[
-                            {text: 'Newest first', orderBy: 'date', order: 'DESC'},
-                            {text: 'Oldest first', orderBy: 'date', order: 'ASC'},
-                            {text: 'Value Asc', orderBy: 'value', order: 'ASC'},
-                            {text: 'Value Desc', orderBy: 'value', order: 'DESC'}
-                        ]}
+                        options={sortOptions}
                     />
 
                     <TransactionsFilterBtn

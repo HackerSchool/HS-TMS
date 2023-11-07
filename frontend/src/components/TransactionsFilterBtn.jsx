@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { showErrorMsg } from '../Alerts';
 import TuneIcon from '@mui/icons-material/Tune';
-import MultipleSelect from './MultipleSelect';
+import SelectDropdown from './SelectDropdown';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -137,6 +137,9 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
             }))
         }
     }, [projectsList]);
+
+    // Memoize project names to avoid computing them in every re-render
+    const projectsNames = useMemo(() => projectsList.map(p => p.name), [projectsList])
 
     function getChosenProjectsNames(chosenProjectsIds) {
         if (projectsList.length > 0)
@@ -275,10 +278,12 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                         <div className="form-row">
                             <div className="form-group" id='transactions-filter-projects-group'>
                                 <label htmlFor="projects">Projects:</label>
-                                <MultipleSelect
-                                    options={projectsList}
+                                <SelectDropdown
+                                    options={projectsNames}
                                     selectedOptions={formData.projects}
                                     handleChange={handleProjectsChange}
+                                    nullOption={"None"}
+                                    multiple={true}
                                 />
                             </div>
                         </div>
