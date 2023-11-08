@@ -216,7 +216,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                         <div className="form-group transaction-value-group" id='edit-transaction-value-group'>
                             <label htmlFor="value">Value: *</label>
                             <div className="value-cost-earning-container">
-                                <input type="number" name="value" placeholder='0' min={0} step={0.01}
+                                <input type="number" name="value" placeholder='0.00' min={0} step={0.01}
                                     className='transaction-value' id="edit-transaction-value" required
                                     value={formData.value} onChange={handleChange} />
                                 <ToggleButtonGroup

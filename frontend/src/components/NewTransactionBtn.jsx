@@ -218,7 +218,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                             <div className="form-group transaction-value-group" id='create-transaction-value-group'>
                                 <label htmlFor="value">Value: *</label>
                                 <div className="value-cost-earning-container">
-                                    <input type="number" name="value" placeholder='0' min={0} step={0.01}
+                                    <input type="number" name="value" placeholder='0.00' min={0} step={0.01}
                                         className='transaction-value' id="create-transaction-value" required
                                         value={formData.value} onChange={handleChange} />
                                     <ToggleButtonGroup

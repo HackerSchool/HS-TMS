@@ -214,7 +214,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                                     <span className='value-help'>(?)</span>
                                 </div>
                                 <input className='transactions-filter-value' type="number" name="initialValue"
-                                    placeholder='0' step={0.01} id="transactions-filter-initial-value"
+                                    placeholder='0.00' step={0.01} id="transactions-filter-initial-value"
                                     value={formData.initialValue} onChange={handleChange} />
                             </div>
 
@@ -224,7 +224,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                                     <span className='value-help'>(?)</span>
                                 </div>
                                 <input className='transactions-filter-value' type="number" name="finalValue"
-                                    placeholder='0' step={0.01} id="transactions-filter-final-value"
+                                    placeholder='0.00' step={0.01} id="transactions-filter-final-value"
                                     value={formData.finalValue} onChange={handleChange} />
                             </div>
                         </div>

@@ -314,7 +314,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                                     <span className='value-help'>(?)</span>
                                 </div>
                                 <input className='transactions-filter-value' type="number" name="initialValue"
-                                    placeholder='0' step={0.01} id="transactions-report-initial-value"
+                                    placeholder='0.00' step={0.01} id="transactions-report-initial-value"
                                     value={formData.initialValue} onChange={handleChange} />
                             </div>
 
@@ -324,7 +324,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                                     <span className='value-help'>(?)</span>
                                 </div>
                                 <input className='transactions-filter-value' type="number" name="finalValue"
-                                    placeholder='0' step={0.01} id="transactions-report-final-value"
+                                    placeholder='0.00' step={0.01} id="transactions-report-final-value"
                                     value={formData.finalValue} onChange={handleChange} />
                             </div>
                         </div>

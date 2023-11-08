@@ -194,12 +194,6 @@ const header = (initialDate, finalDate, filters) => [
 ];
 
 const transactionsTable = (transactions) => [
-    // Table title
-    {
-        text: "Tabela 1: Extrato",
-        alignment: "center",
-        marginTop: 40,
-    },
     // Table
     {
         layout: "dashedLines",
@@ -238,7 +232,7 @@ const transactionsTable = (transactions) => [
                 })(),
             ],
         },
-        marginTop: 20,
+        marginTop: 40,
     },
 ];
 
