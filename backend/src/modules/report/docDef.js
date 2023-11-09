@@ -28,6 +28,14 @@ function getDocDef(filters, transactions) {
         fDate = sortedTransactions[sortedTransactions.length - 1]?.date;
     }
 
+    // Get positive and negative balance
+    const posBalance = transactions
+        .filter((t) => t.value > 0)
+        .reduce((acc, t2) => acc + t2.value, 0);
+    const negBalance = transactions
+        .filter((t) => t.value < 0)
+        .reduce((acc, t2) => acc + t2.value, 0);
+
     // Map filters into text
     let filterRows = [];
     if (filters.initialValue !== undefined)
@@ -74,8 +82,8 @@ function getDocDef(filters, transactions) {
 
     return {
         content: [
-            header(iDate, fDate, filterRows),
-            transactionsTable(transactions),
+            header(iDate, fDate, posBalance, negBalance, filterRows),
+            transactionsTable(transactions, filters.hasNif === undefined),
         ],
         defaultStyle: {
             fontSize: 12,
@@ -89,7 +97,7 @@ function getDocDef(filters, transactions) {
 
 /* pdfmake document definition */
 
-const header = (initialDate, finalDate, filters) => [
+const header = (initialDate, finalDate, posBalance, negBalance, filters) => [
     // Header info (image + address)
     {
         table: {
@@ -148,14 +156,14 @@ const header = (initialDate, finalDate, filters) => [
         alignment: "center",
         fontSize: 16,
     },
-    // Período em amostra
+    // Período em amostra e respectivo balanço
     {
         table: {
             widths: ["*", "*"], // Two columns with equal width
             body: [
                 [
                     {
-                        text: "Período em amostra",
+                        text: "Período em amostra:",
                         alignment: "left",
                         fontSize: 14,
                     },
@@ -165,6 +173,32 @@ const header = (initialDate, finalDate, filters) => [
                         }`,
                         alignment: "right",
                         fontSize: 14,
+                    },
+                ],
+                [
+                    {
+                        ul: ["Balanço positivo"],
+                        alignment: "left",
+                        fontSize: 12,
+                        marginLeft: 15,
+                    },
+                    {
+                        text: `+ ${posBalance.toFixed(2)} €`,
+                        alignment: "right",
+                        fontSize: 12,
+                    },
+                ],
+                [
+                    {
+                        ul: ["Balanço negativo"],
+                        alignment: "left",
+                        fontSize: 12,
+                        marginLeft: 15,
+                    },
+                    {
+                        text: `- ${Math.abs(negBalance).toFixed(2)} €`,
+                        alignment: "right",
+                        fontSize: 12,
                     },
                 ],
             ],
@@ -193,42 +227,108 @@ const header = (initialDate, finalDate, filters) => [
           },
 ];
 
-const transactionsTable = (transactions) => [
+const transactionsTable = (transactions, displayNIF) => [
     // Table
     {
         layout: "dashedLines",
         table: {
             headerRows: 1,
-            widths: ["auto", "auto", "*", "auto", "auto"],
+            widths: displayNIF
+                ? ["auto", "auto", "*", "auto", "auto", "auto"]
+                : ["auto", "auto", "*", "auto", "auto"],
             body: [
-                [
-                    { text: "ID", alignment: "center" },
-                    { text: "Data", alignment: "center" },
-                    { text: "Descrição", alignment: "center" },
-                    { text: "Valor (€)", alignment: "center" },
-                    { text: "Balanço (€)", alignment: "center" },
-                ],
+                displayNIF
+                    ? [
+                          { text: "ID", alignment: "center", noWrap: true },
+                          { text: "Data", alignment: "center", noWrap: true },
+                          { text: "Descrição", alignment: "center" },
+                          {
+                              text: "Valor (€)",
+                              alignment: "center",
+                              noWrap: true,
+                          },
+                          {
+                              text: "Balanço (€)",
+                              alignment: "center",
+                              noWrap: true,
+                          },
+                          { text: "NIF", alignment: "center", noWrap: true },
+                      ]
+                    : [
+                          { text: "ID", alignment: "center", noWrap: true },
+                          { text: "Data", alignment: "center", noWrap: true },
+                          { text: "Descrição", alignment: "center" },
+                          {
+                              text: "Valor (€)",
+                              alignment: "center",
+                              noWrap: true,
+                          },
+                          {
+                              text: "Balanço (€)",
+                              alignment: "center",
+                              noWrap: true,
+                          },
+                      ],
                 ...(() => {
+                    let body;
                     if (transactions.length === 0) {
-                        return [[
-                            { text: "--", alignment: "center" },
-                            { text: "--", alignment: "center" },
-                            {
-                                text: "Não foram encontradas transações",
-                                alignment: "center",
-                            },
-                            { text: "--", alignment: "center" },
-                            { text: "--", alignment: "center" },
-                        ]];
+                        body = [
+                            [
+                                { text: "--", alignment: "center" },
+                                { text: "--", alignment: "center" },
+                                {
+                                    text: "Não foram encontradas transações",
+                                    alignment: "center",
+                                },
+                                { text: "--", alignment: "center" },
+                                { text: "--", alignment: "center" },
+                            ],
+                        ];
+
+                        if (displayNIF)
+                            body[0].push({ text: "--", alignment: "center" });
+                    } else {
+                        if (displayNIF) {
+                            body = transactions.map((t) => [
+                                { text: t.id, noWrap: true },
+                                { text: t.date, noWrap: true },
+                                t.description,
+                                {
+                                    text: t.value.toFixed(2),
+                                    alignment: "right",
+                                    noWrap: true,
+                                },
+                                {
+                                    text: t.balance.toFixed(2),
+                                    alignment: "right",
+                                    noWrap: true,
+                                },
+                                {
+                                    text: t.has_nif ? "S" : "N",
+                                    alignment: "center",
+                                    noWrap: true,
+                                },
+                            ]);
+                        } else {
+                            body = transactions.map((t) => [
+                                { text: t.id, noWrap: true },
+                                { text: t.date, noWrap: true },
+                                t.description,
+                                {
+                                    text: t.value.toFixed(2),
+                                    alignment: "right",
+                                    noWrap: true,
+                                },
+                                {
+                                    text: t.balance.toFixed(2),
+                                    alignment: "right",
+                                    noWrap: true,
+                                },
+                            ]);
+                        }
                     }
 
-                    return transactions.map((t) => [
-                        t.id,
-                        t.date,
-                        t.description,
-                        { text: t.value.toFixed(2), alignment: "right" },
-                        { text: t.balance.toFixed(2), alignment: "right" },
-                    ])
+                    return body;
                 })(),
             ],
         },
