@@ -33,7 +33,7 @@ async function report(transactions, includeReceipts, filters = {}) {
 
     if (!includeReceipts || IDsOfTransactionsWithFile.length === 0) {
         const reportPdfmakeDoc = pdfMake.createPdf(
-            getDocDef(filters, transactions),
+            getDocDef(filters, transactions, true),
             tableLayouts,
             stdFonts
         );
@@ -58,7 +58,7 @@ async function report(transactions, includeReceipts, filters = {}) {
     const storePageNumber = (value) => (pageCount.value = value);
 
     let reportPdfmakeDoc = pdfMake.createPdf(
-        getDocDef(filters, transactions, storePageNumber),
+        getDocDef(filters, transactions, undefined, storePageNumber),
         tableLayouts,
         stdFonts
     );
@@ -76,7 +76,7 @@ async function report(transactions, includeReceipts, filters = {}) {
 
     // Create the final report with links to each receipt page numbers
     reportPdfmakeDoc = pdfMake.createPdf(
-        getDocDef(filters, transactions, undefined, pageMap),
+        getDocDef(filters, transactions, undefined, undefined, pageMap),
         tableLayouts,
         stdFonts
     );
@@ -104,7 +104,7 @@ async function report(transactions, includeReceipts, filters = {}) {
 
     for (let i = 0; i < totalPageCount; i++) {
         const page = reportPdf_lib.getPage(i);
-        const text = `pág. ${i + 1} de ${totalPageCount}`;
+        const text = `${i + 1} / ${totalPageCount}`;
         page.drawText(text, {
             x:
                 page.getWidth() -

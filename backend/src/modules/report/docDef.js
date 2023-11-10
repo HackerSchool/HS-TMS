@@ -2,6 +2,7 @@
  *
  * @param {Object} filters
  * @param {Array<Transaction>} transactions
+ * @param {boolean} [drawFooter=false]
  * @param {(value: int) => void} [storePageCount=null]
  * @param {Map<integer, integer[]>} [receiptPagesMap=null]
  * @returns The report document definition (pdfmake docDef)
@@ -9,6 +10,7 @@
 function getDocDef(
     filters,
     transactions,
+    drawFooter = false,
     storePageCount = null,
     receiptPagesMap = null
 ) {
@@ -92,7 +94,13 @@ function getDocDef(
         footer: function (currentPage, pageCount) {
             // Store the page count of the doc
             if (storePageCount) storePageCount(pageCount);
-            return {};
+            if (!drawFooter) return {};
+            return {
+                text: `${currentPage.toString()} / ${pageCount}`,
+                alignment: "right",
+                marginRight: 20,
+                marginTop: 10,
+            }
         },
         content: [
             header(iDate, fDate, posBalance, negBalance, filterRows),
