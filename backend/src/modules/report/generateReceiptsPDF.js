@@ -1,25 +1,38 @@
 const fs = require("fs");
 const { PDFDocument, rgb, degrees, StandardFonts } = require("pdf-lib");
+const { generateReceiptPath } = require("../../utils/fileUtils");
 
 /**
- * Given a PDFDocument and a list of path-title pairs (pdfsToAttach), returns
- * the resulting PDFDocument bytes of attaching all the given PDFs to the
- * original PDFDocument
- * @param {PDFDocument} originalPdf 
- * @param {Array<Object>} pdfsToAttach 
- * @returns Promise containing resulting PDF bytes
+ * Given a list of transaction IDs, returns the resulting PDFDocument of
+ * attaching all the receipts
+ * @param {Array<integer>} transactionsIDs
+ * @returns PDFDocument containing all receipts or null in case there are none
+ * @returns Map<integer, integer[]> (id => pageNumber[])
  */
-async function attachPDFs(originalPdf, pdfsToAttach) {
+async function generateReceiptsPDF(transactionsIDs) {
     try {
         const A4PageDim = { width: 595, height: 842 };
+        const paddingY = 40;
+        const paddingX = 40;
 
         // Create a new PDF document that will contain all the attachments
         const pdfDoc = await PDFDocument.create();
+        const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
-        for (const pdf of pdfsToAttach) {
+        // Map that associates a transaction ID with its receipt pages
+        const pageMap = new Map();
+        let pageCount = 0;
+
+        for (const id of transactionsIDs) {
+            const pathToReceipt = generateReceiptPath(id);
+
             // Load the existing PDF file from disk
-            const existingPdfBuffer = fs.readFileSync(pdf.path);
+            const existingPdfBuffer = fs.readFileSync(pathToReceipt);
             const receipt = await PDFDocument.load(existingPdfBuffer);
+
+            const title = `Transaction ${id}'s receipt`;
+
+            pageMap.set(id, []);
 
             // Append all the pages of the receipt to the original PDF
             for (const pageIdx of receipt.getPageIndices()) {
@@ -29,16 +42,18 @@ async function attachPDFs(originalPdf, pdfsToAttach) {
                     A4PageDim.height,
                 ]);
 
+                // Save the receipt pages with the associated transaction ID
+                pageMap.set(id, [...pageMap.get(id), ++pageCount]);
+
                 // Add a title to the upper section of the page
-                const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
                 const fontSize = 20;
                 const titleX =
                     (page.getWidth() -
-                        font.widthOfTextAtSize(pdf.title, fontSize)) /
+                        font.widthOfTextAtSize(title, fontSize)) /
                     2;
                 const titleY = A4PageDim.height - 50;
 
-                page.drawText(pdf.title, {
+                page.drawText(title, {
                     x: titleX,
                     y: titleY,
                     size: fontSize,
@@ -46,12 +61,11 @@ async function attachPDFs(originalPdf, pdfsToAttach) {
                     font: font,
                 });
 
+                // Copy the "pageIdx" page of the receipt into the new PDF
                 const [attachmentPage] = await pdfDoc.embedPdf(receipt, [
                     pageIdx,
                 ]);
 
-                const paddingY = 40;
-                const paddingX = 40;
                 const availableHeight = titleY - paddingY * 2;
                 const availableWidth = page.getWidth() - paddingX * 2;
                 const attachmentRatio =
@@ -87,8 +101,6 @@ async function attachPDFs(originalPdf, pdfsToAttach) {
                 }
 
                 page.drawPage(attachmentPage, {
-                    // x: (page.getWidth() - attachmentWidth) / 2,
-                    // y: paddingY + availableHeight - attachmentHeight,
                     x:
                         (page.getWidth() -
                             (vertical ? attachmentWidth : attachmentHeight)) /
@@ -103,16 +115,18 @@ async function attachPDFs(originalPdf, pdfsToAttach) {
             }
         }
 
-        const copiedPages = await originalPdf.copyPages(
-            pdfDoc,
-            pdfDoc.getPageIndices()
-        );
-        for (const newPage of copiedPages) originalPdf.addPage(newPage);
-
-        return await originalPdf.save();
+        return {
+            receiptsPdf: pageCount > 0 ? pdfDoc : null,
+            pageMap,
+            receiptPdfProps: {
+                receiptPageCount: pageCount,
+                paddingX,
+                paddingY
+            }
+        };
     } catch (error) {
-        console.error("Error attaching PDFs:", error);
+        console.error("Error generating receipts PDF:", error);
     }
 }
 
-module.exports = attachPDFs;
+module.exports = generateReceiptsPDF;

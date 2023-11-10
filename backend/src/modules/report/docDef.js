@@ -2,9 +2,16 @@
  *
  * @param {Object} filters
  * @param {Array<Transaction>} transactions
+ * @param {(value: int) => void} [storePageCount=null]
+ * @param {Map<integer, integer[]>} [receiptPagesMap=null]
  * @returns The report document definition (pdfmake docDef)
  */
-function getDocDef(filters, transactions) {
+function getDocDef(
+    filters,
+    transactions,
+    storePageCount = null,
+    receiptPagesMap = null
+) {
     // Get sample period
     let iDate, fDate;
     const sortedTransactions = transactions
@@ -81,13 +88,29 @@ function getDocDef(filters, transactions) {
     ]);
 
     return {
+        // There will be no actual footer, this is the easiest way to grab the pageCount
+        footer: function (currentPage, pageCount) {
+            // Store the page count of the doc
+            if (storePageCount) storePageCount(pageCount);
+            return {};
+        },
         content: [
             header(iDate, fDate, posBalance, negBalance, filterRows),
-            transactionsTable(transactions, filters.hasNif === undefined),
+            transactionsTable(
+                transactions,
+                filters.hasNif === undefined,
+                receiptPagesMap
+            ),
         ],
         defaultStyle: {
             fontSize: 12,
             font: "Times",
+        },
+        styles: {
+            link: {
+                decoration: "underline",
+                color: "blue",
+            },
         },
         images: {
             logo: "hs_logo.png",
@@ -227,114 +250,123 @@ const header = (initialDate, finalDate, posBalance, negBalance, filters) => [
           },
 ];
 
-const transactionsTable = (transactions, displayNIF) => [
-    // Table
-    {
-        layout: "dashedLines",
-        table: {
-            headerRows: 1,
-            widths: displayNIF
-                ? ["auto", "auto", "*", "auto", "auto", "auto"]
-                : ["auto", "auto", "*", "auto", "auto"],
-            body: [
-                displayNIF
-                    ? [
-                          { text: "ID", alignment: "center", noWrap: true },
-                          { text: "Data", alignment: "center", noWrap: true },
-                          { text: "Descrição", alignment: "center" },
-                          {
-                              text: "Valor (€)",
-                              alignment: "center",
-                              noWrap: true,
-                          },
-                          {
-                              text: "Balanço (€)",
-                              alignment: "center",
-                              noWrap: true,
-                          },
-                          { text: "NIF", alignment: "center", noWrap: true },
-                      ]
-                    : [
-                          { text: "ID", alignment: "center", noWrap: true },
-                          { text: "Data", alignment: "center", noWrap: true },
-                          { text: "Descrição", alignment: "center" },
-                          {
-                              text: "Valor (€)",
-                              alignment: "center",
-                              noWrap: true,
-                          },
-                          {
-                              text: "Balanço (€)",
-                              alignment: "center",
-                              noWrap: true,
-                          },
-                      ],
-                ...(() => {
-                    let body;
-                    if (transactions.length === 0) {
-                        body = [
-                            [
-                                { text: "--", alignment: "center" },
-                                { text: "--", alignment: "center" },
-                                {
-                                    text: "Não foram encontradas transações",
-                                    alignment: "center",
-                                },
-                                { text: "--", alignment: "center" },
-                                { text: "--", alignment: "center" },
-                            ],
-                        ];
+const transactionsTable = (transactions, displayNIF, receiptPagesMap) => {
+    // ID | Date | Desc | Value | Balance
+    const widths = ["auto", "auto", "*", "auto", "auto"];
 
-                        if (displayNIF)
-                            body[0].push({ text: "--", alignment: "center" });
-                    } else {
-                        if (displayNIF) {
-                            body = transactions.map((t) => [
-                                { text: t.id, noWrap: true },
-                                { text: t.date, noWrap: true },
-                                t.description,
-                                {
-                                    text: t.value.toFixed(2),
-                                    alignment: "right",
-                                    noWrap: true,
-                                },
-                                {
-                                    text: t.balance.toFixed(2),
-                                    alignment: "right",
-                                    noWrap: true,
-                                },
-                                {
-                                    text: t.has_nif ? "S" : "N",
-                                    alignment: "center",
-                                    noWrap: true,
-                                },
-                            ]);
-                        } else {
-                            body = transactions.map((t) => [
-                                { text: t.id, noWrap: true },
-                                { text: t.date, noWrap: true },
-                                t.description,
-                                {
-                                    text: t.value.toFixed(2),
-                                    alignment: "right",
-                                    noWrap: true,
-                                },
-                                {
-                                    text: t.balance.toFixed(2),
-                                    alignment: "right",
-                                    noWrap: true,
-                                },
-                            ]);
-                        }
-                    }
-
-                    return body;
-                })(),
-            ],
+    const header = [
+        { text: "ID", alignment: "center", noWrap: true },
+        {
+            text: "Data",
+            alignment: "center",
+            noWrap: true,
         },
-        marginTop: 40,
-    },
-];
+        { text: "Descrição", alignment: "center" },
+        {
+            text: "Valor (€)",
+            alignment: "center",
+            noWrap: true,
+        },
+        {
+            text: "Balanço (€)",
+            alignment: "center",
+            noWrap: true,
+        },
+    ];
+
+    // NIF
+    if (displayNIF) {
+        widths.push("auto");
+        header.push({
+            text: "NIF",
+            alignment: "center",
+            noWrap: true,
+        });
+    }
+    // Receipt pages
+    const displayReceiptsColumn = receiptPagesMap && receiptPagesMap.size > 0;
+    if (displayReceiptsColumn) {
+        widths.push("auto");
+        header.push({
+            text: "#",
+            alignment: "center",
+            noWrap: true,
+        });
+    }
+
+    let body;
+    if (transactions.length === 0) {
+        body = [
+            [
+                { text: "--", alignment: "center" },
+                { text: "--", alignment: "center" },
+                {
+                    text: "Não foram encontradas transações",
+                    alignment: "center",
+                },
+                { text: "--", alignment: "center" },
+                { text: "--", alignment: "center" },
+            ],
+        ];
+
+        if (displayNIF)
+            body[0].push({
+                text: "--",
+                alignment: "center",
+            });
+    } else {
+        body = transactions.map((t) => {
+            const row = [
+                { text: t.id, noWrap: true },
+                { text: t.date, noWrap: true },
+                t.description,
+                {
+                    text: t.value.toFixed(2),
+                    alignment: "right",
+                    noWrap: true,
+                },
+                {
+                    text: t.balance.toFixed(2),
+                    alignment: "right",
+                    noWrap: true,
+                },
+            ];
+
+            if (displayNIF)
+                row.push({
+                    text: t.has_nif ? "S" : "N",
+                    alignment: "center",
+                    noWrap: true,
+                });
+
+            if (displayReceiptsColumn) {
+                const pagesList = receiptPagesMap.get(t.id);
+                row.push({
+                    text: pagesList ? pagesList[0] : "--",
+                    alignment: "center",
+                    noWrap: true,
+                    linkToPage: pagesList ? pagesList[0] : null,
+                    style: pagesList ? "link" : "",
+                });
+            }
+
+            return row;
+        });
+    }
+
+    return [
+        // Table
+        {
+            layout: "dashedLines",
+            table: {
+                headerRows: 1,
+                widths: widths,
+                body: [header, ...body],
+            },
+            marginTop: 40,
+        },
+    ];
+};
 
 tableLayouts = {
     dashedLines: {

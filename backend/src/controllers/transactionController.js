@@ -319,20 +319,11 @@ async function generateReport(req, res) {
 		undefined
 	);
 
-    let pdfsToAttach;
-    if (includeReceipts === "true") {
-        pdfsToAttach = transactions.filter(t => t.has_file)
-                                .map(t => ({
-                                    path: fileUtils.generateReceiptPath(t.id),
-                                    title: `Transaction ${t.id}'s receipt`
-                                }));
-    }
-
     // map project id's to their corresponding names to display in the report
     if (queryParams.projects !== undefined)
         queryParams.projects = await Project.getNamesByIds(pool, queryParams.projects);
 
-    const pathToReport = await report(transactions, queryParams, pdfsToAttach)
+    const pathToReport = await report(transactions, queryParams.includeReceipts, queryParams)
 
 	res.download(pathToReport, function (err) {
 		if (err) {
