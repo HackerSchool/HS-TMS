@@ -36,15 +36,11 @@ export default function ProjectSelectBtn({setEarningBool,refetch}){
 
     return (
         <>
-            <ButtonGroup ref={anchorRef} >
-                <button className='btn icon-btn' id='select-btn' onClick={handleToggle}>
-                    <SortIcon />
-                    {`${options[selectedIndex].name}`}
-                </button>
-                <button className='btn icon-btn select-arrow-btn' onClick={handleToggle} >
-                    <ArrowDropDownIcon />
-                </button>
-            </ButtonGroup>
+            <button ref={anchorRef} className='btn icon-btn sort-btn' onClick={handleToggle}>
+                <SortIcon />
+                {`${options[selectedIndex].name}`}
+                <ArrowDropDownIcon />
+            </button>
 
             <Popper
                 sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
@@ -65,7 +61,7 @@ export default function ProjectSelectBtn({setEarningBool,refetch}){
                     >
                         <Paper sx={{ backgroundColor: "transparent" }}>
                             <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList className='select-menu' id="select-menu" autoFocusItem>
+                                <MenuList className='select-menu' id="select-menu" autoFocusItem variant='menu'>
                                     {options.map((option, index) => (
                                         <MenuItem
                                             key={option.name}

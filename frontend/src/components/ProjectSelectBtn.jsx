@@ -55,15 +55,12 @@ export default function ProjectSelectBtn({setProjectID,refetch, idx}){
         <>
             {options.length === 0 ? <></> :
                 <> 
-                    <ButtonGroup ref={anchorRef}>
-                        <button className='btn icon-btn' id='select-btn' onClick={handleToggle}>
-                            <SortIcon />
-                            {`${options[selectedIndex].name}`}
-                        </button>
-                        <button className='btn icon-btn select-arrow-btn' onClick={handleToggle}>
-                            <ArrowDropDownIcon />
-                        </button>
-                    </ButtonGroup><Popper
+                    <button ref={anchorRef} className='btn icon-btn sort-btn' onClick={handleToggle}>
+                        <SortIcon />
+                        {`${options[selectedIndex].name}`}
+                        <ArrowDropDownIcon />
+                    </button>
+                    <Popper
                         sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
                         open={open}
                         anchorEl={anchorRef.current}
