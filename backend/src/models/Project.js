@@ -4,13 +4,14 @@ class Project {
 	 * @param {pg.Pool} pool
 	 * @param {string} name
 	 * @param {boolean} active
+	 * @param {boolean} defaultProject
 	 * @returns {Object}
 	 */
-	async createOne(pool, name, active) {
+	async createOne(pool, name, active, defaultProject) {
 		const projectId = (
 			await pool.query(
-				`INSERT INTO projects (name, active) VALUES($1::text, $2::boolean) RETURNING *;`,
-				[name, active]
+				`INSERT INTO projects (name, active, "default") VALUES($1::text, $2::boolean, $3::boolean) RETURNING *;`,
+				[name, active, defaultProject]
 			)
 		).rows[0].id;
 
@@ -105,6 +106,7 @@ class Project {
 	 * @param {float} [initialBalance=null]
 	 * @param {float} [finalBalance=null]
 	 * @param {boolean} [active=null]
+	 * @param {boolean} [defaultProject=null]
 	 * @param {string} [orderBy="name"]
 	 * @param {string} [order="ASC"]
 	 * @returns {Array<Object>}
@@ -114,6 +116,7 @@ class Project {
 		initialBalance = null,
 		finalBalance = null,
 		active = null,
+		defaultProject = null,
 		orderBy = "name",
 		order = "ASC"
 	) {
@@ -160,6 +163,11 @@ class Project {
 		if (active !== null) {
 			filterConditions.push(`active = $${queryParams.length + 1}::boolean`);
 			queryParams.push(active);
+		}
+
+		if (defaultProject !== null) {
+			filterConditions.push(`"default" = $${queryParams.length + 1}::boolean`);
+			queryParams.push(defaultProject);
 		}
 
 		query +=
