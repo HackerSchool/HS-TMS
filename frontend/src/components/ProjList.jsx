@@ -1,52 +1,40 @@
 import React, { useState } from "react";
 import '../styles/Projects.css'
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import ProjectEditModal from "./ProjectsEditModal";
+import MoreOptionsBtn from "./MoreOptionsBtn";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
-function createData(name, ntransactions, balance, state) {
-    return { name, ntransactions, balance, state };
-}
-
-const projects = [
-    createData('Arquimedia', 6, -15, true),
-    createData('Rocky', 5, -26, true),
-    createData('HS Table', 7, -22, true),
-    createData('HS Minibot', 2, -15, true),
-    createData('Levitação Magnética', 1, -18, false),
-    createData('HSTMS', 0, -23, true),
-    createData('Turing', 7, -24, true),
-    createData('Headset', 4, -63, false),
-    createData('Gameboy Emulator', 5, -48, true),
-    createData('GD Simulator', 11, -30, true),
-    createData('Arquimedia12', 3, -36, false),
-    createData('Arquimedia13', 9, -15, true),
-    createData('Arquimedia14', 0, 0, true),
-    createData('Arquimedia15', 8, -70, true),
-    createData('Arquimedia16', 5, -10, true),
-    createData('Arquimedia17', 13, -50, false),
-    createData('Arquimedia18', 5, -15, true),
-    createData('Arquimedia19', 6, -65, true),
-    createData('Arquimedia20', 8, -54, false),
-];
-
-
-export default function CustomProjectHolder({data, refetch}) {
+export default function CustomProjectHolder({data, openEditModal, openDeleteModal, loading }) {
     return (
         <div className="content">
-            {data.map((project) => (
+            {data.length === 0 && !loading && ( // display message when there's no data to display
+                <div className="project_holder">
+                    <p>No projects found</p>
+                </div>
+            )}
+            {!loading && data.map((project) => (
                     <div className="project_holder" key={`${project.name}`}>
                         <h1>{project.name}</h1>
-                        <p>{project.ntransactions} transactions</p>
+                        <p>{project.transaction_count} transactions</p>
                         <p>Balance: {project.balance}</p>
-                        <p>{project.state ? "Active" : "Inactive"}</p>
-                        
+                        <p>{project.active ? "Active" : "Inactive"}</p>
+                        <MoreOptionsBtn
+                            options={[
+                                {
+                                    icon: <EditIcon />, 
+                                    text: 'Edit', 
+                                    callback: () => openEditModal(project)
+                                },
+                                {
+                                    icon: <DeleteIcon />, 
+                                    text: 'Delete', 
+                                    callback: () => openDeleteModal(project)
+                                }
+                            ]}
+                        />
                     </div>
                 ))}
         </div>
     );
 }
-/*<ProjectEditModal
-                            data={project}
-                            refetch={refetch}
-                        />*/

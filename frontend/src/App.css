@@ -15,6 +15,7 @@ html {
     --cinza-placeholder: rgba(255, 255, 255, 0.30);
     --light-gray: #aeaeae;
     --dark-gray: #161616;
+    --separator-color: rgba(255, 255, 255, 0.2);
 }
 
 body {
@@ -24,7 +25,7 @@ body {
 }
 
 hr {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--separator-color);
 }
 
 .page {
@@ -57,7 +58,7 @@ hr {
 	border-radius: 1rem 1rem 0 0;
 }
 
-.content {
+.content-container > .content {
 	max-height: 100%;
 	padding: 3rem 3rem 0rem 3rem;
     margin-bottom: 50px;
@@ -78,6 +79,17 @@ hr {
 	color: white;
 }
 
+.icon-btn.small {
+    padding: 0.15rem 0.9rem 0.15rem 0.6rem;
+    font-size: 0.95rem;
+    gap: 3px;
+}
+
+.icon-btn.small svg {
+    width: 20px;
+    height: 20px;
+}
+
 .btn-group {
     display: flex;
 	align-items: center;
@@ -93,6 +105,22 @@ hr {
     animation: pulse 2.5s infinite;
 }
 
+.loading-circle {
+    color: white !important;
+    width: 1.2rem !important;
+    height: 1.2rem !important;
+}
+
+.loading-circle.large {
+    width: 4rem !important;
+    height: 4rem !important;
+}
+
+.loading-circle.twenty-four-px {
+    width: 24px !important;
+    height: 24px !important;
+}
+
 @keyframes pulse {
     0% {
         background-color: rgba(255, 255, 255, 0);
@@ -105,6 +133,20 @@ hr {
     100% {
         background-color: rgba(255, 255, 255, 0);
     }
+}
+
+/* Focus highlighting */
+.modal:focus, .box:focus {
+    outline: none;
+    border: none;
+}
+
+.btn:focus {
+    outline: 2px solid white;
+}
+
+.btn:active {
+    outline: none;
 }
 
 /* Modal */
@@ -126,6 +168,11 @@ hr {
     flex-direction: column;
     justify-content: space-between;
     position: relative; /* for the alerts */
+}
+
+.submit-btn {
+    font-size: 1.2rem;
+    margin: 0 auto;
 }
 
 /* close button */
@@ -195,6 +242,46 @@ input[type="file"] {
     align-items: center;
 }
 
+/* Confirmation Modal */
+.confirmation-modal {
+    margin: auto;
+    height: fit-content;
+    max-width: 40%;
+}
+
+.confirmation-box {
+    border-radius: 2rem;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.confirmation-box hr {
+    width: 100%;
+}
+
+.confirmation-box .title {
+    text-align: center;
+}
+
+.confirmation-box .content {
+    margin: 1rem 0;
+    width: 100%;
+    min-height: fit-content;
+    overflow: visible;
+}
+
+.confirmation-box .btn-group {
+    margin-top: 1rem;
+}
+
+.confirmation-box .btn-group .btn.cancel {
+    background-color: var(--cinza-4);
+}
+
 /* toggle buttons */
 .modal .toggle-button {
     text-transform: none;
@@ -214,14 +301,17 @@ input[type="file"] {
 }
 
 .modal .toggle-button.left {
-    border-radius: 6.25rem 0rem 0rem 6.25rem;
+    border-top-left-radius: 6.25rem;
+    border-bottom-left-radius: 6.25rem;
 }
 
 .modal .toggle-button.right {
-    border-radius: 0rem 6.25rem 6.25rem 0rem;
+    border-top-right-radius: 6.25rem;
+    border-bottom-right-radius: 6.25rem;
 }
 
-.modal .toggle-button.Mui-selected {
+.modal .toggle-button.Mui-selected,
+.modal .toggle-button.active {
     background-color: var(--green);
     color: white;
 }
@@ -249,6 +339,10 @@ input[type="file"] {
     border: 1px solid var(--cinza-4);
 }
 
+.css-13vaet-MuiInputBase-root-MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--cinza-4) !important;
+}
+
 .multiple-select .MuiChip-root {
     background-color: var(--green);
     color: white;
@@ -261,6 +355,61 @@ input[type="file"] {
 
 .MuiMenu-list .MuiMenuItem-root.Mui-selected:hover {
     background-color: var(--green-alpha-40);
+}
+
+/* Sort button */
+.sort-btn {
+    padding-right: 0.5rem; 
+}
+
+.sort-menu {
+    background-color: var(--green);
+    border-radius: 0.5rem;
+    top: 0.3rem;
+}
+
+.sort-menu .sort-option {
+    color: white;
+    justify-content: center;
+}
+
+.sort-menu .sort-option.Mui-selected,
+.sort-menu .sort-option.Mui-selected:focus {
+    background-color: var(--hs-logo);
+}
+
+.sort-menu .sort-option:hover,
+.sort-menu .sort-option.Mui-selected:hover {
+    background-color: var(--green-hover);
+}
+
+/* More Options Menu */
+.more-options-menu {
+    background-color: var(--cinza-4);
+    border-radius: 0.5rem;
+}
+
+.more-options-menu .option {
+    color: white;
+    font-size: 0.9rem;
+    line-height: normal;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.more-options-menu .option svg {
+    font-size: 1.3rem;
+}
+
+.more-options-menu .option:hover {
+    background-color: var(--cinza-3);
+}
+
+/* Alerts */
+.alert-success {
+    background-color: var(--green) !important;
 }
 
 /* Sidebar CSS */
@@ -287,8 +436,15 @@ aside {
     gap: 50px;
     height: 100%;
     max-width: 250px;
-    max-height: 900px;
     padding: 3.5rem 1.5rem;
+}
+
+.sidebar-routes-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: auto;
+    gap: 35px;
 }
 
 .nav-item {
@@ -374,7 +530,7 @@ tbody.MuiTableBody-root th.MuiTableCell-body,
 tbody.MuiTableBody-root td.MuiTableCell-body,
 tfoot.MuiTableFooter-root td.MuiTableCell-root {
     color: white;
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--separator-color);
 }
 
 /* Table footer icons */

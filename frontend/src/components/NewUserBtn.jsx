@@ -1,39 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios_instance from '../Axios'
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
-import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import CircularProgress from '@mui/material/CircularProgress';
+import AddIcon from '@mui/icons-material/Add';
 
-export default function NewProjectBtn({ refetch }) {
+function NewUserBtn({ refetch }) {
+
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
         if (loading) return;
-
+        
         setOpen(false)
     };
 
     function reset() {
         setFormData({
             name: "",
-            active: true
+            username: "",
         })
     }
 
-    // refs
+    // Refs
     const formRef = useRef();
 
     // Form state
     const [formData, setFormData] = useState({
         name: "",
-        active: true
+        username: "",
     })
 
     // Handle form changes
@@ -47,17 +45,6 @@ export default function NewProjectBtn({ refetch }) {
             ...oldFormData,
             [name]: value
         }))
-    }
-
-    function handleActiveChange(newValue) {
-        if (loading) return;
-
-        // so there's always a button selected
-        if (newValue !== null)
-            setFormData((oldFormData) => ({
-                ...oldFormData,
-                active: newValue
-            }));
     }
 
     const [loading, setLoading] = useState(false)
@@ -77,27 +64,29 @@ export default function NewProjectBtn({ refetch }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
-        const body = new FormData();
+        if (!formData.username.match(/^ist[0-9]+$/g)) {
+            showErrorMsg('The username has to be a "Técnico ID", that is, an expression like "ist123456"',
+                        { anchorOrigin: { horizontal: "center", vertical: "top" } });
+            return;
+        }
 
-        body.append("name", JSON.stringify(formData.name));
-        body.append("active", JSON.stringify(formData.active));
+        const body = {
+            name: formData.name,
+            username: formData.username
+        };
 
         setLoading(true);
 
-        axios_instance.post("projects", body, {
-            headers: {
-                'Content-Type': "multipart/form-data"
-            }
-        })
+        axios_instance.post("users", body)
             .then(res => {
-                if (res.status == 201) {
-                    showSuccessMsg("Project created successfully");
+                if (res.status === 201) {
+                    showSuccessMsg("User created successfully");
                     refetch();
                 }
                 else throw new Error();
             })
             .catch(err => {
-                let msg = "Couldn't create project"
+                let msg = "Couldn't create user"
                 if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
@@ -118,58 +107,57 @@ export default function NewProjectBtn({ refetch }) {
 
     return (
         <>
-            <button className='btn icon-btn' id='new-project-btn' onClick={handleOpen}>
+            <button className='btn icon-btn small' id='new-user-btn' onClick={handleOpen}>
                 <AddIcon />
                 New
             </button>
 
             <Modal
-                className="modal project-modal"
-                id="new-project-modal"
+                className="modal user-modal"
+                id="new-user-modal"
                 open={open}
                 disableRestoreFocus
                 onClose={(e, reason) => handleClose(reason)}
+                closeAfterTransition
                 slotProps={{ backdrop: { timeout: 500 } }}
             >
                 <Grow in={open} easing={{ exit: "ease-in" }}>
-                <Box className="box project-box">
-                <form encType='multipart/form-data' ref={formRef} id='create-project-form' onSubmit={submitForm}>
+                <Box className="box user-box">
+                <form encType='multipart/form-data' ref={formRef} id='create-user-form' onSubmit={submitForm}>
 
                     <div className='form-header'>
                         <CloseIcon className='modal-close-btn' onClick={handleClose} />
-                        <h1>New Project</h1>
+                        <h1>New User</h1>
                     </div>
 
                     <div className="form-body">
-                        <div className="form-row">
-                            <div className="form-group project-name-group" id='create-project-name-group'>
+                        <div className="form-row user-name-username-row">
+                            <div className="form-group user-name-group" id='create-user-name-group'>
                                 <label htmlFor="name">Name: *</label>
-                                <input type="text" name='name' className='project-name' id="create-project-name" required
-                                    value={formData.name} onChange={handleChange} />
+                                <input type="text" name="name" className='user-name' placeholder='First and last name'
+                                    value={formData.name} onChange={handleChange} required />
                             </div>
-                            
-                            <div className="form-group project-active-group" id='create-project-active-group'>
-                                <label htmlFor="active">Active:</label>
-                                <ToggleButtonGroup
-                                    value={formData.active}
-                                    exclusive
-                                    onChange={(e, value) => handleActiveChange(value)}
-                                >
-                                    <ToggleButton className='toggle-button left' value={false}>
-                                        <CloseIcon />
-                                        No
-                                    </ToggleButton>
-                                    <ToggleButton className='toggle-button right' value={true}>
-                                        <CheckIcon />
-                                        Yes
-                                    </ToggleButton>
-                                </ToggleButtonGroup>
+
+                            <div className="form-group user-username-group" id='create-user-username-group'>
+                                <label htmlFor="usernamae">Username: *</label>
+                                <input type="text" name='username' placeholder='ist1xxxxx'
+                                    value={formData.username} onChange={handleChange} required />
                             </div>
                         </div>
+
+                        <div className="form-row">
+                            <p>
+                                <b style={{ color: 'var(--hs-logo)', fontSize: '1.2rem' }}>NOTE: </b>
+                                The provided name is temporary, as it will be replaced by the information retrieved from Fenix during the first login, which triggers the user activation.
+                                Until then, the user status will be <i style={{ color: "var(--light-gray)" }}>
+                                pending activation</i>.
+                            </p>
+                        </div>
                     </div>
+
                     <hr />
                     <div className="form-row last">
-                        <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='create-project-btn' >
+                        <button type='submit' className={`btn submit-btn ${loading && "icon-btn"}`} id='create-user-btn' >
                             {loading && <CircularProgress className='loading-circle' />}
                             {loading ? "Creating" : "Create"}
                         </button>
@@ -179,8 +167,7 @@ export default function NewProjectBtn({ refetch }) {
                 </Grow>
             </Modal>
         </>
-    )
-
-
-
+    );
 }
+
+export default NewUserBtn;

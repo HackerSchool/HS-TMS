@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios_instance from '../Axios';
+import { showErrorMsg } from '../Alerts';
 import TuneIcon from '@mui/icons-material/Tune';
 import MultipleSelect from './MultipleSelect';
 import Modal from '@mui/material/Modal';
@@ -8,22 +8,15 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckIcon from '@mui/icons-material/Check';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 
-function TransactionsFilterBtn({ params, setParams, refetch }) {
+function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-            setErrorMsg("");
-            setOpen(false);
+        setOpen(false);
     }
-
-    console.log(Array.from(params.entries()))
-
-    // Alerts to display
-    const [errorMsg, setErrorMsg] = useState("");
 
     const defaultFilters = {
         initialMonth: "",
@@ -44,8 +37,6 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         hasNif: params.get("hasNif") ?? "any",
         hasFile: params.get("hasFile") ?? "any",
     })
-
-    console.log(formData)
 
     // Handle form changes
     function handleChange(e) {
@@ -88,19 +79,18 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
         // Check date
         if (formData.initialMonth && formData.finalMonth &&
             (formData.initialMonth > formData.finalMonth)) {
-            setErrorMsg("Final month can't precede Initial month")
+            showErrorMsg("Final month can't precede Initial month",
+                        { anchorOrigin: {horizontal:"right", vertical: "top"} });
             return;
         }
 
         // Check values
         if (formData.initialValue && formData.finalValue &&
             (parseFloat(formData.initialValue) > parseFloat(formData.finalValue))) {
-            setErrorMsg("Max value can't be lower than the Min value")
+            showErrorMsg("Max value can't be lower than the Min value",
+                        { anchorOrigin: {horizontal:"right", vertical: "top"} });
             return;
         }
-
-
-        console.log(getChosenProjectsIds(formData.projects), formData.projects)
 
         let filters = [];
 
@@ -121,8 +111,6 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
             }
         }
 
-        console.log(queryParams)
-
         setParams(oldParams => {
             if (oldParams.get("orderBy") && oldParams.get("order")) {
                 queryParams = {
@@ -135,42 +123,24 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
             return queryParams;
         });
         refetch();
-        setErrorMsg("");
         setOpen(false);
     }
 
-
-    // Projects to choose
-    const [projectsList, setProjectsList] = useState([]);
-
+    // In case the URL params have project IDs specified, we need to translate
+    // the IDs to their corresponding names
     useEffect(() => {
-        if (projectsList.length == 0 && open) { // FIXME
-            console.log("fetching projects...");
-
-            axios_instance.get("projects")
-                .then(res => {
-                    if (res.status == 200) return res.data;
-                    throw new Error("Couldn't fetch projects");
-                })
-                .then(data => {
-                    setProjectsList(data);
-                    console.log(data);
-
-                    const chosenProjectsIds = JSON.parse(params.get("projects")) ?? [];
-                    if (chosenProjectsIds.length > 0) {
-                        setFormData((oldFormData) => ({
-                            ...oldFormData,
-                            projects: getChosenProjectsNames(chosenProjectsIds, data) ?? []
-                        }))
-                    }
-                })
-                .catch(err => console.log(err));
+        const chosenProjectsIds = JSON.parse(params.get("projects")) ?? [];
+        if (chosenProjectsIds.length > 0) {
+            setFormData((oldFormData) => ({
+                ...oldFormData,
+                projects: getChosenProjectsNames(chosenProjectsIds) ?? []
+            }))
         }
-    }, [open])
+    }, [projectsList]);
 
-    function getChosenProjectsNames(chosenProjectsIds, allProjects) {
+    function getChosenProjectsNames(chosenProjectsIds) {
         return chosenProjectsIds.map((value) => {
-            return allProjects.find(el => el.id == value)?.name;
+            return projectsList.find(el => el.id == value)?.name;
         })
     }
 
@@ -182,7 +152,6 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
 
     function handleProjectsChange(event) {
         const value = event.target.value;
-        console.log(typeof value);
 
         setFormData((oldFormData) => ({
             ...oldFormData,
@@ -190,7 +159,6 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
             projects: typeof value === 'string' ? value.split(',') : value
         }));
     }
-
 
 
     return (
@@ -204,7 +172,7 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
                 className="modal"
                 id="transactions-filter-modal"
                 open={open}
-                disableEnforceFocus
+                disableRestoreFocus
                 onClose={(e, reason) => handleClose(reason)}
                 closeAfterTransition 
                 slotProps={{ backdrop: { timeout: 500 } }}
@@ -212,7 +180,6 @@ function TransactionsFilterBtn({ params, setParams, refetch }) {
                 <Slide in={open} direction='left' >
                 <Box className="box filters-box" >
                 <form id='transactions-filter-form' onSubmit={updateFilters}>
-                    {errorMsg && <Alert className="transactions-filter-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
 
                     <div className='form-header'>
                         <ArrowBackIcon className='modal-close-btn' onClick={handleClose} />

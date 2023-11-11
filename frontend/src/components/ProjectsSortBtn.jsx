@@ -60,7 +60,7 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
     return (
         <>
             <ButtonGroup ref={anchorRef} >
-                <button className='btn icon-btn' id='transactions-sort-btn' onClick={handleToggle}>
+                <button className='btn icon-btn' id='projects-sort-btn' onClick={handleToggle}>
                     <SortIcon />
                     {`${options[selectedIndex].text}`}
                 </button>
@@ -88,7 +88,7 @@ export default function TransactionsSortButton({ params, setParams, refetch }) {
                     >
                         <Paper sx={{ backgroundColor: "transparent" }}>
                             <ClickAwayListener onClickAway={handleClose}>
-                                <MenuList className='sort-menu' id="transactions-sort-menu" autoFocusItem>
+                                <MenuList className='sort-menu' id="projects-sort-menu" autoFocusItem>
                                     {options.map((option, index) => (
                                         <MenuItem
                                             key={option.text}

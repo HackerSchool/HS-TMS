@@ -4,7 +4,7 @@ const { asyncHandler } = require("../middleware/error");
 
 const router = express.Router();
 
-router.get("/:username", asyncHandler(userController.getUser));
+router.get("/", asyncHandler(userController.getAllUsers));
 router.post("/", asyncHandler(userController.createUser));
 router.delete("/:username", asyncHandler(userController.deleteUser));
 

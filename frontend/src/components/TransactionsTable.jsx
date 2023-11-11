@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios_instance from "../Axios";
-import TransactionsOptionsBtn from "./TransactionsOptionsBtn";
+import { showErrorMsg } from "../Alerts";
+import MoreOptionsBtn from "./MoreOptionsBtn";
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -15,9 +16,10 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import RequestPageIcon from '@mui/icons-material/RequestPage';
+import CircularProgress from '@mui/material/CircularProgress';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function TablePaginationActions(props) {
     const { count, page, rowsPerPage, onPageChange } = props;
@@ -72,15 +74,23 @@ function TablePaginationActions(props) {
     );
 }
 
-function DownloadIcon({id}) {
+export function DownloadIcon({id}) {
+    const [pending, setPending] = useState(false);
+
     return (
-        <RequestPageIcon
+        <div className="receipt-download-icon-container" style={{ cursor: "pointer", position: "relative" }}
             onClick={() => {
+                setPending(true);
                 axios_instance.get(`transactions/download/${id}`, {
                     responseType: 'blob',
-                }).then(res => {
+                })
+                .then(res => {
+                    if (res.status === 200) return res.data;
+                    else throw new Error();
+                })
+                .then(data => {
                     // create file link in browser's memory
-                    const href = URL.createObjectURL(res.data);
+                    const href = URL.createObjectURL(data);
 
                     const link = document.createElement("a");
                     link.href = href;
@@ -91,14 +101,26 @@ function DownloadIcon({id}) {
 
                     document.body.removeChild(link);
                     URL.revokeObjectURL(href)
-                }).catch(err => console.log(err));
+                })
+                .catch(err => {
+                    let msg = "Couldn't download the receipt"
+                    if (err.response)
+                        msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+    
+                    showErrorMsg(msg);
+                })
+                .finally(() => setPending(false));
             }}
-            sx={{ cursor: "pointer" }}
-        />
+        >
+        {pending ? 
+            <CircularProgress className="loading-circle twenty-four-px" />
+            : <RequestPageIcon className="receipt-download-icon" />
+        }
+        </div>
     )
 }
 
-export default function CustomTable({ data, refetch, openEditModal }) {
+export default function TransactionsTable({ data, openEditModal, openDeleteModal, loading }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
 
@@ -141,7 +163,7 @@ export default function CustomTable({ data, refetch, openEditModal }) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.length === 0 && ( // display message when there's no data to display
+                    {data.length === 0 && !loading && ( // display message when there's no data to display
                         <TableRow>
                             <TableCell colSpan={8} align="center" sx={{fontSize: 18}}>
                                 No transactions found
@@ -149,11 +171,20 @@ export default function CustomTable({ data, refetch, openEditModal }) {
                         </TableRow>
                     )}
 
-                    {(rowsPerPage > 0
+                    {loading && (
+                    <TableRow>
+                        <TableCell colSpan={8} align="center" sx={{ border: 0 }} >
+                            <CircularProgress className="loading-circle large" sx={{ m: 5}} />
+                        </TableCell>
+                    </TableRow>
+                    )}
+
+                    {!loading && (rowsPerPage > 0
                         ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         : data).map((row) => (
                             <TableRow
                                 key={`${row.date}+${row.value}+${Math.random()}`}
+                                hover
                             >
                                 <TableCell component="th" scope="row" align="center">
                                     {row.date}
@@ -171,10 +202,19 @@ export default function CustomTable({ data, refetch, openEditModal }) {
                                     {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
                                 </TableCell>
                                 <TableCell align="center">
-                                    <TransactionsOptionsBtn
-                                        transaction={row}
-                                        refetch={refetch}
-                                        openEditModal={openEditModal}
+                                    <MoreOptionsBtn
+                                        options={[
+                                            {
+                                                icon: <EditIcon />,
+                                                text: "Edit",
+                                                callback: () => openEditModal(row)
+                                            },
+                                            {
+                                                icon: <DeleteIcon />,
+                                                text: "Delete",
+                                                callback: () => openDeleteModal(row)
+                                            }
+                                        ]}
                                     />
                                 </TableCell>
                             </TableRow>
@@ -185,7 +225,7 @@ export default function CustomTable({ data, refetch, openEditModal }) {
                         </TableRow>
                     )}
                 </TableBody>
-                <TableFooter>
+                {!loading && <TableFooter>
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[15, 20, 25, { label: 'All', value: -1 }]}
@@ -204,7 +244,7 @@ export default function CustomTable({ data, refetch, openEditModal }) {
                             ActionsComponent={TablePaginationActions}
                         />
                     </TableRow>
-                </TableFooter>
+                </TableFooter>}
             </Table>
         </TableContainer>
     );

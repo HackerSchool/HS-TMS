@@ -12,10 +12,6 @@ export default function LoginPage() {
     image.onload = () => setImageReady(true)
     image.src = hs_logo;
 
-    function fenixLogin() {
-        window.open("http://localhost:3000/auth/fenix", "_self");
-    }
-
     return (
         <div className="LoginPage">
             <div className="login-container">
@@ -26,10 +22,11 @@ export default function LoginPage() {
                 : <div className="logo loading"></div>
                 }
 
-                <div className="button" id="fenix-login" onClick={fenixLogin}>
+                <a className="button" id="fenix-login"
+                    href="http://localhost:3000/auth/fenix" target="_self" tabIndex={0}>
                     Login with FenixEdu@IST
-                </div>
-                <div className="button" id="demo-account">Demo account</div>
+                </a>
+                <a className="button" id="demo-account" tabIndex={0}>Demo account</a>
 
                 <footer>
                     <a href="https://hackerschool.io" target="_blank">

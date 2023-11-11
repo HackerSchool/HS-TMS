@@ -1,81 +1,130 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom"
-import axios_instance from '../Axios';
 import '../styles/Projects.css'
+import axios_instance from '../Axios';
+import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import ProjList from '../components/ProjList';
-import AddIcon from '@mui/icons-material/Add';
-import SortIcon from '@mui/icons-material/Sort';
-import TuneIcon from '@mui/icons-material/Tune';
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import SummarizeIcon from '@mui/icons-material/Summarize';
-import Alert from '@mui/material/Alert';
 import NewProjectBtn from '../components/NewProjectBtn';
+import SortButton from '../components/SortBtn';
 import ProjectsFilterBtn from '../components/ProjectsFilterBtn';
-//import ProjectsSortButton from '../components/ProjectsSortBtn';
-//import ProjectsFilterBtn from '../components/ProjectsFilterBtn';
-//import ProjectEditModal from '../components/ProjectEditModal';
+import ProjectEditModal from '../components/ProjectsEditModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 
 function ProjectsPage() {
-
     const [projects, setProjects] = useState([]);
     const [fetchProjects, setFetchProjects] = useState(true);
     const [queryParams, setQueryParams] = useSearchParams();
 
-        // Project Edit Modal
-        const [openEditModal, setOpenEditModal] = useState(false);
-        const [projectToEdit, setProjectToEdit] = useState();
+    // Project Edit Modal
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [projectToEdit, setProjectToEdit] = useState();
 
-    //Alerts to dsiplay
-    const [errorMsg, setErrorMsg] = useState("");
+    // Project Deletion
+    const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState();
 
+    function onDeleteCancelation() {
+        setOpenConfirmationModal(false);
+    }
+
+    function onDeleteConfirmation() {
+        axios_instance.delete(`projects/${projectToDelete.id}`)
+            .then(res => {
+                if (res.status === 204) {
+                    showSuccessMsg("Project deleted successfully");
+                    refetchProjects();
+                }
+                else throw new Error();
+            })
+            .catch(err => {
+                showErrorMsg(`Couldn't delete project ${projectToDelete.name}`);
+            });
+
+        setOpenConfirmationModal(false);
+    }
+
+    function getProjectDeletionText() {
+        return (
+        <div style={{ lineHeight: 1.5 }}>
+            <b>Name:</b> {projectToDelete.name} <br /> 
+            <b>Balance:</b> {projectToDelete.balance}€ <br />
+            <b>Active:</b> {projectToDelete.active ? "Yes" : "No"} <br />
+        </div>
+        )
+    }
+
+    // To show loading state while fetching transactions
+    const [loading, setLoading] = useState(false);
+
+    // To fetch projects when needed
     useEffect(() => {
         if (fetchProjects){
+            setLoading(true);
+
             axios_instance.get("projects", {
                 params: queryParams,
             })
                 .then(res => {
-                    console.log(res);
                     if(res.status == 200) return res.data;
                     throw new Error ("Couldn't fetch projects")
                 })
                 .then(data => {
 
                     if (data.length === 0 && queryParams.size > 0)
-                        setErrorMsg("No projects match the specified filters");
-                    else
-                        setErrorMsg("");
+                        showErrorMsg("No projects match the specified filters");
                     
-                        setProjects(data)
+                    setProjects(data)
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    let msg = "Couldn't fetch projects";
+                    if (err.response) 
+                        msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                    showErrorMsg(msg);
+                })
+                .finally(() => setLoading(false));
             
-                setFetchProjects(false);
+            setFetchProjects(false);
         }
     }, [fetchProjects]);
 
     const refetchProjects = useCallback(() => setFetchProjects(true));
 
+    // Callback passed to the projects list componet's edit modal
     const launchEditModal = useCallback((project) => {
         setProjectToEdit(project);
         setOpenEditModal(true);
     });
 
+    // Callback passed to the list to open a project's delete modal
+    const launchConfirmationModal = useCallback((project) => {
+        setProjectToDelete(project);
+        setOpenConfirmationModal(true);
+    });
+
     return (
         <section className="page" id='ProjectsPage'>
-            {errorMsg && <Alert className="projects-alert" onClose={() => { setErrorMsg("") }} severity="error">{errorMsg}</Alert>}
-
             <header>
                 <h1>Projects</h1>
                 <div className="btn-group left">
-                    <NewProjectBtn refetch={refetchProjects} />
+                    <NewProjectBtn 
+                        refetch={refetchProjects} 
+                    />
                 </div>
 
                 <div className="btn-group right">
-                    <button className='btn icon-btn' id='sorted-by'>
-                        <SortIcon />
-                        Sorted by: Most Recent
-                    </button>
+                    <SortButton
+                        params={queryParams}
+                        setParams={setQueryParams}
+                        refetch={refetchProjects}
+                        options={[
+                            {text: 'Name ASC', orderBy: 'name', order: 'ASC'},
+                            {text: 'Name DESC', orderBy: 'name', order: 'DESC'},
+                            {text: 'Balance ASC', orderBy: 'balance', order: 'ASC'},
+                            {text: 'Balance DESC', orderBy: 'balance', order: 'DESC'}
+                        ]}
+                    />
 
                     <ProjectsFilterBtn
                         params={queryParams}
@@ -87,13 +136,30 @@ function ProjectsPage() {
 
             <div className="content-container">
                 <div className="content">
-                    <ProjList
+                    <ProjList className="content"
                         data={projects}
-                        refetch={refetchProjects}
                         openEditModal={launchEditModal}
+                        openDeleteModal={launchConfirmationModal}
+                        loading={loading}
                     />
                 </div>
             </div>
+
+            {projectToEdit && <ProjectEditModal
+                open={openEditModal}
+                setOpen={setOpenEditModal}
+                project={projectToEdit}
+                refetch={refetchProjects}
+            />}
+
+            {projectToDelete && <ConfirmationModal
+                open={openConfirmationModal}
+                title={"Do you wish to permanently delete the following project"}
+                content={getProjectDeletionText()}
+                onCancel={onDeleteCancelation}
+                onConfirm={onDeleteConfirmation}
+            />}
+
         </section>
     );
 }

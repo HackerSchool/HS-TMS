@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios_instance from '../Axios';
+import { showErrorMsg } from '../Alerts';
 import TuneIcon from '@mui/icons-material/Tune';
-import MultipleSelect from './MultipleSelect';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckIcon from '@mui/icons-material/Check';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
 
@@ -16,28 +14,20 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-            setErrorMsg("");
             setOpen(false);
     }
 
-    console.log(Array.from(params.entries()))
-
-    // Alerts to display
-    const [errorMsg, setErrorMsg] = useState("");
-
     const defaultFilters = {
-        initialValue: "",
-        finalValue: "",
+        initialBalance: "",
+        finalBalance: "",
         active: "any",
     }
 
     const [formData, setFormData] = useState({
-        initialValue: params.get("initialValue") ?? "",
-        finalValue: params.get("finalValue") ?? "",
+        initialBalance: params.get("initialBalance") ?? "",
+        finalBalance: params.get("finalBalance") ?? "",
         active: params.get("active") ?? "any",
     })
-
-    console.log(formData)
 
     // Handle form changes
     function handleChange(e) {
@@ -68,21 +58,19 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
         // stop all the default form submission behaviour
         event.preventDefault();
 
-        // Check values
-        if (formData.initialValue && formData.finalValue &&
-            (parseFloat(formData.initialValue) > parseFloat(formData.finalValue))) {
-            setErrorMsg("Max value can't be lower than the Min value")
+        // Check balances
+        if (formData.initialBalance && formData.finalBalance &&
+            (parseFloat(formData.initialBalance) > parseFloat(formData.finalBalance))) {
+            showErrorMsg("Max balance can't be lower than the Min balance",
+                { anchorOrigin: {horizontal:"right", vertical: "top"} });
             return;
         }
 
-
-        console.log(getChosenProjectsIds(formData.projects), formData.projects)
-
         let filters = [];
 
-        if (formData.initialValue != "") filters.push(["initialValue", formData.initialValue]);
-        if (formData.finalValue != "") filters.push(["finalValue", formData.finalValue]);
-        if (formData.active != "any") filters.push(["active", formData.hasNif]);
+        if (formData.initialBalance != "") filters.push(["initialBalance", formData.initialBalance]);
+        if (formData.finalBalance != "") filters.push(["finalBalance", formData.finalBalance]);
+        if (formData.active != "any") filters.push(["active", formData.active]);
 
         let queryParams = {};
 
@@ -92,8 +80,6 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
                 [el[0]]: el[1]
             }
         }
-
-        console.log(queryParams)
 
         setParams(oldParams => {
             if (oldParams.get("orderBy") && oldParams.get("order")) {
@@ -107,7 +93,6 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
             return queryParams;
         });
         refetch();
-        setErrorMsg("");
         setOpen(false);
     }
 
@@ -132,7 +117,6 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
                 <Slide in={open} direction='left' >
                 <Box className="box filters-box" >
                 <form id='projects-filter-form' onSubmit={updateFilters}>
-                    {errorMsg && <Alert className="projects-filter-alert" onClose={() => setErrorMsg("")} severity="error">{errorMsg}</Alert>}
 
                     <div className='form-header'>
                         <ArrowBackIcon className='modal-close-btn' onClick={handleClose} />
@@ -142,24 +126,24 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
                     <div className="form-body">
 
                         <div className="form-row">
-                            <div className="form-group" id='projects-filter-initial-value-group'>
+                            <div className="form-group" id='projects-filter-initial-balance-group'>
                                 <div className="projects-filter-label-group">
-                                    <label htmlFor="value" className='projects-filter-value-label'>Min value:</label>
-                                    <span className='value-help'>(?)</span>
+                                    <label htmlFor="balance" className='projects-filter-balance-label'>Min balance:</label>
+                                    <span className='balance-help'>(?)</span>
                                 </div>
-                                <input className='projects-filter-value' type="number" name="initialValue"
-                                    placeholder='0' step={0.01} id="projects-filter-initial-value"
-                                    value={formData.initialValue} onChange={handleChange} />
+                                <input className='projects-filter-balance' type="number" name="initialBalance"
+                                    placeholder='0' step={0.01} id="projects-filter-initial-balance"
+                                    value={formData.initialBalance} onChange={handleChange} />
                             </div>
 
-                            <div className="form-group" id='projects-filter-final-value-group'>
+                            <div className="form-group" id='projects-filter-final-balance-group'>
                                 <div className="projects-filter-label-group">
-                                    <label htmlFor="value" className='projects-filter-value-label'>Max value:</label>
-                                    <span className='value-help'>(?)</span>
+                                    <label htmlFor="balance" className='projects-filter-balance-label'>Max balance:</label>
+                                    <span className='balance-help'>(?)</span>
                                 </div>
-                                <input className='projects-filter-value' type="number" name="finalValue"
-                                    placeholder='0' step={0.01} id="projects-filter-final-value"
-                                    value={formData.finalValue} onChange={handleChange} />
+                                <input className='projects-filter-balance' type="number" name="finalBalance"
+                                    placeholder='0' step={0.01} id="projects-filter-final-balance"
+                                    value={formData.finalBalance} onChange={handleChange} />
                             </div>
                         </div>
 
@@ -190,10 +174,10 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
 
                     <hr />
                     <div className="form-row last">
-                        <button className="btn" id='transactions-filter-clear-btn' onClick={clearFilters} >
+                        <button className="btn" id='projects-filter-clear-btn' onClick={clearFilters} >
                             Clear
                         </button>
-                        <button type='submit' className="btn" id='transactions-filter-save-btn' >
+                        <button type='submit' className="btn" id='projects-filter-save-btn' >
                             Save
                         </button>
                     </div>

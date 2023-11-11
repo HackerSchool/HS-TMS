@@ -10,12 +10,15 @@ class Reminder {
 	 * @returns {Object}
 	 */
 	async createOne(pool, title, description, date) {
-		const res = await pool.query(
-			`INSERT INTO reminders (title, description, date) VALUES($1::text, $2::text, $3::date) RETURNING *;`,
-			[title, description, date]
-		);
+		const res = (
+			await pool.query(
+				`INSERT INTO reminders (title, description, date) VALUES($1::text, $2::text, $3::date) RETURNING *;`,
+				[title, description, date]
+			)
+		).rows[0];
 
-		return await this.getOne(pool, res.rows[0].id);
+		res.date = dateUtils.convertToLocalTimezone(res.date);
+		return res;
 	}
 
 	/**
@@ -25,12 +28,12 @@ class Reminder {
 	 * @returns {Object}
 	 */
 	async getOne(pool, id) {
-		const res = await pool.query(`SELECT * FROM reminders WHERE id = $1::integer`, [
-			id
-		]);
+		const res = (
+			await pool.query(`SELECT * FROM reminders WHERE id = $1::integer`, [id])
+		).rows[0];
 
-		res.rows[0].date = dateUtils.convertToLocalTimezone(res.rows[0].date);
-		return res.rows[0];
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		return res;
 	}
 
 	/**
@@ -43,35 +46,39 @@ class Reminder {
 	 * @returns {Object}
 	 */
 	async updateOne(pool, id, title, description, date) {
-		await pool.query(
-			`
+		const res = (
+			await pool.query(
+				`
 		UPDATE reminders
 		SET title = $2::text,
 			description = $3::text,
 			date = $4::date
 		WHERE id = $1::integer
 		RETURNING *;
-	`,
-			[id, title, description, date]
-		);
-
-		return await this.getOne(pool, id);
+		`,
+				[id, title, description, date]
+			)
+		).rows[0];
+        
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		return res;
 	}
 
 	/**
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {integer} id
-	 * @returns {void}
+	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		await pool.query(
+		return (await pool.query(
 			`
 		DELETE FROM reminders
-		WHERE id = $1::integer;
-	`,
+		WHERE id = $1::integer
+        RETURNING *;
+	    `,
 			[id]
-		);
+		)).rows[0];
 	}
 
 	/**
