@@ -2,10 +2,20 @@
  * @param {integer} id
  * @returns {string}
  */
-function generateTransactionFilePath(id) {
-	return __dirname + "/../uploads/transaction" + String(id).padStart(4, "0") + ".pdf";
+function generateReceiptPath(id) {
+	return __dirname + "/../receipts/transaction" + String(id).padStart(4, "0") + ".pdf";
+}
+
+/**
+ * @returns {string}
+ */
+function generateReportPath() {
+	const timestamp = new Date().toISOString();
+
+	return __dirname + "/../reports/report" + timestamp.replace(/[:.]/g, "-") + ".pdf";
 }
 
 module.exports = {
-	generateTransactionFilePath
+	generateReceiptPath,
+	generateReportPath
 };

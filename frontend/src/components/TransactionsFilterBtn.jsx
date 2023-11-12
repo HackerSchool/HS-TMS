@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { showErrorMsg } from '../Alerts';
 import TuneIcon from '@mui/icons-material/Tune';
-import MultipleSelect from './MultipleSelect';
+import SelectDropdown from './SelectDropdown';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -94,12 +94,12 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
 
         let filters = [];
 
-        if (formData.initialMonth != "") filters.push(["initialMonth", formData.initialMonth]);
-        if (formData.finalMonth != "") filters.push(["finalMonth", formData.finalMonth]);
-        if (formData.initialValue != "") filters.push(["initialValue", formData.initialValue]);
-        if (formData.finalValue != "") filters.push(["finalValue", formData.finalValue]);
-        if (formData.hasNif != "any") filters.push(["hasNif", formData.hasNif]);
-        if (formData.hasFile != "any") filters.push(["hasFile", formData.hasFile]);
+        if (formData.initialMonth !== "") filters.push(["initialMonth", formData.initialMonth]);
+        if (formData.finalMonth !== "") filters.push(["finalMonth", formData.finalMonth]);
+        if (formData.initialValue !== "") filters.push(["initialValue", formData.initialValue]);
+        if (formData.finalValue !== "") filters.push(["finalValue", formData.finalValue]);
+        if (formData.hasNif !== "any") filters.push(["hasNif", formData.hasNif]);
+        if (formData.hasFile !== "any") filters.push(["hasFile", formData.hasFile]);
         if (formData.projects.length > 0) filters.push(["projects", `[${getChosenProjectsIds(formData.projects)}]`]);
 
         let queryParams = {};
@@ -138,15 +138,20 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
         }
     }, [projectsList]);
 
+    // Memoize project names to avoid computing them in every re-render
+    const projectsNames = useMemo(() => projectsList.map(p => p.name), [projectsList])
+
     function getChosenProjectsNames(chosenProjectsIds) {
-        return chosenProjectsIds.map((value) => {
-            return projectsList.find(el => el.id == value)?.name;
-        })
+        if (projectsList.length > 0)
+            return chosenProjectsIds.map((value) => {
+                return projectsList.find(el => el.id === value)?.name;
+            })
+        return [];
     }
 
     function getChosenProjectsIds(chosenProjects) {
         return chosenProjects.map((value) => {
-            return projectsList.find(el => el.name == value)?.id;
+            return projectsList.find(el => el.name === value)?.id;
         })
     }
 
@@ -209,7 +214,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                                     <span className='value-help'>(?)</span>
                                 </div>
                                 <input className='transactions-filter-value' type="number" name="initialValue"
-                                    placeholder='0' step={0.01} id="transactions-filter-initial-value"
+                                    placeholder='0.00' step={0.01} id="transactions-filter-initial-value"
                                     value={formData.initialValue} onChange={handleChange} />
                             </div>
 
@@ -219,7 +224,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                                     <span className='value-help'>(?)</span>
                                 </div>
                                 <input className='transactions-filter-value' type="number" name="finalValue"
-                                    placeholder='0' step={0.01} id="transactions-filter-final-value"
+                                    placeholder='0.00' step={0.01} id="transactions-filter-final-value"
                                     value={formData.finalValue} onChange={handleChange} />
                             </div>
                         </div>
@@ -273,10 +278,12 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                         <div className="form-row">
                             <div className="form-group" id='transactions-filter-projects-group'>
                                 <label htmlFor="projects">Projects:</label>
-                                <MultipleSelect
-                                    options={projectsList}
+                                <SelectDropdown
+                                    options={projectsNames}
                                     selectedOptions={formData.projects}
                                     handleChange={handleProjectsChange}
+                                    nullOption={"None"}
+                                    multiple={true}
                                 />
                             </div>
                         </div>
@@ -284,7 +291,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
 
                     <hr />
                     <div className="form-row last">
-                        <button className="btn" id='transactions-filter-clear-btn' onClick={clearFilters} >
+                        <button className="btn transactions-filter-clear-btn" onClick={clearFilters} >
                             Clear
                         </button>
                         <button type='submit' className="btn" id='transactions-filter-save-btn' >

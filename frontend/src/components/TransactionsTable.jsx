@@ -192,8 +192,8 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
                                 <TableCell align="center">
                                     {row.description ? formatString(row.description) : "-"}
                                 </TableCell>
-                                <TableCell align="center">{`${row.value}€`}</TableCell>
-                                <TableCell align="center">{`${row.balance}€`}</TableCell>
+                                <TableCell align="center">{`${row.value.toFixed(2)}€`}</TableCell>
+                                <TableCell align="center">{`${row.balance.toFixed(2)}€`}</TableCell>
                                 <TableCell align="center">
                                     {row.projects ? formatString(row.projects) : "-"}
                                 </TableCell>

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import axios_instance from '../Axios'
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
-import MultipleSelect from './MultipleSelect';
+import SelectDropdown from './SelectDropdown';
 import AddIcon from '@mui/icons-material/Add';
 import Modal from '@mui/material/Modal';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -103,6 +103,13 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
         // check form requirements
         if (!form.reportValidity()) return;
 
+        // guarantee description is non-empty
+        if (formData.description.trim() === "") {
+            showErrorMsg("You must provide a non-empty description",
+                        {anchorOrigin: {horizontal: 'center', vertical: 'top' }})
+            return;
+        }
+
         // guarantee the receipt is a pdf
         if (fileRef.current.files[0] && fileRef.current.files[0].type !== "application/pdf") {
             showErrorMsg("Receipt's file type needs to be \"pdf\"",
@@ -153,6 +160,9 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
         if (open) reset();
 
     }, [open])
+
+    // Memoize project names to avoid computing them in every re-render
+    const projectsNames = useMemo(() => projectsList.map(p => p.name), [projectsList])
 
     function getChosenProjectsIds() {
         return formData.projects.map((value) => {
@@ -208,7 +218,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                             <div className="form-group transaction-value-group" id='create-transaction-value-group'>
                                 <label htmlFor="value">Value: *</label>
                                 <div className="value-cost-earning-container">
-                                    <input type="number" name="value" placeholder='0' min={0} step={0.01}
+                                    <input type="number" name="value" placeholder='0.00' min={0} step={0.01}
                                         className='transaction-value' id="create-transaction-value" required
                                         value={formData.value} onChange={handleChange} />
                                     <ToggleButtonGroup
@@ -232,10 +242,12 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                         <div className="form-row">
                             <div className="form-group transaction-projects-group" id='create-transaction-projects-group'>
                                 <label htmlFor="projects">Projects:</label>
-                                <MultipleSelect
-                                    options={projectsList}
+                                <SelectDropdown
+                                    options={projectsNames}
                                     selectedOptions={formData.projects}
                                     handleChange={handleProjectsChange}
+                                    nullOption={"None"}
+                                    multiple={true}
                                 />
 
 
@@ -261,9 +273,9 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
 
                         <div className="form-row">
                             <div className="form-group transaction-description-group" id='create-transaction-description-group'>
-                                <label htmlFor="description">Description:</label>
+                                <label htmlFor="description">Description: *</label>
                                 <input type="text" name='description' placeholder='Description of the transaction'
-                                    value={formData.description} onChange={handleChange} />
+                                    value={formData.description} onChange={handleChange} required />
                             </div>
                             <div className="form-group transaction-file-group" id='create-transaction-file-group'>
                                 <label htmlFor="file">Receipt:</label>

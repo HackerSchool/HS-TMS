@@ -18,7 +18,7 @@
 	},
 	"homepage": "https://github.com/HackerSchool/HS-TMS#readme",
 	"dependencies": {
-		"axios": "^1.4.0",
+		"axios": "^1.6.0",
 		"cors": "^2.8.5",
 		"dotenv": "^16.0.3",
 		"express": "^4.18.2",
@@ -27,6 +27,8 @@
 		"fs": "^0.0.1-security",
 		"passport": "^0.6.0",
 		"passport-oauth2": "^1.7.0",
+		"pdf-lib": "^1.17.1",
+		"pdfmake": "^0.2.7",
 		"pg": "^8.10.0"
 	},
 	"devDependencies": {
