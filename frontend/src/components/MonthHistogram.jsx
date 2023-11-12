@@ -5,128 +5,114 @@ import Plot from "react-plotly.js";
 function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransactions}){
     const [histogramData, setHistogramData] = useState([]);
     const [years, setYears]=useState([]);
-    //Fetches data for a specific month, year, and type of transaction (Earning/Expense)
-    const fetchTransactionData = (month, year, earning_bool) => {
-        const res = axios_instance.get("transactions", {
-            params:{
-                initialMonth:`${year}-${month}`,
-                finalMonth:`${year}-${month}`,
-                ...
-                earning_bool ? {initialValue:0} : {finalValue:0}
-            },
-        })
-        .then( response => {
-            const transactions=response.data;
-            if(transactions.length===0){
-                return 0;
-            }
-            else {
-                //Sum of the transactions values
-                return Math.abs(transactions.reduce((accumulator, transaction) => {
-                    return accumulator + transaction.value;
-                }, 0));
-            }
-        })
-        .catch(error=>{
-            console.error(error);
-        });
-        return res;
-    };
-    //Fetches the first and last year recorded by the transactions
-    const fetchYears = () => {
-        const res = axios_instance.get("transactions")
+
+    useEffect(() => {
+        if(fetchTransactions){
+            axios_instance.get("transactions", {})
             .then( response => {
-                const transactions = response.data;
+                const transactions=response.data;
                 if(transactions.length===0){
-                    //If there are no transactions, 2023 is chosen as default year
-                    return ["2023"]
-                } else {
+                    //Mudar aqui
+                    setHistogramData([{
+                        x: months.map(String),
+                        y: Array(12).fill(0),
+                        name: "Earnings",
+                        type: "bar",
+                        width:0.4,
+                        marker: {
+                            color: "#6bba75",
+                            line: {
+                            color: "#0e9553",
+                            width: 2,
+                            },
+                        },
+                        }, {
+                        x: months.map(String),
+                        y: Array(12).fill(0),
+                        name: "Expenses",
+                        type: "bar",
+                        width:0.4,
+                        marker: {
+                            color: "#ff7e80",
+                            line: {
+                            color: "#cc6466",
+                            width: 2,
+                            },
+                        },
+                        }]);
+                    setYears([2023]);
+                    setFetchTransactions(false);
+                }
+                else {
                     //If typeOfYear is civic then the first year is automatically the first year seen. If typeOfYear is academic we need to check if the month is lesser than 9 (september): if it is the first, academic year is firstYear-1/firstYear.
                     //if it isn't the first academic year, is firstYear/firstYear+1 (we only return the first year of the academic year). The same check is done for lastYear.
-                    const firstYear= typeOfYear==="civic" ? parseInt(transactions[transactions.length-1].date.substring(0,4)) : 
+                    const firstYear = typeOfYear==="civic" ? parseInt(transactions[transactions.length-1].date.substring(0,4)) :
                         parseInt(transactions[transactions.length-1].date.substring(5,7)) < 9 ? parseInt(transactions[transactions.length-1].date.substring(0,4))-1 : parseInt(transactions[transactions.length-1].date.substring(0,4));
                     const lastYear=typeOfYear==="civic" ? parseInt(transactions[0].date.substring(0,4)) : 
                         parseInt(transactions[0].date.substring(5,7)) < 9 ? parseInt(transactions[0].date.substring(0,4))-1 : parseInt(transactions[0].date.substring(0,4));
-                    return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
+                    const years = Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
+                    setYears(years);
+                    let transaction_y = years.map((year)=>{
+                        return [Array(12).fill(0), Array(12).fill(0)]
+                    });
+
+                    const months= typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
+
+                    transactions.forEach((transaction)=>{
+                        const year_idx= typeOfYear==="civic" ? years.indexOf(parseInt(transaction.date.substring(0,4))) : 
+                            parseInt(transaction.date.substring(5,7)) < 9 ? years.indexOf(parseInt(transaction.date.substring(0,4))-1) : years.indexOf(parseInt(transaction.date.substring(0,4)));
+                        const month_idx=months.indexOf(parseInt(transaction.date.substring(5,7)));
+                        if(transaction.value>=0){
+                            transaction_y[year_idx][0][month_idx] = transaction_y[year_idx][0][month_idx] + transaction.value
+                        } else {
+                            transaction_y[year_idx][1][month_idx] = transaction_y[year_idx][1][month_idx] + Math.abs(transaction.value)
+                        }
+                    })
+
+                    console.log(transaction_y)
+
+                    const histData=transaction_y.map((year_y,idx)=>{
+                        return [{
+                            x: months.map(String),
+                            y: year_y[0],
+                            name: "Earnings",
+                            text: year_y[0].map(String),
+                            type: "bar",
+                            width:0.4,
+                            //Only the most recent year with transactions is initially visible
+                            visible: idx===0,
+                            marker: {
+                                color: "#6bba75",
+                                line: {
+                                color: "#0e9553",
+                                width: 2,
+                                },
+                            },
+                            }, {
+                            x: months.map(String),
+                            y: year_y[1],
+                            text: year_y[1].map(String),
+                            name: "Expenses",
+                            type: "bar",
+                            width:0.4,
+                            visible: idx===0,
+                            marker: {
+                                color: "#ff7e80",
+                                line: {
+                                color: "#cc6466",
+                                width: 2,
+                                },
+                            },
+                            }]
+                    }).flat();
+                    setFetchTransactions(false);
+                    setHistogramData(histData)
                 }
             })
             .catch(error=>{
                 console.error(error);
             });
-            return res;
-    }
-
-    useEffect(() => {
-        if(fetchTransactions){
-            const months = typeOfYear=== "civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
-            const years_promise = fetchYears();
-            Promise.all([years_promise])
-                .then((result)=> {
-                    const years = result[0];
-                    setYears(years)
-                    const y_earn_promises = months.flatMap((month) => 
-                         years.map((year)=>typeOfYear==="academic" && month < 9 ? fetchTransactionData(month,year+1,true) : fetchTransactionData(month,year,true))
-                    );
-
-                    const y_exp_promises = months.flatMap((month) => 
-                         years.map((year)=>typeOfYear==="academic" && month < 9 ? fetchTransactionData(month,year+1,false) : fetchTransactionData(month,year,false))
-                    );
-
-                    Promise.all([...y_earn_promises, ...y_exp_promises])
-                        .then((results) => {
-                            const y_earn = results.slice(0,results.length/2);
-                            const y_exp = results.slice(results.length/2);
-                            let data = []
-                            years.forEach((year)=>{
-                                const year_index = years.indexOf(year);
-                                const y_year_earn=y_earn.filter((value, index) => index % years.length === year_index);
-                                const y_year_exp=y_exp.filter((value, index) => index % years.length === year_index);
-                                const earnings = {
-                                    x: months.map(String),
-                                    y: y_year_earn,
-                                    name: "Earnings",
-                                    text: y_year_earn.map(String),
-                                    type: "bar",
-                                    width:0.4,
-                                    //Only the most recent year with transactions is initially visible
-                                    visible: year_index===0,
-                                    marker: {
-                                        color: "#6bba75",
-                                        line: {
-                                        color: "#0e9553",
-                                        width: 2,
-                                        },
-                                    },
-                                    };
-                                const expenses = {
-                                    x: months.map(String),
-                                    y: y_year_exp,
-                                    text: y_year_exp.map(String),
-                                    name: "Expenses",
-                                    type: "bar",
-                                    width:0.4,
-                                    visible: year_index===0,
-                                    marker: {
-                                        color: "#ff7e80",
-                                        line: {
-                                        color: "#cc6466",
-                                        width: 2,
-                                        },
-                                    },
-                                    };
-                                const year_data=[earnings,expenses];
-                                data = [...data, ...year_data];
-                            });
-                            setHistogramData(data);
-                            setFetchTransactions(false)
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                        });
-                }).catch((error) => {
-                    console.error(error)
-                })
-    }}, [fetchTransactions]);
+        }}, [fetchTransactions]);
     
     return (
         <div className="chart-box">
