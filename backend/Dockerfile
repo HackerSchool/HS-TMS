@@ -15,5 +15,11 @@ RUN npm install
 # Bundle app source
 COPY .env* .
 
+# Setup pdfmake VFS
+RUN mkdir node_modules/pdfmake/report
+RUN mkdir node_modules/pdfmake/report/assets
+COPY src/modules/report/assets node_modules/pdfmake/report/assets
+RUN cd node_modules/pdfmake && node build-vfs.js "./report/assets" "./build/vfs.js"
+
 EXPOSE 3000
 CMD [ "npm", "start" ]

@@ -15,13 +15,14 @@ CREATE TABLE users (
 CREATE TABLE projects (
     id SERIAL PRIMARY KEY,
     "name" TEXT UNIQUE NOT NULL,
-    active BOOLEAN NOT NULL
+    active BOOLEAN NOT NULL,
+    "default" BOOLEAN NOT NULL
 );
 
 CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     "date" DATE NOT NULL,
-    "description" TEXT,
+    "description" TEXT NOT NULL,
     "value" NUMERIC NOT NULL,
     has_file BOOLEAN NOT NULL,
     has_nif BOOLEAN NOT NULL

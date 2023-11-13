@@ -5,16 +5,22 @@ import axios_instance from '../Axios';
 import { showErrorMsg, showSuccessMsg } from '../Alerts';
 import Table, { DownloadIcon } from '../components/TransactionsTable'
 import NewTransactionBtn from '../components/NewTransactionBtn';
+import TransactionsReportBtn from '../components/TransactionsReportBtn';
 import SortButton from '../components/SortBtn';
 import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
-import SummarizeIcon from '@mui/icons-material/Summarize';
 
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
     const [queryParams, setQueryParams] = useSearchParams();
+    const sortOptions = [
+        {text: 'Newest first', orderBy: 'date', order: 'DESC'},
+        {text: 'Oldest first', orderBy: 'date', order: 'ASC'},
+        {text: 'Value Asc', orderBy: 'value', order: 'ASC'},
+        {text: 'Value Desc', orderBy: 'value', order: 'DESC'}
+    ]
 
     // Transaction Edit Modal
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -48,7 +54,7 @@ function TransactionsPage() {
         return (
         <div style={{ lineHeight: 1.5 }}>
             <b>Date:</b> {transactionToDelete.date} <br />
-            <b>Value:</b> {transactionToDelete.value}€ <br />
+            <b>Value:</b> {transactionToDelete.value.toFixed(2)}€ <br />
             <b>Projects:</b> {transactionToDelete.projects ?? "none"} <br />
             <b>NIF:</b> {transactionToDelete.has_nif ? "Yes" : "No"} <br />
             <b>Receipt:</b> {transactionToDelete.has_file ?
@@ -137,10 +143,11 @@ function TransactionsPage() {
                         refetch={refetchTransactions}
                     />
 
-                    <button className='btn icon-btn'>
-                        <SummarizeIcon />
-                        Report
-                    </button>
+                    <TransactionsReportBtn
+                        params={queryParams}
+                        projectsList={projectsList}
+                        sortOptions={sortOptions}
+                    />
                 </div>
 
                 <div className="btn-group right">
@@ -148,12 +155,7 @@ function TransactionsPage() {
                         params={queryParams}
                         setParams={setQueryParams}
                         refetch={refetchTransactions}
-                        options={[
-                            {text: 'Newest first', orderBy: 'date', order: 'DESC'},
-                            {text: 'Oldest first', orderBy: 'date', order: 'ASC'},
-                            {text: 'Value Asc', orderBy: 'value', order: 'ASC'},
-                            {text: 'Value Desc', orderBy: 'value', order: 'DESC'}
-                        ]}
+                        options={sortOptions}
                     />
 
                     <TransactionsFilterBtn

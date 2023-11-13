@@ -3,132 +3,127 @@ import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
 import TransactionTypeBtn from "./TransactionTypeBtn";
 
-const projects = [-1,6,7,8];
-const project_names = ["Projects", "Bank", "HS", "Other"];
-const bars_color = ["#7FA8FD","#FFDC82","#6BBA75","#FF787C"];
-const bar_lines_color = ["#4274C4", "#CEA54E", "#0E9553", "#9F5C5C"];
+const bars_color = ["#7FA8FD","#6BBA75","#FFDC82","#FF787C"];
+const bar_lines_color = ["#4274C4","#0E9553", "#CEA54E", "#9F5C5C"];
 
 //Transactions CANNOT BE any combination of Bank, HS and Other.
 function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransactions}){
     const [histogramData, setHistogramData] = useState([]);
     const [years, setYears] = useState([]);
+    const [defaultProjects, setDefaultProjects]=useState([])
     const [earningBool, setEarningBool] = useState(true);
-    const [projectsData, setProjectsData] = useState([]);
-    const [bankData, setBankData] = useState([]);
-    const [HSData, setHSData] = useState([]);
-    const [otherData, setOtherData] = useState([]); 
 
     const refetchTransactions = useCallback(() => setFetchTransactions(true));
 
-    const fetchTransactionData = (month, year, earningBool, projectID) => {
+    const fetchTransactionData = (earningBool, projects) => {
         const res = axios_instance.get("transactions", {
             params:{
-                initialMonth:`${year}-${month}`,
-                finalMonth:`${year}-${month}`,
                 ...
                 earningBool ? {initialValue:0} : {finalValue:0},
-                ...
-                projectID === -1 ? {} : {projects:JSON.stringify([projectID])},
             },
         })
         .then( response => {
             const transactions=response.data;
             if(transactions.length===0){
-                return 0;
+                setHistogramData([{
+                    x: months.map(String),
+                    y: Array(12).fill(0),
+                    name: "Projects",
+                    type: "bar",
+                    marker: {
+                        line: {
+                        width: 2,
+                        },
+                    },
+                    }]);
+                setYears([2023]);
+                setFetchTransactions(false);
             }
             else {
-                //Sum of the transactions values
-                return Math.abs(transactions.reduce((accumulator, transaction) => {
-                    if(projectID===-1){
-                        if(transaction.projects !== "Banco" && transaction.projects !== "HS" && transaction.projects !== "Outros"){
-                            return accumulator + transaction.value;
-                        } else {
-                            return accumulator;
-                        }
+                const firstYear = typeOfYear==="civic" ? parseInt(transactions[transactions.length-1].date.substring(0,4)) :
+                        parseInt(transactions[transactions.length-1].date.substring(5,7)) < 9 ? parseInt(transactions[transactions.length-1].date.substring(0,4))-1 : parseInt(transactions[transactions.length-1].date.substring(0,4));
+                const lastYear = typeOfYear==="civic" ? parseInt(transactions[0].date.substring(0,4)) : 
+                    parseInt(transactions[0].date.substring(5,7)) < 9 ? parseInt(transactions[0].date.substring(0,4))-1 : parseInt(transactions[0].date.substring(0,4));
+                const years = Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
+                setYears(years);
+                let transaction_y = years.map((year)=>{
+                    return Array(projects.length+1).fill(Array(12).fill(0))
+
+                });
+                //Porque é que isto tem logo um valor? :')
+                console.log(transaction_y)
+                
+                const months = typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
+                
+                transactions.forEach((transaction)=>{
+                    const year_idx= typeOfYear==="civic" ? years.indexOf(parseInt(transaction.date.substring(0,4))) : 
+                        parseInt(transaction.date.substring(5,7)) < 9 ? years.indexOf(parseInt(transaction.date.substring(0,4))-1) : years.indexOf(parseInt(transaction.date.substring(0,4)));
+                    const month_idx=months.indexOf(parseInt(transaction.date.substring(5,7)));
+                    const project_idx=projects.indexOf(transaction.projects);
+                    //If project_idx===-1 (project is not default) then the value is assigned to the last position of the transactions array
+                    if(project_idx===-1){
+                        transaction_y[year_idx][projects.length][month_idx] = transaction_y[year_idx][projects.length][month_idx] + Math.abs(transaction.value);
                     } else {
-                        return accumulator + transaction.value
+                        console.log(transaction_y[year_idx][project_idx][month_idx])
+                        transaction_y[year_idx][project_idx][month_idx] = transaction_y[year_idx][project_idx][month_idx] + Math.abs(transaction.value);
                     }
-                }, 0));
+                });
+                const histData = transaction_y.map((year_y, year_index) => {
+                    console.log(year_y)
+                    return year_y.map((project_y, project_idx)=>{
+                        console.log(projects[project_idx % (projects.length+1)] ? projects[project_idx % (projects.length+1)] : "Projects")
+                        return {
+                            x: months.map(String),
+                            y: project_y,
+                            //sque isto
+                            name: projects[project_idx % (projects.length+1)] ? projects[project_idx % (projects.length+1)] : "Projects",
+                            text: project_y.map(String),
+                            type: "bar",
+                            //Only the most recent year with transactions is initially visible
+                            visible: year_index===0,
+                            marker: {
+                                //é seguro meter cores, de certeza que só são 3 defaults?
+                                color: projects[project_idx % (projects.length+1)] ? bars_color[project_idx % (projects.length+1)] : bars_color[bars_color.length-1],
+                                line: {
+                                color: projects[project_idx % (projects.length+1)] ? bar_lines_color[project_idx % (projects.length+1)] : bar_lines_color[bar_lines_color.length-1],
+                                width: 2,
+                                },
+                            },
+                        }
+                    }).flat()
+                }).flat();
+                console.log(histData)
+                setFetchTransactions(false)
+                setHistogramData(histData)
             }
         })
         .catch(error=>{
             console.error(error);
         });
-        return res;
     };
 
-    //Fetches the first and last year recorded by the transactions
-    const fetchYears = () => {
-        const res = axios_instance.get("transactions")
-            .then( response => {
-                const transactions = response.data;
-                if(transactions.length===0){
-                    //If there are no transactions, 2023 is chosen as default year
-                    return ["2023"]
-                } else {
-                    //If typeOfYear is civic then the first year is automatically the first year seen. If typeOfYear is academic we need to check if the month is lesser than 9 (september): if it is the first, academic year is firstYear-1/firstYear.
-                    //if it isn't the first academic year, is firstYear/firstYear+1 (we only return the first year of the academic year). The same check is done for lastYear.
-                    const firstYear= typeOfYear==="civic" ? parseInt(transactions[transactions.length-1].date.substring(0,4)) : 
-                        parseInt(transactions[transactions.length-1].date.substring(5,7)) < 9 ? parseInt(transactions[transactions.length-1].date.substring(0,4))-1 : parseInt(transactions[transactions.length-1].date.substring(0,4));
-                    const lastYear=typeOfYear==="civic" ? parseInt(transactions[0].date.substring(0,4)) : 
-                        parseInt(transactions[0].date.substring(5,7)) < 9 ? parseInt(transactions[0].date.substring(0,4))-1 : parseInt(transactions[0].date.substring(0,4));
-                    return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
-                }
-            })
-            .catch(error=>{
-                console.error(error);
-            });
-            return res;
+    const fetchDefaultProjects = () => {
+        const res = axios_instance.get("projects", {
+            params: {
+                defaultProject: true
+            },
+        })
+        .then( response => {
+            const projects=response.data;
+            let project_data = projects.map((project) => project.name)
+            setDefaultProjects(project_data)
+            return project_data
+        });
+        return res;
     }
 
     useEffect(() => {
         if(fetchTransactions){
-            const months = typeOfYear === "civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
-            const years_promise = fetchYears();
-            Promise.all([years_promise])
+            const default_projects_promise=fetchDefaultProjects();
+            Promise.all([default_projects_promise])
                 .then((result)=> {
-                    const years = result[0];
-                    //[-1, 6,7,8] - ID's [All Projects, Banco, HS, Outros] - Hard Coded
-                    setYears(years);
-                    const data_promises = projects.flatMap((projectID) => months.flatMap((month) => 
-                        years.map((year)=> typeOfYear==="academic" && month < 9 ? fetchTransactionData(month,year+1,earningBool, projectID) : fetchTransactionData(month,year,earningBool, projectID))));
-                    Promise.all(data_promises)
-                        .then((results) => {
-
-                            let data = [];
-                            years.forEach((year)=>{
-                                const year_index = years.indexOf(year);
-                                let year_data=[];
-                                for(let i=0; i<4;i++){
-                                    const typeData = results.slice((results.length/4)*i, (results.length/4)*(i+1));
-                                    const y_year = typeData.filter((value, index) => index % years.length === year_index);
-                                   
-                                    const typedTransactions = {
-                                        x: months.map(String),
-                                        y: y_year,
-                                        name: project_names[i],
-                                        text: y_year.map(String),
-                                        type: "bar",
-                                        //Only the most recent year with transactions is initially visible
-                                        visible: year_index===0,
-                                        marker: {
-                                            color: bars_color[i],
-                                            line: {
-                                            color: bar_lines_color[i],
-                                            width: 2,
-                                            },
-                                        },
-                                    };
-                                    year_data=[...year_data, typedTransactions]
-                                }
-                                data = [...data, ...year_data];
-                            });
-                            setHistogramData(data);
-                            setFetchTransactions(false)
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                        });
+                    const projects = result[0];
+                    fetchTransactionData(earningBool, projects);
                 }).catch((error) => {
                     console.error(error)
                 })
@@ -182,9 +177,9 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
                     //Dropdown menu for choosing the desired year
                     updatemenus:[{
                         buttons:years.map((year,index)=>{
-                            const visibleArray=Array(years.length*4).fill(false);
-                            for(let i=0; i<4; i++){
-                                visibleArray[index*4+i]=true;
+                            const visibleArray=Array(years.length*(defaultProjects.length+1)).fill(false);
+                            for(let i=0; i<defaultProjects.length+1; i++){
+                                visibleArray[index*(defaultProjects.length+1)+i]=true;
                             }
                             return {
                                 method:"restyle",

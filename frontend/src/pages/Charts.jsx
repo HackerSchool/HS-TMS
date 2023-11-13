@@ -21,12 +21,6 @@ function ChartsPage() {
                 <h1>
                     Charts
                 </h1>
-                <div className="btn-group left">
-                        <button className='btn icon-btn'>
-                            <PrintIcon />
-                            Print
-                        </button>
-                </div>
                 <div className="btn-group right">
                     <TransactionsSortButton
                         setTypeOfYear={setTypeOfYear}

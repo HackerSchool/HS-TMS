@@ -38,15 +38,11 @@ export default function TypeOfYearBtn({setTypeOfYear,refetch}){
 
     return (
         <>
-            <ButtonGroup ref={anchorRef} >
-                <button className='btn icon-btn' id='select-btn' onClick={handleToggle}>
-                    <SortIcon />
-                    {`${options[selectedIndex].text}`}
-                </button>
-                <button className='btn icon-btn select-arrow-btn' onClick={handleToggle} >
-                    <ArrowDropDownIcon />
-                </button>
-            </ButtonGroup>
+            <button ref={anchorRef} className='btn icon-btn sort-btn' onClick={handleToggle}>
+                <SortIcon />
+                {`${options[selectedIndex].text}`}
+                <ArrowDropDownIcon />
+            </button>
 
             <Popper
                 sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}

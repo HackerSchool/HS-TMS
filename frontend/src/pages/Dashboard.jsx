@@ -205,7 +205,7 @@ function DashboardPage() {
                         <div className="dashboard-item-content">
                             <div className="dashboard-card-row">
                                 <DashboardCard
-                                    mainText={`€ ${totalBalance ?? "?"}`}
+                                    mainText={`€ ${totalBalance?.toFixed(2) ?? "?"}`}
                                     subText="Total balance"
                                     green
                                     bolderMain
