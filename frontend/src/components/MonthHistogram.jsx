@@ -12,7 +12,6 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
             .then( response => {
                 const transactions=response.data;
                 if(transactions.length===0){
-                    //Mudar aqui
                     setHistogramData([{
                         x: months.map(String),
                         y: Array(12).fill(0),
@@ -55,7 +54,7 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
                     let transaction_y = years.map((year)=>{
                         return [Array(12).fill(0), Array(12).fill(0)]
                     });
-
+                    
                     const months= typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
 
                     transactions.forEach((transaction)=>{
@@ -68,8 +67,6 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
                             transaction_y[year_idx][1][month_idx] = transaction_y[year_idx][1][month_idx] + Math.abs(transaction.value)
                         }
                     })
-
-                    console.log(transaction_y)
 
                     const histData=transaction_y.map((year_y,idx)=>{
                         return [{

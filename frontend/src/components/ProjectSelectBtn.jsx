@@ -24,7 +24,6 @@ export default function ProjectSelectBtn({setProjectID,refetch, idx}){
             axios_instance.get("projects")
             .then((response)=>{
                 //Only active projects are shown on the menu
-                console.log(response.data)
                 setOptions(response.data.filter((project)=>project.active===true))
 
                 setFetchProjects(false)
