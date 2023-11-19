@@ -81,7 +81,8 @@ function TransactionsPage() {
                 })
                 .then(data => {
 
-                    if (data.length === 0 && queryParams.size > 0)
+                    if (data.length === 0 && queryParams.size > 0 && !(queryParams.size === 2
+                            && queryParams.get("orderBy") && queryParams.get("order")))
                         showErrorMsg("No transactions match the specified filters");
 
                     setTransactions(data)
