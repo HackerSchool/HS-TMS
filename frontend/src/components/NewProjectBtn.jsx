@@ -24,7 +24,7 @@ export default function NewProjectBtn({ refetch }) {
         setFormData({
             name: "",
             active: true,
-            defaultProject: false
+            symbolic: false
         })
     }
 
@@ -35,7 +35,7 @@ export default function NewProjectBtn({ refetch }) {
     const [formData, setFormData] = useState({
         name: "",
         active: true,
-        defaultProject: false
+        symbolic: false
     })
 
     // Handle form changes
@@ -62,14 +62,14 @@ export default function NewProjectBtn({ refetch }) {
             }));
     }
 
-    function handleDefaultProjectChange(newValue) {
+    function handleSymbolicChange(newValue) {
         if (loading) return;
 
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
                 ...oldFormData,
-                defaultProject: newValue
+                symbolic: newValue
             }));
     }
 
@@ -93,7 +93,7 @@ export default function NewProjectBtn({ refetch }) {
         const body = {
             name: formData.name,
             active: formData.active,
-            defaultProject: formData.defaultProject
+            symbolic: formData.symbolic
         };
 
         setLoading(true);
@@ -176,12 +176,12 @@ export default function NewProjectBtn({ refetch }) {
                                 </ToggleButtonGroup>
                             </div>
 
-                            <div className="form-group project-default-group" id='create-project-default-group'>
-                                <label htmlFor="default">Default:</label>
+                            <div className="form-group project-symbolic-group" id='create-project-symbolic-group'>
+                                <label htmlFor="symbolic">Symbolic:</label>
                                 <ToggleButtonGroup
-                                    value={formData.defaultProject}
+                                    value={formData.symbolic}
                                     exclusive
-                                    onChange={(e, value) => handleDefaultProjectChange(value)}
+                                    onChange={(e, value) => handleSymbolicChange(value)}
                                 >
                                     <ToggleButton className='toggle-button left' value={false}>
                                         <CloseIcon />

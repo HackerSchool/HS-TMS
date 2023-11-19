@@ -51,7 +51,7 @@ function ProjectsPage() {
             <b># Transactions:</b> {projectToDelete.transaction_count} <br /> 
             <b>Balance:</b> {projectToDelete.balance}€ <br />
             <b>Active:</b> {projectToDelete.active ? "Yes" : "No"} <br />
-            <b>Default:</b> {projectToDelete.default ? "Yes" : "No"}
+            <b>Symbolic:</b> {projectToDelete.symbolic ? "Yes" : "No"}
         </div>
         )
     }

@@ -31,14 +31,14 @@
     max-width: 85%;
 }
 
-.project-default-indicator-container {
+.project-symbolic-indicator-container {
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
 }
 
-.project-default-indicator {
+.project-symbolic-indicator {
     display: inline-flex;
     position: relative;
     background-color: var(--hs-logo);
@@ -46,8 +46,8 @@
     padding: 0.3rem;
 }
 
-.project-default-indicator:hover::after,
-.project-default-indicator:focus::after {
+.project-symbolic-indicator:hover::after,
+.project-symbolic-indicator:focus::after {
     display: block;
     position: absolute;
     left: 50%;
@@ -59,13 +59,13 @@
     font-size: 0.8rem;
     background-color: var(--hs-logo);
     color: white;
-    content: "Default project";
+    content: "Symbolic project";
     border-radius: 0.8rem;
     padding: 0.25rem 0.5rem;
     z-index: 1400;
 }
 
-.project-default-indicator svg {
+.project-symbolic-indicator svg {
     font-size: 1rem
 }
 

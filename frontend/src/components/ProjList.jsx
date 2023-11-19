@@ -4,19 +4,31 @@ import MoreOptionsBtn from "./MoreOptionsBtn";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function ProjList({ data, openEditModal, openDeleteModal, loading }) {
+
+    if (loading)
+        return (
+            <div style={{ margin: "0 auto", width: "fit-content" }}>
+                <CircularProgress className="loading-circle large" />
+            </div>
+        )
+
+    // display message when there's no data to display
+    if (data.length === 0)
+        return (
+            <div className="project-container" style={{ margin: "0 auto" }}>
+                <p>No projects found</p>
+            </div>
+        )
+
     return (
         <div className="project-list">
-            {data.length === 0 && !loading && ( // display message when there's no data to display
-                <div className="project-container">
-                    <p>No projects found</p>
-                </div>
-            )}
-            {!loading && data.map((project) => (
+            {data.map((project) => (
                     <div className="project-container" key={`${project.name}`}>
-                        {project.default && <div className="project-default-indicator-container">
-                            <div className="project-default-indicator">
+                        {project.symbolic && <div className="project-symbolic-indicator-container">
+                            <div className="project-symbolic-indicator">
                                 <AccountBalanceIcon />
                             </div>
                         </div>}

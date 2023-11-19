@@ -21,14 +21,14 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
         initialBalance: "",
         finalBalance: "",
         active: "any",
-        defaultProject: "any"
+        symbolic: "any"
     }
 
     const [formData, setFormData] = useState({
         initialBalance: params.get("initialBalance") ?? "",
         finalBalance: params.get("finalBalance") ?? "",
         active: params.get("active") ?? "any",
-        defaultProject: params.get("defaultProject") ?? "any",
+        symbolic: params.get("symbolic") ?? "any",
     })
 
     // Handle form changes
@@ -51,12 +51,12 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
             }));
     }
 
-    function handleDefaultProjectChange(newValue) {
+    function handleSymbolicChange(newValue) {
         // so there's always a button selected
         if (newValue !== null)
             setFormData((oldFormData) => ({
                 ...oldFormData,
-                defaultProject: newValue
+                symbolic: newValue
             }));
     }
 
@@ -79,10 +79,10 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
 
         let filters = [];
 
-        if (formData.initialBalance != "") filters.push(["initialBalance", formData.initialBalance]);
-        if (formData.finalBalance != "") filters.push(["finalBalance", formData.finalBalance]);
-        if (formData.active != "any") filters.push(["active", formData.active]);
-        if (formData.defaultProject != "any") filters.push(["defaultProject", formData.defaultProject]);
+        if (formData.initialBalance !== "") filters.push(["initialBalance", formData.initialBalance]);
+        if (formData.finalBalance !== "") filters.push(["finalBalance", formData.finalBalance]);
+        if (formData.active !== "any") filters.push(["active", formData.active]);
+        if (formData.symbolic !== "any") filters.push(["symbolic", formData.symbolic]);
 
         let queryParams = {};
 
@@ -180,13 +180,13 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
                                 </ToggleButtonGroup>
                             </div>
 
-                            <div className="form-group" id='projects-filter-default-group'>
-                                <label htmlFor="default">Default:</label>
+                            <div className="form-group" id='projects-filter-symbolic-group'>
+                                <label htmlFor="symbolic">Symbolic:</label>
                                 <ToggleButtonGroup
-                                    value={formData.defaultProject}
+                                    value={formData.symbolic}
                                     exclusive
-                                    onChange={(e, value) => handleDefaultProjectChange(value)}
-                                    id='projects-filter-default-buttons'
+                                    onChange={(e, value) => handleSymbolicChange(value)}
+                                    id='projects-filter-symbolic-buttons'
                                 >
                                     <ToggleButton className='toggle-button left' value={"false"}>
                                         <CloseIcon />
