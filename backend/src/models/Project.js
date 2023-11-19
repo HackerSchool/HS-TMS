@@ -4,14 +4,14 @@ class Project {
 	 * @param {pg.Pool} pool
 	 * @param {string} name
 	 * @param {boolean} active
-	 * @param {boolean} defaultProject
+	 * @param {boolean} symbolic
 	 * @returns {Object}
 	 */
-	async createOne(pool, name, active, defaultProject) {
+	async createOne(pool, name, active, symbolic) {
 		const projectId = (
 			await pool.query(
-				`INSERT INTO projects (name, active, "default") VALUES($1::text, $2::boolean, $3::boolean) RETURNING *;`,
-				[name, active, defaultProject]
+				`INSERT INTO projects (name, active, symbolic) VALUES($1::text, $2::boolean, $3::boolean) RETURNING *;`,
+				[name, active, symbolic]
 			)
 		).rows[0].id;
 
@@ -106,7 +106,7 @@ class Project {
 	 * @param {float} [initialBalance=null]
 	 * @param {float} [finalBalance=null]
 	 * @param {boolean} [active=null]
-	 * @param {boolean} [defaultProject=null]
+	 * @param {boolean} [symbolic=null]
 	 * @param {string} [orderBy="name"]
 	 * @param {string} [order="ASC"]
 	 * @returns {Array<Object>}
@@ -116,7 +116,7 @@ class Project {
 		initialBalance = null,
 		finalBalance = null,
 		active = null,
-		defaultProject = null,
+		symbolic = null,
 		orderBy = "name",
 		order = "ASC"
 	) {
@@ -165,9 +165,9 @@ class Project {
 			queryParams.push(active);
 		}
 
-		if (defaultProject !== null) {
-			filterConditions.push(`"default" = $${queryParams.length + 1}::boolean`);
-			queryParams.push(defaultProject);
+		if (symbolic !== null) {
+			filterConditions.push(`symbolic = $${queryParams.length + 1}::boolean`);
+			queryParams.push(symbolic);
 		}
 
 		query +=
