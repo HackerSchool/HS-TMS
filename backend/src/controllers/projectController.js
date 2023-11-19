@@ -2,7 +2,7 @@ const Project = require("../models/Project");
 
 async function createProject(req, res) {
 	const pool = req.pool;
-	const { name, active, defaultProject } = req.body;
+	const { name, active, symbolic } = req.body;
 
 	// input validation
 	if (
@@ -11,12 +11,12 @@ async function createProject(req, res) {
 		name === "" ||
 		active === undefined ||
 		typeof active !== "boolean" ||
-		defaultProject === undefined ||
-		typeof defaultProject !== "boolean"
+		symbolic === undefined ||
+		typeof symbolic !== "boolean"
 	)
 		return res.status(400).send("Invalid params");
 
-	res.status(201).send(await Project.createOne(pool, name, active, defaultProject));
+	res.status(201).send(await Project.createOne(pool, name, active, symbolic));
 }
 
 async function getProject(req, res) {
@@ -75,7 +75,7 @@ async function deleteProject(req, res) {
 async function getAllProjects(req, res) {
 	const pool = req.pool;
 
-	const { initialBalance, finalBalance, active, defaultProject, orderBy, order } =
+	const { initialBalance, finalBalance, active, symbolic, orderBy, order } =
 		req.query;
 
 	// input validation
@@ -88,9 +88,9 @@ async function getAllProjects(req, res) {
 			throw Error();
 
 		if (
-			defaultProject !== undefined &&
-			defaultProject !== "true" &&
-			defaultProject !== "false"
+			symbolic !== undefined &&
+			symbolic !== "true" &&
+			symbolic !== "false"
 		)
 			throw Error();
 
@@ -107,7 +107,7 @@ async function getAllProjects(req, res) {
 			initialBalance && parseFloat(initialBalance),
 			finalBalance && parseFloat(finalBalance),
 			active && JSON.parse(active),
-			defaultProject && JSON.parse(defaultProject),
+			symbolic && JSON.parse(symbolic),
 			orderBy,
 			order
 		)
