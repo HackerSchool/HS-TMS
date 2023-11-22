@@ -25,7 +25,11 @@ async function createTransaction(req, res) {
 			projects !== undefined &&
 			(!Array.isArray(projects) ||
 				!projects.every((v) => Number.isInteger(parseFloat(v))) ||
-				!(await Project.assertAllExist(pool, projects)))
+				!(await Project.assertAllExist(pool, projects)) ||
+                // symbolic projects transactions can only be associated with 1 project
+                ((await Project.getAll(pool, undefined, undefined, undefined, true))
+                            .some(proj => projects.some(id => id === proj.id))
+                            && projects.length > 1))
 		)
 			throw Error();
 	} catch (err) {
@@ -129,7 +133,11 @@ async function updateTransaction(req, res) {
 			projects !== undefined &&
 			(!Array.isArray(projects) ||
 				!projects.every((v) => Number.isInteger(parseFloat(v))) ||
-				!(await Project.assertAllExist(pool, projects)))
+				!(await Project.assertAllExist(pool, projects)) ||
+                // symbolic projects transactions can only be associated with 1 project
+                ((await Project.getAll(pool, undefined, undefined, undefined, true))
+                            .some(proj => projects.some(id => id === proj.id))
+                            && projects.length > 1))
 		)
 			throw Error();
 	} catch (err) {

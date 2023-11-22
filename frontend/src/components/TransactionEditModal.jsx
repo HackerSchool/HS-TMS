@@ -124,6 +124,14 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
             return;
         }
 
+        // symbolic projects transactions can only be associated with 1 project
+        if (formData.projects.some(name => projectsList.find(proj => proj.name === name).symbolic)
+            && formData.projects.length > 1) {
+            showErrorMsg("Symbolic projects can't be combined with other projects in a single transaction",
+                        {anchorOrigin: {horizontal: 'center', vertical: 'top' }})
+            return;
+        }
+
         const body = {
             date: formData.date,
             value: formData.isCost ? formData.value * -1 : formData.value,
