@@ -2,11 +2,9 @@ const User = require("../models/User");
 
 async function isLoggedIn(req, res, next) {
 	if (req.user) {
-		if (
-			await User.getOne(require("../middleware/selectPool").pool, req.user.username)
-		) {
+		if (await User.getOne(require("../models/pool"), req.user.username)) {
 			await User.updateOne(
-				require("../middleware/selectPool").pool,
+				require("../models/pool"),
 				req.user.username,
 				true,
 				req.user.name,
