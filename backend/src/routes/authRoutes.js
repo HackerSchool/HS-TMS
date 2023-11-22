@@ -26,6 +26,24 @@ router.get("/fenix/failure", (req, res) => {
 	res.redirect(`${process.env.CLIENT_ADDRESS}/login`);
 });
 
+router.post(
+	"/demo",
+	asyncHandler(
+		passport.authenticate("demo", {
+			successRedirect: "/auth/demo/success",
+			failureRedirect: "/auth/demo/failure"
+		})
+	)
+);
+
+router.get("/demo/success", (req, res) => {
+	res.send("Success");
+});
+
+router.get("/demo/failure", (req, res) => {
+	res.send("Failure");
+});
+
 router.get("/user", isLoggedIn, (req, res) => {
 	res.send(req.user);
 });

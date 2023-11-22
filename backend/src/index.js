@@ -4,6 +4,7 @@ const session = require("express-session");
 const passport = require("passport");
 const cors = require("cors");
 require("./auth/fenixOAuth2");
+require("./auth/demoLocal");
 require("dotenv").config();
 const isLoggedIn = require("./middleware/isLoggedIn");
 
