@@ -325,8 +325,8 @@ const transactionsTable = (transactions, displayNIF, receiptPagesMap) => {
     } else {
         body = transactions.map((t) => {
             const row = [
-                { text: t.id, noWrap: true },
-                { text: t.date, noWrap: true },
+                { text: t.id, alignment: "center", noWrap: true },
+                { text: t.date, alignment: "center", noWrap: true },
                 t.description,
                 {
                     text: t.value.toFixed(2),

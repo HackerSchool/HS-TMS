@@ -6,7 +6,8 @@ async function createUser(req, res) {
 
     if (username === undefined || typeof username !== 'string' ||
         !username.match(/^ist[0-9]+$/g) ||
-        name === undefined || typeof name !== 'string')
+        name === undefined || typeof name !== 'string' ||
+        (await User.getOne(pool, username)) !== undefined)
         return res.status(400).send("Invalid params");
 
 	res.status(201).send(await User.createOne(pool, username, name));
