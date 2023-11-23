@@ -517,6 +517,11 @@ aside {
     max-height: 2.5rem;
 }
 
+svg.profile-pic {
+    height: 2.5rem !important;
+    width: 2.5rem !important;
+}
+
 /* Table */
 
 /* Table head cells */

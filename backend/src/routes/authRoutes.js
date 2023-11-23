@@ -37,11 +37,11 @@ router.post(
 );
 
 router.get("/demo/success", (req, res) => {
-	res.send("Success");
+	res.status(200).send("Demo login success");
 });
 
 router.get("/demo/failure", (req, res) => {
-	res.send("Failure");
+	res.status(401).send("Demo login failure");
 });
 
 router.get("/user", isLoggedIn, (req, res) => {

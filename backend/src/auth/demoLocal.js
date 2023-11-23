@@ -6,7 +6,8 @@ passport.use(
 	"demo",
 	new LocalStrategy(function (username, password, done) {
 		if (username === "demo" && password === "demo") {
-			done(null, { username });
+			const name = "Demo User";
+			done(null, { username, name });
 		} else {
 			done(null, null);
 		}

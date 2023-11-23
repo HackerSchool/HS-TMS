@@ -10,6 +10,7 @@ import HandymanIcon from '@mui/icons-material/Handyman';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function Sidebar({ user }) {
 
@@ -63,11 +64,17 @@ function Sidebar({ user }) {
 
                 <div className="nav-item" id='user'>
                     <div className="nav-item" id="user-info" >
-                        <ImageRenderer
-                            imageData={[user.photo]}
-                            altText='Profile pic'
-                            className="profile-pic"
-                        />
+                        {user.photo ? 
+                            <ImageRenderer
+                                imageData={[user.photo]}
+                                altText='Profile pic'
+                                className="profile-pic"
+                            />
+                            : <AccountCircleIcon
+                                alttext='No profile pic'
+                                className='profile-pic'
+                                />
+                        }
                         {user.name}
                     </div>
                     <a className="nav-item" id='logout' onClick={logout} >

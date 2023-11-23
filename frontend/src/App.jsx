@@ -49,6 +49,9 @@ function App() {
                 else if (err.response.status === 403) { // AxiosError, sv responded with 4xx
                     showErrorMsg("Successfully authenticated via FenixEdu but not authorized in the system");
                 }
+                else if (("" + err.response.status)[0] === '5') { // Internal sv error
+                    showErrorMsg("Authentication failed. Internal server error")
+                }
             });
     }, []);
 
