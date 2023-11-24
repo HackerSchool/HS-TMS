@@ -3,6 +3,7 @@ const transactionController = require("../controllers/transactionController");
 const { asyncHandler } = require("../middleware/error");
 
 const router = express.Router();
+router.use(require("../middleware/demoUserRestriction"));
 
 router.get("/", asyncHandler(transactionController.getAllTransactions));
 router.get("/report", asyncHandler(transactionController.generateReport));
