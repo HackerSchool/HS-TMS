@@ -16,7 +16,7 @@ CREATE TABLE projects (
     id SERIAL PRIMARY KEY,
     "name" TEXT UNIQUE NOT NULL,
     active BOOLEAN NOT NULL,
-    "default" BOOLEAN NOT NULL
+    symbolic BOOLEAN NOT NULL
 );
 
 CREATE TABLE transactions (
