@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+// eslint-disable-next-line no-unused-vars
 import React, {useEffect, useState, useCallback} from "react";
 import axios_instance from "../Axios";
 import Plot from "react-plotly.js";
@@ -16,7 +18,7 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
     const refetchTransactions = useCallback(() => setFetchTransactions(true));
 
     const fetchTransactionData = (earningBool, projects) => {
-        const res = axios_instance.get("transactions", {
+        axios_instance.get("transactions", {
             params:{
                 ...
                 earningBool ? {initialValue:0} : {finalValue:0},
@@ -24,6 +26,7 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
         })
         .then( response => {
             const transactions=response.data;
+            const months = typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
             if(transactions.length===0){
                 setHistogramData([{
                     x: months.map(String),
@@ -46,15 +49,24 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
                     parseInt(transactions[0].date.substring(5,7)) < 9 ? parseInt(transactions[0].date.substring(0,4))-1 : parseInt(transactions[0].date.substring(0,4));
                 const years = Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
                 setYears(years);
-                let transaction_y = years.map((year)=>{
-                    return Array(projects.length+1).fill(Array(12).fill(0))
 
-                });
-                //Porque é que isto tem logo um valor? :')
-                console.log(transaction_y)
-                
+                let n_years = years.length;
+                let n_projects = projects.length+1;
+                let n_months = 12;
+
+                // Creating a 2D array dynamically
+                let transaction_y = [];
+                for (let i = 0; i < n_years; i++) {
+                    transaction_y[i] = []; // Initialize each row as an empty array
+                    for (let j = 0; j < n_projects; j++) {
+                        transaction_y[i][j]=[]
+                        for (let k=0; k<n_months; k++)
+                            transaction_y[i][j][k] = 0; // You can set any value here
+                    }
+                }
+
                 const months = typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
-                
+
                 transactions.forEach((transaction)=>{
                     const year_idx= typeOfYear==="civic" ? years.indexOf(parseInt(transaction.date.substring(0,4))) : 
                         parseInt(transaction.date.substring(5,7)) < 9 ? years.indexOf(parseInt(transaction.date.substring(0,4))-1) : years.indexOf(parseInt(transaction.date.substring(0,4)));
@@ -64,14 +76,12 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
                     if(project_idx===-1){
                         transaction_y[year_idx][projects.length][month_idx] = transaction_y[year_idx][projects.length][month_idx] + Math.abs(transaction.value);
                     } else {
-                        console.log(transaction_y[year_idx][project_idx][month_idx])
+
                         transaction_y[year_idx][project_idx][month_idx] = transaction_y[year_idx][project_idx][month_idx] + Math.abs(transaction.value);
                     }
                 });
                 const histData = transaction_y.map((year_y, year_index) => {
-                    console.log(year_y)
                     return year_y.map((project_y, project_idx)=>{
-                        console.log(projects[project_idx % (projects.length+1)] ? projects[project_idx % (projects.length+1)] : "Projects")
                         return {
                             x: months.map(String),
                             y: project_y,
@@ -92,7 +102,6 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
                         }
                     }).flat()
                 }).flat();
-                console.log(histData)
                 setFetchTransactions(false)
                 setHistogramData(histData)
             }
@@ -144,8 +153,10 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
                         x: 1,
                         xanchor: 'right',
                         y: 1.15,
-                        bgcolor: 'rgba(0,0,0,0)'
+                        bgcolor: 'rgba(0,0,0,0)',
+                        orientation: "h"
                       },
+                    modebar:{orientation:"v"},
                     barmode: "stack",
                     yaxis: {
                         showgrid: true,

@@ -124,6 +124,7 @@ function ProjectLineChart({title, typeOfYear, disableProjectSelectBtn}) {
                 rangeslider: {range: [dates[0], today]},
                 type: "date",
               },
+              modebar:{orientation:"v"},
               width: 680,
               height:450,
               margin: {t:60, b:20, l: 50, r: 50},

@@ -118,6 +118,7 @@ function BalanceTimeSeries({title, typeOfYear, disableRange, inDashboard}){
                 //desde o 0? ou só pelos limites?
                 rangemode: "tozero"
               },
+              modebar:{orientation:"v"},
               xaxis: xaxisconfig,
               width: 680,
               height:inDashboard ? 350 : 450,

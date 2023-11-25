@@ -123,9 +123,11 @@ function MonthHistogram({title, typeOfYear, fetchTransactions, setFetchTransacti
                         x: 1,
                         xanchor: 'right',
                         y: 1.15,
+                        orientation:"h",
                         bgcolor: 'rgba(0,0,0,0)'
                       },
                     barmode: "group",
+                    modebar:{orientation:"v"},
                     yaxis: {
                         showgrid: true,
                         gridcolor: "#474747",

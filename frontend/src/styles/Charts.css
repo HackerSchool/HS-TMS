@@ -31,8 +31,7 @@
 }
   
 .js-plotly-plot .plotly .modebar{
-  left: 60%;
-  transform: translateX(-65%);
+  transform: translateY(75%);
   margin:0.5rem;
 }
 
