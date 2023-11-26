@@ -17,6 +17,7 @@ function Sidebar({ user }) {
     function logout() {
         axios_instance.post("auth/logout")
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status == 200)
                     window.open('/login', "_self")
                 else throw new Error();

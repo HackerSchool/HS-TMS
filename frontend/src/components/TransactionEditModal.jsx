@@ -146,6 +146,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
 
         axios_instance.put(`transactions/${transaction.id}`, body)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) {
                     showSuccessMsg("Transaction updated successfully");
                     refetch();

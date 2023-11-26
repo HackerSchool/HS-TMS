@@ -20,6 +20,7 @@ export default function LoginPage() {
             password: "demo"
         })
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) {
                     return window.location.reload();
                 }

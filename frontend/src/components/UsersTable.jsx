@@ -29,7 +29,7 @@ export default function UsersTable({ data, loading, openDeleteModal }) {
                     {data.length === 0 && !loading && ( // display message when there's no data to display
                         <TableRow>
                             <TableCell colSpan={5} align="center" sx={{ fontSize: 18, border: 0 }}>
-                                No Users found
+                                No users found
                             </TableCell>
                         </TableRow>
                     )}

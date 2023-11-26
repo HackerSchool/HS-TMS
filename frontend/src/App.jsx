@@ -17,13 +17,22 @@ function App() {
 
     useEffect(() => {
 
-        // Add a response interceptor to logout user when unauthorized
+        // Add a response interceptor (middleware)
         axios_instance.interceptors.response.use((response) => {
             // Any status code that lie within the range of 2xx cause this function to trigger
             return response;
         }, (error) => {
             // Any status codes that falls outside the range of 2xx cause this function to trigger
 
+            // Check for demo user trying to modify data
+            if (error.response.status === 403 && error.response.data?.username === "demo") {
+                console.log("Demo user can't modify data");
+                showErrorMsg("Demo User can't modify data");
+                error.response.handledByMiddleware = true;
+                return error.response;
+            }
+
+            // logout user when unauthorized
             if (error.response.status === 403 || error.response.status === 401) {
                 if (window.location.pathname.match(/\/home\//g))
                     showErrorMsg("Session expired or no longer authorized");
@@ -38,6 +47,7 @@ function App() {
         // Check if user is logged in
         axios_instance.get("auth/user")
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error("Authentication failed!");
             })

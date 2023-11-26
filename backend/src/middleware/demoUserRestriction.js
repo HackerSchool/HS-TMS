@@ -3,7 +3,7 @@ function demoUserRestriction(req, res, next) {
 		if (req.method === "GET") {
 			next();
 		} else {
-			res.sendStatus(403);
+			res.status(403).json({ username: "demo" }).send();
 		}
 	} else {
 		next();
