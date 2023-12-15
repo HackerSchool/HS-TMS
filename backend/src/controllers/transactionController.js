@@ -337,6 +337,10 @@ async function generateReport(req, res) {
 		if (err) {
 			res.status(500).send("Report download failed");
 		}
+
+		if (req.user.username === "demo") {
+			fs.unlink(pathToReport, (err) => {});
+		}
 	});
 }
 
