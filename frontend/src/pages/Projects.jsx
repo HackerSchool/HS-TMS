@@ -38,7 +38,11 @@ function ProjectsPage() {
                 else throw new Error();
             })
             .catch(err => {
-                showErrorMsg(`Couldn't delete project ${projectToDelete.name}`);
+                let msg = `Couldn't delete project ${projectToDelete.name}`;
+                if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             });
 
         setOpenConfirmationModal(false);

@@ -56,7 +56,11 @@ function SettingsPage() {
                 else throw new Error();
             })
             .catch(err => {
-                showErrorMsg(`Couldn't revoke ${userToDelete.username}'s access`);
+                let msg = `Couldn't revoke ${userToDelete.username}'s access`;
+                if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             });
 
         setOpenConfirmationModal(false);

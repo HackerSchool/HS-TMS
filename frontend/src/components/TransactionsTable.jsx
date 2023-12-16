@@ -113,7 +113,7 @@ export function DownloadIcon({id}) {
             }}
         >
         {pending ? 
-            <CircularProgress className="loading-circle twenty-four-px" />
+            <CircularProgress className="loading-circle small" />
             : <RequestPageIcon className="receipt-download-icon" />
         }
         </div>

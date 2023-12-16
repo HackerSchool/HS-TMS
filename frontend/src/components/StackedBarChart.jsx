@@ -1,153 +1,190 @@
-/* eslint-disable react/prop-types */
-// eslint-disable-next-line no-unused-vars
-import React, {useEffect, useState, useCallback} from "react";
-import axios_instance from "../Axios";
+import React, { useEffect, useState, useMemo } from "react";
 import Plot from "react-plotly.js";
 import TransactionTypeBtn from "./TransactionTypeBtn";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const bars_color = ["#7FA8FD","#6BBA75","#FFDC82","#FF787C"];
 const bar_lines_color = ["#4274C4","#0E9553", "#CEA54E", "#9F5C5C"];
 
-//Transactions CANNOT BE any combination of Bank, HS and Other.
-function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransactions}){
-    const [histogramData, setHistogramData] = useState([]);
+function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loading }){
     const [years, setYears] = useState([]);
-    const [defaultProjects, setDefaultProjects]=useState([])
     const [earningBool, setEarningBool] = useState(true);
+    const [histogramData, setHistogramData] = useState(() => getHistData([], []));
 
-    const refetchTransactions = useCallback(() => setFetchTransactions(true));
-
-    const fetchTransactionData = (earningBool, projects) => {
-        axios_instance.get("transactions", {
-            params:{
-                ...
-                earningBool ? {initialValue:0} : {finalValue:0},
-            },
+    useEffect(() => {
+        if (loading) return;
+        const filteredTransactions = transactionsList.filter(t => {
+            if (earningBool) return t.value >= 0;
+            return t.value <= 0;
         })
-        .then( response => {
-            const transactions=response.data;
-            const months = typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
-            if(transactions.length===0){
-                setHistogramData([{
+        setHistogramData(getHistData(filteredTransactions, symbolicProjectsNames));
+    }, [earningBool, typeOfYear, projectList, transactionsList]);
+
+    const symbolicProjectsNames = useMemo(() => {
+        return projectList.filter(proj => proj.symbolic)
+                          .map(symbProj => symbProj.name);
+    }, [projectList]);
+
+    function getHistData(transactions, projects) {
+        const months =
+            typeOfYear === "civic"
+                ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                : [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8];
+
+        if (transactions.length === 0) {
+            setYears([new Date().getFullYear()]);
+
+            return [
+                {
                     x: months.map(String),
                     y: Array(12).fill(0),
                     name: "Projects",
                     type: "bar",
                     marker: {
                         line: {
-                        width: 2,
+                            width: 2,
                         },
                     },
-                    }]);
-                setYears([2023]);
-                setFetchTransactions(false);
+                },
+            ];
+        }
+
+        const firstYear =
+            typeOfYear === "civic"
+                ? parseInt(
+                      transactions[transactions.length - 1].date.substring(0, 4)
+                  )
+                : parseInt(
+                      transactions[transactions.length - 1].date.substring(5, 7)
+                  ) < 9
+                ? parseInt(
+                      transactions[transactions.length - 1].date.substring(0, 4)
+                  ) - 1
+                : parseInt(
+                      transactions[transactions.length - 1].date.substring(0, 4)
+                  );
+
+        const lastYear =
+            typeOfYear === "civic"
+                ? parseInt(transactions[0].date.substring(0, 4))
+                : parseInt(transactions[0].date.substring(5, 7)) < 9
+                ? parseInt(transactions[0].date.substring(0, 4)) - 1
+                : parseInt(transactions[0].date.substring(0, 4));
+
+        const yearsList = Array.from(
+            { length: lastYear - firstYear + 1 },
+            (_, index) => firstYear + index
+        ).reverse();
+        setYears(yearsList);
+
+        let n_years = yearsList.length;
+        let n_projects = projects.length + 1;
+        let n_months = 12;
+
+        // Creating a 3D array [n_years][n_projects][n_months]
+        let transaction_y = [];
+        for (let i = 0; i < n_years; i++) {
+            transaction_y[i] = Array(n_projects);
+            for (let j = 0; j < n_projects; j++) {
+                transaction_y[i][j] = Array(n_months);
+                for (let k = 0; k < n_months; k++) transaction_y[i][j][k] = 0;
             }
-            else {
-                const firstYear = typeOfYear==="civic" ? parseInt(transactions[transactions.length-1].date.substring(0,4)) :
-                        parseInt(transactions[transactions.length-1].date.substring(5,7)) < 9 ? parseInt(transactions[transactions.length-1].date.substring(0,4))-1 : parseInt(transactions[transactions.length-1].date.substring(0,4));
-                const lastYear = typeOfYear==="civic" ? parseInt(transactions[0].date.substring(0,4)) : 
-                    parseInt(transactions[0].date.substring(5,7)) < 9 ? parseInt(transactions[0].date.substring(0,4))-1 : parseInt(transactions[0].date.substring(0,4));
-                const years = Array.from({ length: lastYear - firstYear + 1 }, (_, index) => (firstYear + index)).reverse();
-                setYears(years);
+        }
 
-                let n_years = years.length;
-                let n_projects = projects.length+1;
-                let n_months = 12;
+        transactions.forEach((transaction) => {
+            const year_idx =
+                typeOfYear === "civic"
+                    ? yearsList.indexOf(parseInt(transaction.date.substring(0, 4)))
+                    : parseInt(transaction.date.substring(5, 7)) < 9
+                    ? yearsList.indexOf(
+                          parseInt(transaction.date.substring(0, 4)) - 1
+                      )
+                    : yearsList.indexOf(parseInt(transaction.date.substring(0, 4)));
+            const month_idx = months.indexOf(
+                parseInt(transaction.date.substring(5, 7))
+            );
+            const project_idx = projects.indexOf(transaction.projects);
+            // If project_idx === -1 (project is not symbolic) then the value is
+            // assigned to the last position of the transactions array
+            if (project_idx === -1) {
+                transaction_y[year_idx][projects.length][month_idx] =
+                    transaction_y[year_idx][projects.length][month_idx] +
+                    Math.abs(transaction.value);
+            } else {
+                transaction_y[year_idx][project_idx][month_idx] =
+                    transaction_y[year_idx][project_idx][month_idx] +
+                    Math.abs(transaction.value);
+            }
+        });
 
-                // Creating a 2D array dynamically
-                let transaction_y = [];
-                for (let i = 0; i < n_years; i++) {
-                    transaction_y[i] = []; // Initialize each row as an empty array
-                    for (let j = 0; j < n_projects; j++) {
-                        transaction_y[i][j]=[]
-                        for (let k=0; k<n_months; k++)
-                            transaction_y[i][j][k] = 0; // You can set any value here
-                    }
-                }
-
-                const months = typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12] : [9,10,11,12,1,2,3,4,5,6,7,8];
-
-                transactions.forEach((transaction)=>{
-                    const year_idx= typeOfYear==="civic" ? years.indexOf(parseInt(transaction.date.substring(0,4))) : 
-                        parseInt(transaction.date.substring(5,7)) < 9 ? years.indexOf(parseInt(transaction.date.substring(0,4))-1) : years.indexOf(parseInt(transaction.date.substring(0,4)));
-                    const month_idx=months.indexOf(parseInt(transaction.date.substring(5,7)));
-                    const project_idx=projects.indexOf(transaction.projects);
-                    //If project_idx===-1 (project is not default) then the value is assigned to the last position of the transactions array
-                    if(project_idx===-1){
-                        transaction_y[year_idx][projects.length][month_idx] = transaction_y[year_idx][projects.length][month_idx] + Math.abs(transaction.value);
-                    } else {
-
-                        transaction_y[year_idx][project_idx][month_idx] = transaction_y[year_idx][project_idx][month_idx] + Math.abs(transaction.value);
-                    }
-                });
-                const histData = transaction_y.map((year_y, year_index) => {
-                    return year_y.map((project_y, project_idx)=>{
+        return transaction_y
+            .map((year_y, year_index) => {
+                return year_y
+                    .map((project_y, project_idx) => {
                         return {
                             x: months.map(String),
                             y: project_y,
-                            //sque isto
-                            name: projects[project_idx % (projects.length+1)] ? projects[project_idx % (projects.length+1)] : "Projects",
+                            // sque isto FIXME
+                            name: projects[project_idx % (projects.length + 1)]
+                                ? projects[project_idx % (projects.length + 1)]
+                                : "Projects",
                             text: project_y.map(String),
                             type: "bar",
-                            //Only the most recent year with transactions is initially visible
-                            visible: year_index===0,
+                            // Only the most recent year with transactions is initially visible
+                            visible: year_index === 0,
+                            hoverinfo: "x+y",
                             marker: {
-                                //é seguro meter cores, de certeza que só são 3 defaults?
-                                color: projects[project_idx % (projects.length+1)] ? bars_color[project_idx % (projects.length+1)] : bars_color[bars_color.length-1],
+                                // é seguro meter cores, de certeza que só são 3 defaults? FIXME
+                                color: projects[
+                                    project_idx % (projects.length + 1)
+                                ]
+                                    ? bars_color[
+                                          project_idx % (projects.length + 1)
+                                      ]
+                                    : bars_color[bars_color.length - 1],
                                 line: {
-                                color: projects[project_idx % (projects.length+1)] ? bar_lines_color[project_idx % (projects.length+1)] : bar_lines_color[bar_lines_color.length-1],
-                                width: 2,
+                                    color: projects[
+                                        project_idx % (projects.length + 1)
+                                    ]
+                                        ? bar_lines_color[
+                                              project_idx %
+                                                  (projects.length + 1)
+                                          ]
+                                        : bar_lines_color[
+                                              bar_lines_color.length - 1
+                                          ],
+                                    width: 2,
                                 },
                             },
-                        }
-                    }).flat()
-                }).flat();
-                setFetchTransactions(false)
-                setHistogramData(histData)
-            }
-        })
-        .catch(error=>{
-            console.error(error);
-        });
-    };
-
-    const fetchDefaultProjects = () => {
-        const res = axios_instance.get("projects", {
-            params: {
-                defaultProject: true
-            },
-        })
-        .then( response => {
-            const projects=response.data;
-            let project_data = projects.map((project) => project.name)
-            setDefaultProjects(project_data)
-            return project_data
-        });
-        return res;
+                        };
+                    })
+                    .flat();
+            })
+            .flat();
     }
-
-    useEffect(() => {
-        if(fetchTransactions){
-            const default_projects_promise=fetchDefaultProjects();
-            Promise.all([default_projects_promise])
-                .then((result)=> {
-                    const projects = result[0];
-                    fetchTransactionData(earningBool, projects);
-                }).catch((error) => {
-                    console.error(error)
-                })
-    }}, [fetchTransactions]);
     
     return (
         <div className="chart-box">
             <div className="chart-header">
                 <div className="chartTitle">{title}</div>
-            <div className="projectSelect"> <TransactionTypeBtn setEarningBool={setEarningBool} refetch={refetchTransactions}/></div>
-        </div>
+                {loading &&
+                    <CircularProgress
+                        className="loading-circle small"
+                        style={{ marginLeft: 10, marginRight: "auto" }}
+                    />}
+                <div className="projectSelect">
+                    <TransactionTypeBtn
+                        setEarningBool={setEarningBool}
+                    />
+                </div>
+            </div>
             <div className="chart">
             <Plot
                 data={histogramData}
-                config={{modeBarButtonsToRemove:[ "select2d", "lasso2d"], displaylogo:false}}
+                config={{
+                    modeBarButtonsToRemove: [ "select2d", "lasso2d"],
+                    displaylogo:false
+                }}
                 layout = {{
                     legend: {
                         x: 1,
@@ -156,7 +193,7 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
                         bgcolor: 'rgba(0,0,0,0)',
                         orientation: "h"
                       },
-                    modebar:{orientation:"v"},
+                    modebar: { orientation: "v", bgcolor: "rgba(0,0,0,0)" },
                     barmode: "stack",
                     yaxis: {
                         showgrid: true,
@@ -169,42 +206,48 @@ function StackedBarChart({title, typeOfYear, fetchTransactions, setFetchTransact
                     },
                     xaxis: {
                         type: "category",
-                        tickvals: typeOfYear==="civic" ? [1,2,3,4,5,6,7,8,9,10,11,12].map(String) : [9,10,11,12,1,2,3,4,5,6,7,8].map(String),
-                        ticktext: typeOfYear==="civic" ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] : ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+                        tickvals: typeOfYear === "civic" 
+                                    ? [1,2,3,4,5,6,7,8,9,10,11,12].map(String)
+                                    : [9,10,11,12,1,2,3,4,5,6,7,8].map(String),
+                        ticktext: typeOfYear === "civic"
+                                    ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                                    : ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
                         showgrid: false,
                         zeroline: true,
                         zerolinecolor: "#ffffff",
                         color: "#ffffff",
                     },
                     width: 680,
-                    height:450,
-                    margin: {t: 60, b: 50, l: 50, r: 50},
+                    height: 450,
+                    margin: { t: 60, b: 50, l: 50, r: 50 },
                     autosize: false,
-                    plot_bgcolor: "#333333",
-                    paper_bgcolor: "#333333",
+                    plot_bgcolor: "rgba(0,0,0,0)",
+                    paper_bgcolor: "rgba(0,0,0,0)",
                     font: {
                         color: "#ffffff"
                     },
-                    //Dropdown menu for choosing the desired year
-                    updatemenus:[{
-                        buttons:years.map((year,index)=>{
-                            const visibleArray=Array(years.length*(defaultProjects.length+1)).fill(false);
-                            for(let i=0; i<defaultProjects.length+1; i++){
-                                visibleArray[index*(defaultProjects.length+1)+i]=true;
+                    // Dropdown menu for choosing the desired year
+                    updatemenus: [{
+                        buttons: years.map((year,index, array) => {
+                            const visibleArray = Array(array.length*(symbolicProjectsNames.length+1)).fill(false);
+                            for (let i = 0; i < symbolicProjectsNames.length + 1; i++){
+                                visibleArray[index*(symbolicProjectsNames.length+1)+i] = true;
                             }
                             return {
-                                method:"restyle",
-                                args:["visible", visibleArray],
-                                label: typeOfYear==="civic" ? year : [String(year), "/", String(year+1)].join("")
+                                method: "restyle",
+                                args: ["visible", visibleArray],
+                                label: typeOfYear==="civic"
+                                        ? year
+                                        : [String(year), "/", String(year+1)].join("")
                             }
                         }),
-                        type:"dropdown",
-                        xanchor:"left",
+                        type: "dropdown",
+                        xanchor: "left",
                         x:0,
                         y:1.15,
-                        font: {color: '#333333'},
+                        font: { color: '#333333' },
                         bgcolor: '#6bba75',
-                        bordercolor: '#6bba75', // Set the border color to be the same as the background color
+                        bordercolor: '#6bba75',
                         borderwidth: 2,
                         showactive: true,
                     }]

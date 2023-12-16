@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios_instance from "../Axios";
-import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SortIcon from '@mui/icons-material/Sort'
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -11,33 +9,16 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import '../styles/SelectBtn.css'
 
-export default function ProjectSelectBtn({setProjectID,refetch, idx}){
-    const [options, setOptions] = useState([{name:'placeholder'}]);
-    const [fetchProjects, setFetchProjects]=useState(true);
+export default function ProjectSelectBtn({ projectList, loading, updateProjectID, defaultIdx }){
     const [open, setOpen] = useState(false);
-    const anchorRef = useRef(null);
-    //usar índice diferente maybe
+    const [options, setOptions] = useState([{ name: "loading..." }]);
     const [selectedIndex, setSelectedIndex] = useState(0);
-
-    useEffect(()=>{
-        if(fetchProjects){
-            axios_instance.get("projects")
-            .then((response)=>{
-                //Only active projects are shown on the menu
-                setOptions(response.data.filter((project)=>project.active===true))
-
-                setFetchProjects(false)
-            })
-            .catch((error)=>{
-                console.log(error)
-            });
-        }
-    }, [fetchProjects])
+    
+    const anchorRef = useRef(null);
     
     const handleMenuItemClick = (event, index) => {
         const chosenOption = options[index];
-        setProjectID(chosenOption.id);
-        refetch();
+        updateProjectID(chosenOption.id);
         setSelectedIndex(index);
         setOpen(false);
     };
@@ -50,52 +31,64 @@ export default function ProjectSelectBtn({setProjectID,refetch, idx}){
         setOpen(false);
     };
 
+    useEffect(() => {
+        if (loading) return;
+
+        const activeProjects = projectList.filter(proj => proj.active);
+        if (activeProjects.length > 0) {
+            setOptions(activeProjects);
+            // guarantee the defaultIdx is in range
+            const chosenIdx = defaultIdx % activeProjects.length;
+            setSelectedIndex(chosenIdx);
+            updateProjectID(activeProjects[chosenIdx].id);
+        } else {
+            setOptions([{ name: "No projects" }]);
+            updateProjectID(-1);
+        }
+    }, [projectList, loading]);
+
     return (
-        <>
-            {options.length === 0 ? <></> :
-                <> 
-                    <button ref={anchorRef} className='btn icon-btn sort-btn' onClick={handleToggle}>
-                        <SortIcon />
-                        {`${options[selectedIndex].name}`}
-                        <ArrowDropDownIcon />
-                    </button>
-                    <Popper
-                        sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
-                        open={open}
-                        anchorEl={anchorRef.current}
-                        placement='bottom'
-                        role={undefined}
-                        transition
-                        disablePortal
+        <> 
+            <button ref={anchorRef} className='btn icon-btn sort-btn' onClick={handleToggle}>
+                <SortIcon />
+                {`${options[selectedIndex].name}`}
+                <ArrowDropDownIcon />
+            </button>
+            <Popper
+                sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth - 20 }}
+                open={open}
+                anchorEl={anchorRef.current}
+                placement='bottom'
+                role={undefined}
+                transition
+                disablePortal
+            >
+                {({ TransitionProps, placement }) => (
+                    <Grow
+                        {...TransitionProps}
+                        style={{
+                            transformOrigin: placement = 'center top',
+                        }}
                     >
-                            {({ TransitionProps, placement }) => (
-                                <Grow
-                                    {...TransitionProps}
-                                    style={{
-                                        transformOrigin: placement = 'center top',
-                                    }}
-                                >
-                                    <Paper sx={{ backgroundColor: "transparent" }}>
-                                        <ClickAwayListener onClickAway={handleClose}>
-                                            <MenuList className='select-menu' id="select-menu" autoFocusItem>
-                                                {options.map((option, index) => (
-                                                    <MenuItem
-                                                        key={option.name}
-                                                        className='select-option'
-                                                        selected={index === selectedIndex}
-                                                        onClick={(event) => handleMenuItemClick(event, index)}
-                                                    >
-                                                        {option.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </MenuList>
-                                        </ClickAwayListener>
-                                    </Paper>
-                                </Grow>
-                            )}
-                        </Popper> 
-                </>
-            }
+                        <Paper sx={{ backgroundColor: "transparent" }}>
+                            <ClickAwayListener onClickAway={handleClose}>
+                                <MenuList className='select-menu' id="select-menu" autoFocusItem>
+                                    {options.map((option, index) => (
+                                        <MenuItem
+                                            key={option.name}
+                                            className='select-option'
+                                            selected={index === selectedIndex}
+                                            onClick={(event) => handleMenuItemClick(event, index)}
+                                        >
+                                            {option.name}
+                                        </MenuItem>
+                                    ))}
+                                </MenuList>
+                            </ClickAwayListener>
+                        </Paper>
+                    </Grow>
+                )}
+            </Popper> 
         </>
     );
 

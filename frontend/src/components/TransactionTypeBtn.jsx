@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios_instance from "../Axios";
-import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SortIcon from '@mui/icons-material/Sort'
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -11,17 +9,16 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import '../styles/SelectBtn.css';
 
-const options = [{name: "Earnings", bool: true}, {name: "Expenses", bool: false},];
+const options = [{ name: "Earnings", bool: true }, { name: "Expenses", bool: false }];
 
-export default function ProjectSelectBtn({setEarningBool,refetch}){
+export default function TransactionTypeBtn({ setEarningBool }){
     const [open, setOpen] = useState(false);
-    const anchorRef = useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const anchorRef = useRef(null);
     
     const handleMenuItemClick = (event, index) => {
         const chosenOption = options[index];
         setEarningBool(chosenOption.bool);
-        refetch();
         setSelectedIndex(index);
         setOpen(false);
     };

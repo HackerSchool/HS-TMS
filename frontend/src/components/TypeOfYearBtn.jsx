@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SortIcon from '@mui/icons-material/Sort'
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -10,20 +9,20 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import '../styles/SelectBtn.css'
 
-const options=[
-    {text: 'Civic Years', type:'civic'},
-    {text: 'Academic Years', type:'academic'},
+const options = [
+    { text: 'Civic Years', type:'civic' },
+    { text: 'Academic Years', type:'academic' },
 ]
 
-export default function TypeOfYearBtn({setTypeOfYear,refetch}){
+export default function TypeOfYearBtn({ setTypeOfYear }){
     const [open, setOpen] = useState(false);
-    const anchorRef = useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    
+    const anchorRef = useRef(null);
 
     const handleMenuItemClick = (event, index) => {
         const chosenOption = options[index];
         setTypeOfYear(chosenOption.type);
-        refetch();
         setSelectedIndex(index);
         setOpen(false);
     };

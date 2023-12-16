@@ -44,7 +44,11 @@ function TransactionsPage() {
                 else throw new Error();
             })
             .catch(err => {
-                showErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`);
+                let msg = `Couldn't delete transaction ${transactionToDelete.id}`;
+                if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             });
 
         setOpenConfirmationModal(false);
@@ -77,7 +81,7 @@ function TransactionsPage() {
             })
                 .then(res => {
                     if (res.status == 200) return res.data;
-                    throw new Error("Couldn't fetch transactions")
+                    throw new Error("Couldn't fetch transactions");
                 })
                 .then(data => {
 
@@ -85,7 +89,7 @@ function TransactionsPage() {
                             && queryParams.get("orderBy") && queryParams.get("order")))
                         showErrorMsg("No transactions match the specified filters");
 
-                    setTransactions(data)
+                    setTransactions(data);
                 })
                 .catch(err => {
                     let msg = "Couldn't fetch transactions";

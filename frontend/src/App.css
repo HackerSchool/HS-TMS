@@ -28,6 +28,11 @@ hr {
     border-color: var(--separator-color);
 }
 
+.link {
+    color: var(--hs-logo);
+    font-weight: 700;
+}
+
 .page {
     background-color: var(--cinza-4);
     height: 100vh;
@@ -116,7 +121,7 @@ hr {
     height: 4rem !important;
 }
 
-.loading-circle.twenty-four-px {
+.loading-circle.small {
     width: 24px !important;
     height: 24px !important;
 }
