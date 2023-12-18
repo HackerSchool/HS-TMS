@@ -8,7 +8,7 @@ require("./auth/fenixOAuth2");
 require("./auth/demoLocal");
 require("dotenv").config();
 const isLoggedIn = require("./middleware/isLoggedIn");
-const { logger } = require("./modules/logging/logger");
+const { logger } = require("./modules/logging");
 
 const app = express();
 

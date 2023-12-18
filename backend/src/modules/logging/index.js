@@ -77,4 +77,4 @@ const emailLogger = winston.createLogger({
 	]
 });
 
-module.exports = {logger, emailLogger};
+module.exports = { logger, emailLogger };
