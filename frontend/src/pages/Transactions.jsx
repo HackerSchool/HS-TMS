@@ -11,16 +11,17 @@ import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
+const sortOptions = [
+    { name: 'Newest first', orderBy: 'date', order: 'DESC' },
+    { name: 'Oldest first', orderBy: 'date', order: 'ASC' },
+    { name: 'Value Asc', orderBy: 'value', order: 'ASC' },
+    { name: 'Value Desc', orderBy: 'value', order: 'DESC' }
+];
+
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
     const [queryParams, setQueryParams] = useSearchParams();
-    const sortOptions = [
-        {text: 'Newest first', orderBy: 'date', order: 'DESC'},
-        {text: 'Oldest first', orderBy: 'date', order: 'ASC'},
-        {text: 'Value Asc', orderBy: 'value', order: 'ASC'},
-        {text: 'Value Desc', orderBy: 'value', order: 'DESC'}
-    ]
 
     // Transaction Edit Modal
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -161,6 +162,7 @@ function TransactionsPage() {
                         setParams={setQueryParams}
                         refetch={refetchTransactions}
                         options={sortOptions}
+                        loading={loading}
                     />
 
                     <TransactionsFilterBtn

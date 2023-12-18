@@ -206,12 +206,12 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
                                         options={[
                                             {
                                                 icon: <EditIcon />,
-                                                text: "Edit",
+                                                name: "Edit",
                                                 callback: () => openEditModal(row)
                                             },
                                             {
                                                 icon: <DeleteIcon />,
-                                                text: "Delete",
+                                                name: "Delete",
                                                 callback: () => openDeleteModal(row)
                                             }
                                         ]}

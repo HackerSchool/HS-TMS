@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { showErrorMsg } from "../Alerts"
 import axios_instance from "../Axios";
 import ProjectSelectBtn from "./ProjectSelectBtn";
 import BalanceTimeSeries from "./BalanceTimeSeries";
@@ -63,7 +64,8 @@ function ProjectLineChart({ title, projectList, projectsLoading }) {
                 <div className="projectSelect">
                     <ProjectSelectBtn
                         projectList={projectList}
-                        loading={projectsLoading}
+                        projectsLoading={projectsLoading}
+                        transactionsLoading={transactionsLoading}
                         updateProjectID={updateProjectID}
                         // Extract a default index from the title (the chart number)
                         defaultIdx={isNaN(parseInt(title.substr(title.length-1)))

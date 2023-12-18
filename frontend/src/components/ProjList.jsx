@@ -43,12 +43,12 @@ export default function ProjList({ data, openEditModal, openDeleteModal, loading
                             options={[
                                 {
                                     icon: <EditIcon />,
-                                    text: 'Edit',
+                                    name: 'Edit',
                                     callback: () => openEditModal(project)
                                 },
                                 {
                                     icon: <DeleteIcon />,
-                                    text: 'Delete',
+                                    name: 'Delete',
                                     callback: () => openDeleteModal(project)
                                 }
                             ]}

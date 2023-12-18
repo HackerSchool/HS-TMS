@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import { showErrorMsg } from "../Alerts"
 import '../styles/Charts.css'
 import axios_instance from '../Axios';
 import MonthHistogram from '../components/MonthHistogram';
-import TransactionsSortButton from '../components/TypeOfYearBtn';
 import ProjectLineChart from '../components/ProjectLineChart';
 import BalanceTimeSeries from '../components/BalanceTimeSeries';
 import StackedBarChart from '../components/StackedBarChart';
+import DropdownBtn from '../components/DropdownBtn';
 import CircularProgress from '@mui/material/CircularProgress';
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 
 //time series da evolução do balance
 //gráfico de earnings com a data real em vez de ser por mês?
 //Talvez fazer comparação dos gastos dos projetos com os gastos médios de todos os projetos? FIXME
 
+const yearTypeOptions = [
+    { name: 'Civic Years', type:'civic' },
+    { name: 'Academic Years', type:'academic' },
+];
+
 function ChartsPage() {
-    const [typeOfYear, setTypeOfYear] = useState("civic");
+    const [typeOfYear, setTypeOfYear] = useState(yearTypeOptions[0].type);
+
+    const onYearTypeSelection = (chosenOption) => {
+        setTypeOfYear(chosenOption.type);
+    }
 
     // list of all existing projects and transactions for child components to use
     const [projectsList, setProjectsList] = useState([]);
@@ -60,8 +71,11 @@ function ChartsPage() {
             <header>
                 <h1>Charts</h1>
                 <div className="btn-group right">
-                    <TransactionsSortButton
-                        setTypeOfYear={setTypeOfYear}
+                    <DropdownBtn
+                        icon={<EditCalendarIcon />}
+                        options={yearTypeOptions}
+                        onOptionSelection={onYearTypeSelection}
+                        defaultIndex={0}
                     />
                 </div>
             </header>

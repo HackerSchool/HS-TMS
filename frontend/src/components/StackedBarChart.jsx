@@ -1,15 +1,25 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Plot from "react-plotly.js";
-import TransactionTypeBtn from "./TransactionTypeBtn";
 import CircularProgress from '@mui/material/CircularProgress';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import DropdownBtn from "./DropdownBtn";
+
+const transactionTypeOptions = [
+    { name: "Earnings", bool: true },
+    { name: "Costs", bool: false }
+];
 
 const bars_color = ["#7FA8FD","#6BBA75","#FFDC82","#FF787C"];
 const bar_lines_color = ["#4274C4","#0E9553", "#CEA54E", "#9F5C5C"];
 
 function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loading }){
     const [years, setYears] = useState([]);
-    const [earningBool, setEarningBool] = useState(true);
+    const [earningBool, setEarningBool] = useState(transactionTypeOptions[0].bool);
     const [histogramData, setHistogramData] = useState(() => getHistData([], []));
+
+    const onTransactionTypeSelection = (chosenOption) => {
+        setEarningBool(chosenOption.bool);
+    }
 
     useEffect(() => {
         if (loading) return;
@@ -173,8 +183,11 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
                         style={{ marginLeft: 10, marginRight: "auto" }}
                     />}
                 <div className="projectSelect">
-                    <TransactionTypeBtn
-                        setEarningBool={setEarningBool}
+                    <DropdownBtn
+                        icon={<AttachMoneyIcon />}
+                        options={transactionTypeOptions}
+                        onOptionSelection={onTransactionTypeSelection}
+                        defaultIndex={0}
                     />
                 </div>
             </div>

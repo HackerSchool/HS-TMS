@@ -38,7 +38,7 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }){
                 {
                     x: months.map(String),
                     y: Array(12).fill(0),
-                    name: "Expenses",
+                    name: "Costs",
                     type: "bar",
                     width: 0.4,
                     marker: {
@@ -127,7 +127,7 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }){
                         x: months.map(String),
                         y: year_y[1],
                         text: year_y[1].map(value => value.toFixed(2)),
-                        name: "Expenses",
+                        name: "Costs",
                         type: "bar",
                         width: 0.4,
                         visible: idx === 0,
