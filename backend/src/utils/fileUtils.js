@@ -1,5 +1,6 @@
 const fs = require("fs");
 const readline = require("readline");
+const AdmZip = require("adm-zip");
 
 /**
  * @param {integer} id
@@ -54,8 +55,32 @@ async function readLogFile(filePath) {
 	return logs;
 }
 
+/**
+ * @param {string} sourceFolder
+ * @param {string} outputZipFile
+ */
+function zipFolder(sourceFolder, outputZipFile) {
+	const zip = new AdmZip();
+
+	const dirEntries = fs.readdirSync(sourceFolder);
+	dirEntries.forEach((entry) => {
+		const path = sourceFolder + "/" + entry;
+
+		if (entry !== "backups") {
+			if (fs.statSync(path).isDirectory()) {
+				zip.addLocalFolder(path, entry);
+			} else {
+				zip.addLocalFile(path);
+			}
+		}
+	});
+
+	zip.writeZip(outputZipFile);
+}
+
 module.exports = {
 	generateReceiptPath,
 	generateReportPath,
-	readLogFile
+	readLogFile,
+	zipFolder
 };
