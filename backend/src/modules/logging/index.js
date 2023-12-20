@@ -1,32 +1,25 @@
 const winston = require("winston");
 const { combine, timestamp, json, printf } = winston.format;
-require("winston-daily-rotate-file");
 
-const combinedFileTransport = new winston.transports.DailyRotateFile({
+const combinedFileTransport = new winston.transports.File({
+	filename: __dirname + "/../../../storage/logs/combined.log",
 	format: combine(
 		timestamp({
 			format: "YYYY-MM-DD HH:mm:ss.SSS"
 		}),
 		json()
-	),
-	filename: __dirname + "/../../../storage/logs/combined-%DATE%.log",
-	dirname: __dirname + "/../../../storage/logs/",
-	datePattern: "YYYY-WW",
-	maxFiles: "4w"
+	)
 });
 
-const errorFileTransport = new winston.transports.DailyRotateFile({
+const errorFileTransport = new winston.transports.File({
 	level: "error",
+	filename: __dirname + "/../../../storage/logs/error.log",
 	format: combine(
 		timestamp({
 			format: "YYYY-MM-DD HH:mm:ss.SSS"
 		}),
 		json()
-	),
-	filename: __dirname + "/../../../storage/logs/error-%DATE%.log",
-	dirname: __dirname + "/../../../storage/logs/",
-	datePattern: "YYYY-WW",
-	maxFiles: "4w"
+	)
 });
 
 const logger = winston.createLogger({
@@ -47,17 +40,14 @@ const logger = winston.createLogger({
 	]
 });
 
-const emailFileTransport = new winston.transports.DailyRotateFile({
+const emailFileTransport = new winston.transports.File({
+	filename: __dirname + "/../../../storage/logs/email.log",
 	format: combine(
 		timestamp({
 			format: "YYYY-MM-DD HH:mm:ss.SSS"
 		}),
 		json()
-	),
-	filename: __dirname + "/../../../storage/logs/email-%DATE%.log",
-	dirname: __dirname + "/../../../storage/logs/",
-	datePattern: "YYYY-WW",
-	maxFiles: "4w"
+	)
 });
 
 const emailLogger = winston.createLogger({

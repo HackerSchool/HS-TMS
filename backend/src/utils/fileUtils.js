@@ -1,6 +1,8 @@
 const fs = require("fs");
 const readline = require("readline");
 const AdmZip = require("adm-zip");
+const moment = require("moment");
+const { sendWeeklySummary } = require("../modules/email");
 
 /**
  * @param {integer} id
@@ -56,6 +58,15 @@ async function readLogFile(filePath) {
 }
 
 /**
+ * @param {string} filePath
+ */
+async function clearLogFile(filePath) {
+	try {
+		fs.writeFileSync(filePath, "");
+	} catch (error) {}
+}
+
+/**
  * @param {string} sourceFolder
  * @param {string} outputZipFile
  */
@@ -78,9 +89,55 @@ function zipFolder(sourceFolder, outputZipFile) {
 	zip.writeZip(outputZipFile);
 }
 
+async function weeklyBackup() {
+	await sendWeeklySummary(
+		[], // TODO: Add recipients
+		await readLogFile(__dirname + "/../../storage/logs/email.log")
+	);
+
+	zipFolder(
+		__dirname + "/../../storage",
+		__dirname + "/../../storage/backups/" + moment().format("YYYY-WW") + ".zip"
+	);
+
+	clearLogFile(__dirname + "/../../storage/logs/combined.log");
+	clearLogFile(__dirname + "/../../storage/logs/email.log");
+	clearLogFile(__dirname + "/../../storage/logs/error.log");
+	deleteOldBackups();
+}
+
+function deleteOldBackups() {
+	const currentWeek = moment().isoWeek();
+	const backupFiles = fs.readdirSync(__dirname + "/../../storage/backups");
+
+	backupFiles.forEach((file) => {
+		const dotIndex = file.lastIndexOf(".");
+
+		if (dotIndex !== -1) {
+			const fileParts = file.substring(0, dotIndex).split("-");
+			if (fileParts.length === 2) {
+				const fileWeek = parseInt(fileParts[1], 10);
+
+				if (
+					(currentWeek >= fileWeek && currentWeek - fileWeek > 4) ||
+					(currentWeek < fileWeek && currentWeek + 52 - fileWeek > 4)
+				) {
+					fs.unlink(
+						__dirname + "/../../storage/backups" + "/" + file,
+						(err) => {}
+					);
+				}
+			}
+		}
+	});
+}
+
 module.exports = {
 	generateReceiptPath,
 	generateReportPath,
 	readLogFile,
-	zipFolder
+	clearLogFile,
+	zipFolder,
+	weeklyBackup,
+	deleteOldBackups
 };

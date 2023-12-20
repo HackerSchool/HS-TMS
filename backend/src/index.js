@@ -9,6 +9,8 @@ require("./auth/demoLocal");
 require("dotenv").config();
 const isLoggedIn = require("./middleware/isLoggedIn");
 const { logger } = require("./modules/logging");
+const { CronJob } = require("cron");
+const { weeklyBackup } = require("./utils/fileUtils");
 
 const app = express();
 
@@ -56,3 +58,11 @@ app.get("/health", (req, res) => {
 app.listen(process.env.PORT, () => {
 	console.log(`Server listening on port ${process.env.PORT}`);
 });
+
+new CronJob(
+	"0 0 * * 2", // Every Tuesday at midnight
+	weeklyBackup,
+	null,
+	true,
+	"Europe/Lisbon"
+);
