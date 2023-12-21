@@ -3,6 +3,7 @@ const readline = require("readline");
 const AdmZip = require("adm-zip");
 const moment = require("moment");
 const { sendWeeklySummary } = require("../modules/email");
+const User = require("../models/User");
 
 /**
  * @param {integer} id
@@ -91,7 +92,9 @@ function zipFolder(sourceFolder, outputZipFile) {
 
 async function weeklyBackup() {
 	await sendWeeklySummary(
-		[], // TODO: Add recipients
+		(await User.getAll(require("../models/pool")))
+			.filter((user) => user.active)
+			.map((user) => user.email),
 		await readLogFile(__dirname + "/../../storage/logs/email.log")
 	);
 

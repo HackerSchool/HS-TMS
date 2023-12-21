@@ -8,7 +8,8 @@ async function isLoggedIn(req, res, next) {
 				req.user.username,
 				true,
 				req.user.name,
-				req.user.photo
+				req.user.photo,
+				req.user.email
 			);
 
 			next();

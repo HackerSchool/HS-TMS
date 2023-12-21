@@ -34,20 +34,22 @@ class User {
 	 * @param {boolean} active
 	 * @param {string} name
 	 * @param {string} photo
+	 * @param {string} email
 	 * @returns {Object}
 	 */
-	async updateOne(pool, username, active, name, photo) {
+	async updateOne(pool, username, active, name, photo, email) {
 		return (
 			await pool.query(
 				`
 		UPDATE users
 		SET active = $2::boolean,
 			name = $3::text,
-			photo = $4::text
+			photo = $4::text,
+			email = $5::text
 		WHERE username = $1::text
 		RETURNING *;
 		`,
-				[username, active, name, photo]
+				[username, active, name, photo, email]
 			)
 		).rows[0];
 	}
@@ -59,7 +61,11 @@ class User {
 	 * @returns {Object}
 	 */
 	async deleteOne(pool, username) {
-		return (await pool.query(`DELETE FROM users WHERE username = $1::text RETURNING *;`, [username])).rows[0]
+		return (
+			await pool.query(`DELETE FROM users WHERE username = $1::text RETURNING *;`, [
+				username
+			])
+		).rows[0];
 	}
 
 	/**

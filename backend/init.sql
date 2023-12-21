@@ -9,7 +9,8 @@ CREATE TABLE users (
     username TEXT PRIMARY KEY CHECK (username LIKE 'ist%'),
     active BOOLEAN NOT NULL,
     "name" TEXT NOT NULL,
-    photo TEXT
+    photo TEXT,
+    email TEXT
 );
 
 CREATE TABLE projects (

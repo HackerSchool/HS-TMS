@@ -23,28 +23,24 @@ passport.use(
 					}
 				})
 				.then(async (response) => {
-					let { username, name, photo } = response.data;
+					let { username, name, photo, email } = response.data;
 
 					const fullName = name.split(" ");
 					name = `${fullName[0]} ${fullName[fullName.length - 1]}`;
 					photo = photo.data;
 
-					if (
-						await User.getOne(
-							require("../models/pool"),
-							username
-						)
-					) {
+					if (await User.getOne(require("../models/pool"), username)) {
 						await User.updateOne(
 							require("../models/pool"),
 							username,
 							true,
 							name,
-							photo
+							photo,
+							email
 						);
 					}
 
-					cb(null, { username, name, photo });
+					cb(null, { username, name, photo, email });
 				})
 				.catch((error) => {
 					cb(error, null);
