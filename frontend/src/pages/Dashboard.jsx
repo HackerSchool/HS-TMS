@@ -295,14 +295,12 @@ function DashboardPage() {
                             )}
                         </h3>
                         <div className="dashboard-item-content">
-                            <div className="dashboard-item-content-container">
-                                <BalanceTimeSeries
-                                    transactions={transactionsLastMonth ?? []}
-                                    loading={transactionsLastMonthLoading}
-                                    disableRange={true}
-                                    inDashboard={true}
-                                />
-                            </div>
+                            <BalanceTimeSeries
+                                transactions={transactionsLastMonth ?? []}
+                                loading={transactionsLastMonthLoading}
+                                disableRange={true}
+                                inDashboard={true}
+                            />
                         </div>
                     </div>
 

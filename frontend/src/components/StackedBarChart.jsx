@@ -230,9 +230,9 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
                         zerolinecolor: "#ffffff",
                         color: "#ffffff",
                     },
-                    width: 680,
-                    height: 450,
-                    margin: { t: 60, b: 50, l: 50, r: 50 },
+                    width: 580,
+                    height: 383,
+                    margin: { t: 60, b: 30, l: 45, r: 45 },
                     autosize: false,
                     plot_bgcolor: "rgba(0,0,0,0)",
                     paper_bgcolor: "rgba(0,0,0,0)",
@@ -251,16 +251,14 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
                                 args: ["visible", visibleArray],
                                 label: typeOfYear==="civic"
                                         ? year
-                                        : [String(year), "/", String(year+1)].join("")
+                                        : `${String(year)}/${String(year+1)}`
                             }
                         }),
                         type: "dropdown",
                         xanchor: "left",
                         x:0,
-                        y:1.15,
-                        font: { color: '#333333' },
-                        bgcolor: '#6bba75',
-                        bordercolor: '#6bba75',
+                        y:1.16,
+                        font: { color: '#ffffff' },
                         borderwidth: 2,
                         showactive: true,
                     }]

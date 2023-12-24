@@ -66,24 +66,23 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard })
                     label: "All"
                     }
                 ], 
-              font: { color: '#333333' },
-              bgcolor: '#6bba75',
-              bordercolor: '#6bba75',
-              borderwidth: 2
+                font: { color: '#ffffff' },
+                borderwidth: 1,
+                y: 1.06,
             },
             rangeslider: { range: [dates[0], today] },
         })
       };
 
     if (!loading && transactions.length <= 1) {
-        return <div className="transaction-warn-container" style={{ textAlign: "center" }}>
-            Not enough transactions to plot
+        return <div className="transaction-warn-container" style={inDashboard ? { width: 580 } : {}}>
+            <span>Not enough transactions to plot
             {inDashboard
                 ? <>.<br/>Check the
                     <NavLink to="/home/charts" className="link"> charts page </NavLink>
                     for the full balance history</>
                 : ""
-            }
+            }</span>
         </div>
     }
 
@@ -116,9 +115,9 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard })
               },
               modebar:{ orientation:"v", bgcolor: "rgba(0,0,0,0)" },
               xaxis: xaxisconfig,
-              width: 680,
-              height: inDashboard ? 350 : 450,
-              margin: {t: disableRange ? 20 : 60, b:20, l: inDashboard ? 40 : 50, r: inDashboard ? 40 : 50},
+              width: 580,
+              height: inDashboard ? 283 : 383,
+              margin: {t: disableRange ? 10 : 50, b: disableRange ? 20 : 15, l: inDashboard ? 40 : 45, r: inDashboard ? 40 : 45},
               autosize: false,
               plot_bgcolor: "rgba(0,0,0,0)",
               paper_bgcolor: "rgba(0,0,0,0)",
