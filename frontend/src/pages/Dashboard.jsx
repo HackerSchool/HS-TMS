@@ -37,6 +37,7 @@ function DashboardPage() {
             }
         })
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
@@ -68,6 +69,7 @@ function DashboardPage() {
             }
         })
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
@@ -86,6 +88,7 @@ function DashboardPage() {
     useEffect(() => {
         axios_instance.get("users")
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
@@ -112,6 +115,7 @@ function DashboardPage() {
 
             axios_instance.get("reminders")
                 .then(res => {
+                    if (res.handledByMiddleware) return;
                     if (res.status === 200) return res.data;
                     else throw new Error();
                 })
@@ -142,6 +146,7 @@ function DashboardPage() {
             }
         })
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 else throw new Error();
             })
@@ -171,6 +176,7 @@ function DashboardPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`reminders/${reminderToDelete.id}`)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("Reminder deleted successfully");
                     refetchReminders();

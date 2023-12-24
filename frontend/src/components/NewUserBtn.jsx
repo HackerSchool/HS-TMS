@@ -79,6 +79,7 @@ function NewUserBtn({ refetch }) {
 
         axios_instance.post("users", body)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 201) {
                     showSuccessMsg("User created successfully");
                     refetch();

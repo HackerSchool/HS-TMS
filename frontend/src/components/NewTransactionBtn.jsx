@@ -143,6 +143,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
             }
         })
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 201) {
                     showSuccessMsg("Transaction created successfully");
                     refetch();

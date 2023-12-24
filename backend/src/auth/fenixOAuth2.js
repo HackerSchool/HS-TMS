@@ -31,12 +31,12 @@ passport.use(
 
 					if (
 						await User.getOne(
-							require("../middleware/selectPool").pool,
+							require("../models/pool"),
 							username
 						)
 					) {
 						await User.updateOne(
-							require("../middleware/selectPool").pool,
+							require("../models/pool"),
 							username,
 							true,
 							name,

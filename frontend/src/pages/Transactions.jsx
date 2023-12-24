@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom"
 import '../styles/Transactions.css'
 import axios_instance from '../Axios';
-import { showErrorMsg, showSuccessMsg } from '../Alerts';
+import { showErrorMsg, showSuccessMsg, showWarningMsg } from '../Alerts';
 import Table, { DownloadIcon } from '../components/TransactionsTable'
 import NewTransactionBtn from '../components/NewTransactionBtn';
 import TransactionsReportBtn from '../components/TransactionsReportBtn';
@@ -38,6 +38,7 @@ function TransactionsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`transactions/${transactionToDelete.id}`)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("Transaction deleted successfully");
                     refetchTransactions();
@@ -81,6 +82,7 @@ function TransactionsPage() {
                 params: queryParams,
             })
                 .then(res => {
+                    if (res.handledByMiddleware) return;
                     if (res.status == 200) return res.data;
                     throw new Error("Couldn't fetch transactions");
                 })
@@ -88,7 +90,7 @@ function TransactionsPage() {
 
                     if (data.length === 0 && queryParams.size > 0 && !(queryParams.size === 2
                             && queryParams.get("orderBy") && queryParams.get("order")))
-                        showErrorMsg("No transactions match the specified filters");
+                        showWarningMsg("No transactions match the specified filters");
 
                     setTransactions(data);
                 })
@@ -114,6 +116,7 @@ function TransactionsPage() {
     useEffect(() => {
         axios_instance.get("projects")
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })

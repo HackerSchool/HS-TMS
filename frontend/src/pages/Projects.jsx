@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from "react-router-dom"
 import '../styles/Projects.css'
 import axios_instance from '../Axios';
-import { showErrorMsg, showSuccessMsg } from '../Alerts';
+import { showErrorMsg, showSuccessMsg, showWarningMsg } from '../Alerts';
 import ProjList from '../components/ProjList';
 import NewProjectBtn from '../components/NewProjectBtn';
 import SortButton from '../components/SortBtn';
@@ -37,6 +37,7 @@ function ProjectsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`projects/${projectToDelete.id}`)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("Project deleted successfully");
                     refetchProjects();
@@ -78,6 +79,7 @@ function ProjectsPage() {
                 params: queryParams,
             })
                 .then(res => {
+                    if (res.handledByMiddleware) return;
                     if (res.status == 200) return res.data;
                     throw new Error ("Couldn't fetch projects");
                 })
@@ -85,7 +87,7 @@ function ProjectsPage() {
 
                     if (data.length === 0 && queryParams.size > 0 && !(queryParams.size === 2
                             && queryParams.get("orderBy") && queryParams.get("order")))
-                        showErrorMsg("No projects match the specified filters");
+                        showWarningMsg("No projects match the specified filters");
                     
                     setProjects(data);
                 })

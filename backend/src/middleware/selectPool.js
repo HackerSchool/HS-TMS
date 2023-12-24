@@ -1,16 +1,14 @@
-const { Pool } = require("pg");
-
-const pool = new Pool({
-	user: process.env.DB_USER,
-	host: process.env.DB_HOST,
-	database: process.env.DB_NAME,
-	password: process.env.DB_PASSWORD,
-	port: process.env.DB_PORT
-});
+const pool = require("../models/pool")
+const demoPool = require("../models/demoPool")
 
 function selectPool(req, res, next) {
-	req.pool = pool;
+	if (req.user !== undefined && req.user.username !== "demo") {
+		req.pool = pool;
+	} else {
+		req.pool = demoPool;
+	}
+
 	next();
 }
 
-module.exports = { pool, selectPool };
+module.exports = selectPool;

@@ -76,6 +76,7 @@ function NewReminderBtn({ refetch }) {
 
         axios_instance.post("reminders", body)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 201) {
                     showSuccessMsg("Reminder created successfully");
                     refetch();

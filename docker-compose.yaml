@@ -6,10 +6,18 @@ services:
     container_name: postgres
     image: postgres
     restart: always
-    ports:
-      - 5432:5432
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  postgres-demo:
+    container_name: postgres-demo
+    image: postgres
+    restart: always
+    volumes:
+      - ./backend/init-demo.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -24,6 +32,7 @@ services:
       - 3000:3000
     volumes:
       - ./backend/src:/usr/src/app/backend/src
+      - ./backend/storage:/usr/src/app/backend/storage
 
   frontend:
     container_name: frontend

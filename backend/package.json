@@ -26,6 +26,7 @@
 		"express-session": "^1.17.3",
 		"fs": "^0.0.1-security",
 		"passport": "^0.6.0",
+		"passport-local": "^1.0.0",
 		"passport-oauth2": "^1.7.0",
 		"pdf-lib": "^1.17.1",
 		"pdfmake": "^0.2.7",

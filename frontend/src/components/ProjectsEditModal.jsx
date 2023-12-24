@@ -85,6 +85,7 @@ function ProjectEditModal({ open, setOpen, project, refetch }) {
 
         axios_instance.put(`projects/${project.id}`, body)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status == 200) {
                     showSuccessMsg("Project updated successfully");
                     refetch();

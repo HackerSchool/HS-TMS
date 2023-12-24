@@ -19,6 +19,7 @@ function SettingsPage() {
 
             axios_instance.get("users")
                 .then(res => {
+                    if (res.handledByMiddleware) return;
                     if (res.status === 200) return res.data;
                     throw new Error();
                 })
@@ -49,6 +50,7 @@ function SettingsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`users/${userToDelete.username}`)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("User no longer allowed");
                     refetchUsers();

@@ -3,6 +3,7 @@ const reminderController = require("../controllers/reminderController");
 const { asyncHandler } = require("../middleware/error");
 
 const router = express.Router();
+router.use(require("../middleware/demoUserRestriction"));
 
 router.get("/", asyncHandler(reminderController.getAllReminders));
 router.get("/:id", asyncHandler(reminderController.getReminder));

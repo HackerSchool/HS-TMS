@@ -201,6 +201,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
             responseType: 'blob',
         })
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 else throw new Error();
             })

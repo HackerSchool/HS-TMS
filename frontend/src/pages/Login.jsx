@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import '../styles/Login.css'
 import '../App.css'
+import axios_instance from "../Axios";
+import { showErrorMsg } from "../Alerts";
 import hs_logo from '../assets/hs-logo.png'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LanguageIcon from '@mui/icons-material/Language';
@@ -11,6 +13,31 @@ export default function LoginPage() {
     const image = new Image();
     image.onload = () => setImageReady(true)
     image.src = hs_logo;
+
+    function demoAccountLogin() {
+        axios_instance.post("auth/demo", {
+            username: "demo",
+            password: "demo"
+        })
+            .then(res => {
+                if (res.handledByMiddleware) return;
+                if (res.status === 200) {
+                    return window.location.reload();
+                }
+                throw new Error();
+            })
+            .catch(err => {
+                let msg = "Demo login failed";
+                if (err.response) {
+                    if (err.response.status === 401)
+                        msg += ". Invalid credentials";
+                    else
+                        msg += ". Internal server error"
+                }
+
+                showErrorMsg(msg);
+            })
+    }
 
     return (
         <div className="LoginPage">
@@ -26,7 +53,9 @@ export default function LoginPage() {
                     href="http://localhost:3000/auth/fenix" target="_self" tabIndex={0}>
                     Login with FenixEdu@IST
                 </a>
-                <a className="button" id="demo-account" tabIndex={0}>Demo account</a>
+                <a className="button" id="demo-account" tabIndex={0} onClick={demoAccountLogin}>
+                    Demo account
+                </a>
 
                 <footer>
                     <a href="https://hackerschool.io" target="_blank">

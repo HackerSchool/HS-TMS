@@ -14,7 +14,7 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = (reason) => {
-            setOpen(false);
+        setOpen(false);
     }
 
     const defaultFilters = {

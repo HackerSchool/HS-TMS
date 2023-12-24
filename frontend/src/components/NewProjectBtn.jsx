@@ -100,6 +100,7 @@ export default function NewProjectBtn({ refetch }) {
 
         axios_instance.post("projects", body)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status == 201) {
                     showSuccessMsg("Project created successfully");
                     refetch();

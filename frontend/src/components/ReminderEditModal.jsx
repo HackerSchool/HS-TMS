@@ -74,6 +74,7 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
 
         axios_instance.put(`reminders/${reminder.id}`, body)
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) {
                     showSuccessMsg("Reminder updated successfully");
                     refetch();
