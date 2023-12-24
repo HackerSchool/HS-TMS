@@ -36,6 +36,7 @@ function ProjectLineChart({ title, projectList, projectsLoading }) {
                 },
             })
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })

@@ -37,6 +37,7 @@ function ChartsPage() {
     useEffect(() => {
         axios_instance.get("projects")
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
@@ -52,6 +53,7 @@ function ChartsPage() {
 
         axios_instance.get("transactions")
             .then(res => {
+                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
