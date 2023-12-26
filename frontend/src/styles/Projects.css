@@ -77,6 +77,14 @@
     margin-top: -3px;
 }
 
+.no-projects-container {
+    width: fit-content;
+    background-color: #333333;
+    padding: 0.6rem 1.2rem;
+    border-radius: 1rem;
+    font-size: 1.2rem;
+}
+
 /* Project Modal */
 .project-modal {
     margin: auto;

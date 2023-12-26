@@ -17,14 +17,17 @@ function Sidebar({ user }) {
     function logout() {
         axios_instance.post("auth/logout")
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status == 200)
                     window.open('/login', "_self")
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Logout failed";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);

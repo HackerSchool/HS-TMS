@@ -146,7 +146,6 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
 
         axios_instance.put(`transactions/${transaction.id}`, body)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) {
                     showSuccessMsg("Transaction updated successfully");
                     refetch();
@@ -154,8 +153,12 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't update Transaction";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);

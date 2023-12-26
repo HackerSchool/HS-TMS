@@ -17,6 +17,12 @@ function App() {
 
     useEffect(() => {
 
+        // Add a timeout to requests
+        axios_instance.interceptors.request.use(config => {
+            config.timeout = 10000; // Wait for 10 seconds before timing out
+            return config;
+        });
+
         // Add a response interceptor (middleware)
         axios_instance.interceptors.response.use((response) => {
             // Any status code that lie within the range of 2xx cause this function to trigger
@@ -24,12 +30,19 @@ function App() {
         }, (error) => {
             // Any status codes that falls outside the range of 2xx cause this function to trigger
 
+            // Check for timeout
+            if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
+                console.log("Request timed out");
+                error.reqTimedOut = true;
+                return Promise.reject(error);
+            }
+
             // Check for demo user trying to modify data
             if (error.response.status === 403 && error.response.data?.username === "demo") {
                 console.log("Demo user can't modify data");
                 showErrorMsg("Demo User can't modify data");
-                error.response.handledByMiddleware = true;
-                return error.response;
+                error.handledByMiddleware = true;
+                return Promise.reject(error);
             }
 
             // logout user when unauthorized
@@ -47,13 +60,19 @@ function App() {
         // Check if user is logged in
         axios_instance.get("auth/user")
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error("Authentication failed!");
             })
             .then(data => setUser(data))
             .catch(err => {
-                if (!err.response) { // Thrown error above
+                if (err.handledByMiddleware) return;
+
+                setUser(false);
+                
+                if (err.reqTimedOut) {
+                    showErrorMsg("Authentication failed! Request timed out");
+                }
+                else if (!err.response) { // Thrown error above
                     showErrorMsg(err.message);
                 }
                 else if (err.response.status === 403) { // AxiosError, sv responded with 4xx
@@ -67,7 +86,7 @@ function App() {
 
     return (
         <div className="App">
-            {user != undefined && <Routes>
+            {user !== undefined && <Routes>
                 {!user && <Route path="/login" element={<LoginPage />} />}
                 {user && <Route path="/home" element={<Home user={user} />} >
                     <Route index element={<Navigate to='dashboard' />} />

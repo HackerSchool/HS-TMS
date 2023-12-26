@@ -100,7 +100,6 @@ export default function NewProjectBtn({ refetch }) {
 
         axios_instance.post("projects", body)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status == 201) {
                     showSuccessMsg("Project created successfully");
                     refetch();
@@ -108,8 +107,12 @@ export default function NewProjectBtn({ refetch }) {
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't create project"
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);

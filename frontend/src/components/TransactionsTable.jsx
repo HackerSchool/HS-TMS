@@ -85,7 +85,6 @@ export function DownloadIcon({id}) {
                     responseType: 'blob',
                 })
                 .then(res => {
-                    if (res.handledByMiddleware) return;
                     if (res.status === 200) return res.data;
                     else throw new Error();
                 })
@@ -104,8 +103,12 @@ export function DownloadIcon({id}) {
                     URL.revokeObjectURL(href)
                 })
                 .catch(err => {
+                    if (err.handledByMiddleware) return;
+
                     let msg = "Couldn't download the receipt"
-                    if (err.response)
+                    if (err.reqTimedOut)
+                        msg += ". Request timed out";
+                    else if (err.response)
                         msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
     
                     showErrorMsg(msg);

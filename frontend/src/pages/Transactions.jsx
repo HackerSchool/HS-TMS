@@ -37,7 +37,6 @@ function TransactionsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`transactions/${transactionToDelete.id}`)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("Transaction deleted successfully");
                     refetchTransactions();
@@ -45,7 +44,15 @@ function TransactionsPage() {
                 else throw new Error();
             })
             .catch(err => {
-                showErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`);
+                if (err.handledByMiddleware) return;
+
+                let msg = `Couldn't delete transaction ${transactionToDelete.id}`;
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             });
 
         setOpenConfirmationModal(false);
@@ -77,7 +84,6 @@ function TransactionsPage() {
                 params: queryParams,
             })
                 .then(res => {
-                    if (res.handledByMiddleware) return;
                     if (res.status == 200) return res.data;
                     throw new Error("Couldn't fetch transactions")
                 })
@@ -90,8 +96,12 @@ function TransactionsPage() {
                     setTransactions(data);
                 })
                 .catch(err => {
+                    if (err.handledByMiddleware) return;
+
                     let msg = "Couldn't fetch transactions";
-                    if (err.response)
+                    if (err.reqTimedOut)
+                        msg += ". Request timed out";
+                    else if (err.response)
                         msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                     showErrorMsg(msg);
@@ -111,14 +121,17 @@ function TransactionsPage() {
     useEffect(() => {
         axios_instance.get("projects")
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
             .then(data => setProjectsList(data))
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't fetch projects";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
