@@ -20,15 +20,18 @@ export default function LoginPage() {
             password: "demo"
         })
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) {
                     return window.location.reload();
                 }
                 throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Demo login failed";
-                if (err.response) {
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response) {
                     if (err.response.status === 401)
                         msg += ". Invalid credentials";
                     else

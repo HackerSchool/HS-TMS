@@ -37,7 +37,6 @@ function DashboardPage() {
             }
         })
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
@@ -45,8 +44,12 @@ function DashboardPage() {
                 setActiveProjectsCount(data.length);
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't fetch active projects";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
@@ -69,14 +72,17 @@ function DashboardPage() {
             }
         })
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
             .then(data => setTransactionsLastMonth(data))
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't fetch transactions done in the last 30 days";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
@@ -88,14 +94,17 @@ function DashboardPage() {
     useEffect(() => {
         axios_instance.get("users")
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
             .then(data => setAuthorizedUsersCount(data.length))
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't fetch authorized users";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
@@ -115,14 +124,17 @@ function DashboardPage() {
 
             axios_instance.get("reminders")
                 .then(res => {
-                    if (res.handledByMiddleware) return;
                     if (res.status === 200) return res.data;
                     else throw new Error();
                 })
                 .then(data => setReminders(data))
                 .catch(err => {
+                    if (err.handledByMiddleware) return;
+
                     let msg = "Couldn't fetch reminders";
-                    if (err.response)
+                    if (err.reqTimedOut)
+                        msg += ". Request timed out";
+                    else if (err.response)
                         msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                     showErrorMsg(msg);
@@ -146,7 +158,6 @@ function DashboardPage() {
             }
         })
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 else throw new Error();
             })
@@ -155,8 +166,12 @@ function DashboardPage() {
                 setTotalBalance(data[0]?.balance ?? 0);
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't fetch latest transactions";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
@@ -176,7 +191,6 @@ function DashboardPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`reminders/${reminderToDelete.id}`)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("Reminder deleted successfully");
                     refetchReminders();
@@ -184,8 +198,12 @@ function DashboardPage() {
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = `Couldn't delete reminder ${reminderToDelete.id}`;
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);

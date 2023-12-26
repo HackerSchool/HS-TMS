@@ -85,7 +85,6 @@ function ProjectEditModal({ open, setOpen, project, refetch }) {
 
         axios_instance.put(`projects/${project.id}`, body)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status == 200) {
                     showSuccessMsg("Project updated successfully");
                     refetch();
@@ -93,8 +92,12 @@ function ProjectEditModal({ open, setOpen, project, refetch }) {
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't update Project";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);

@@ -2,6 +2,7 @@
  *
  * @param {Object} filters
  * @param {Array<Transaction>} transactions
+ * @param {boolean} [fakeCredentials=false]
  * @param {boolean} [drawFooter=false]
  * @param {(value: int) => void} [storePageCount=null]
  * @param {Map<integer, integer[]>} [receiptPagesMap=null]
@@ -10,6 +11,7 @@
 function getDocDef(
     filters,
     transactions,
+    fakeCredentials = false,
     drawFooter = false,
     storePageCount = null,
     receiptPagesMap = null
@@ -103,7 +105,7 @@ function getDocDef(
             }
         },
         content: [
-            header(iDate, fDate, posBalance, negBalance, filterRows),
+            header(fakeCredentials, iDate, fDate, posBalance, negBalance, filterRows),
             transactionsTable(
                 transactions,
                 filters.hasNif === undefined,
@@ -128,7 +130,7 @@ function getDocDef(
 
 /* pdfmake document definition */
 
-const header = (initialDate, finalDate, posBalance, negBalance, filters) => [
+const header = (fakeCredentials, initialDate, finalDate, posBalance, negBalance, filters) => [
     // Header info (image + address)
     {
         table: {
@@ -142,9 +144,14 @@ const header = (initialDate, finalDate, posBalance, negBalance, filters) => [
                                 text: "Associação HackerSchool",
                                 alignment: "right",
                             },
-                            { text: "NIPC: 513491821", alignment: "right" },
                             {
-                                text: "Av. Rovisco Pais, Nº1 1049-001, Lisboa",
+                                text: `NIPC: ${fakeCredentials ? "999999999" : "513491821"}`,
+                                alignment: "right"
+                            },
+                            {
+                                text: fakeCredentials
+                                    ? "Sede da HackerSchool, [REDACTED]"
+                                    : "Av. Rovisco Pais, Nº1 1049-001, Lisboa",
                                 alignment: "right",
                             },
                         ],

@@ -331,7 +331,12 @@ async function generateReport(req, res) {
     if (queryParams.projects !== undefined)
         queryParams.projects = await Project.getNamesByIds(pool, queryParams.projects);
 
-    const pathToReport = await report(transactions, queryParams.includeReceipts, queryParams)
+    const pathToReport = await report(
+        transactions,
+        queryParams.includeReceipts,
+        queryParams,
+        req.user.username === "demo"
+    )
 
 	res.download(pathToReport, function (err) {
 		if (err) {
