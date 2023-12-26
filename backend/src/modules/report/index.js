@@ -12,9 +12,10 @@ const { generateReportPath } = require("../../utils/fileUtils");
  * @param {Array<Transaction>} transactions
  * @param {boolean} includeReceipts
  * @param {object} filters
+ * @param {boolean} fakeCredentials
  * @returns the path to the generated report
  */
-async function report(transactions, includeReceipts, filters = {}) {
+async function report(transactions, includeReceipts, filters = {}, fakeCredentials = false) {
     pdfMake.vfs = vfs.pdfMake.vfs;
     const stdFonts = {
         Times: {
@@ -33,7 +34,7 @@ async function report(transactions, includeReceipts, filters = {}) {
 
     if (!includeReceipts || IDsOfTransactionsWithFile.length === 0) {
         const reportPdfmakeDoc = pdfMake.createPdf(
-            getDocDef(filters, transactions, true),
+            getDocDef(filters, transactions, fakeCredentials, true),
             tableLayouts,
             stdFonts
         );
@@ -58,7 +59,7 @@ async function report(transactions, includeReceipts, filters = {}) {
     const storePageNumber = (value) => (pageCount.value = value);
 
     let reportPdfmakeDoc = pdfMake.createPdf(
-        getDocDef(filters, transactions, undefined, storePageNumber),
+        getDocDef(filters, transactions, fakeCredentials, undefined, storePageNumber),
         tableLayouts,
         stdFonts
     );
@@ -76,7 +77,7 @@ async function report(transactions, includeReceipts, filters = {}) {
 
     // Create the final report with links to each receipt page numbers
     reportPdfmakeDoc = pdfMake.createPdf(
-        getDocDef(filters, transactions, undefined, undefined, pageMap),
+        getDocDef(filters, transactions, fakeCredentials, undefined, undefined, pageMap),
         tableLayouts,
         stdFonts
     );
