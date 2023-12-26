@@ -36,14 +36,17 @@ function ProjectLineChart({ title, projectList, projectsLoading }) {
                 },
             })
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
             .then(data => setTransactions(data))
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't fetch project's transactions";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
