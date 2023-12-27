@@ -28,6 +28,11 @@ hr {
     border-color: var(--separator-color);
 }
 
+.link {
+    color: var(--hs-logo);
+    font-weight: 700;
+}
+
 .page {
     background-color: var(--cinza-4);
     height: 100vh;
@@ -116,7 +121,7 @@ hr {
     height: 4rem !important;
 }
 
-.loading-circle.twenty-four-px {
+.loading-circle.small {
     width: 24px !important;
     height: 24px !important;
 }
@@ -330,7 +335,7 @@ input[type="file"] {
     width: 100%;
 }
 
-.select-dropdown .MuiSelect-multiple {
+.select-dropdown .MuiSelect-select {
     border-radius: 0.25rem;
     font-family: 'Roboto', sans-serif;
     color: var(--cinza-placeholder);
@@ -358,29 +363,31 @@ input[type="file"] {
     background-color: var(--green-alpha-40);
 }
 
-/* Sort button */
-.sort-btn {
+/* Dropdown button */
+.dropdown-btn {
     padding-right: 0.5rem; 
 }
 
-.sort-menu {
+.dropdown-menu {
     background-color: var(--green);
     border-radius: 0.5rem;
     top: 0.3rem;
 }
 
-.sort-menu .sort-option {
+.dropdown-menu .dropdown-option {
     color: white;
     justify-content: center;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
-.sort-menu .sort-option.Mui-selected,
-.sort-menu .sort-option.Mui-selected:focus {
+.dropdown-menu .dropdown-option.Mui-selected,
+.dropdown-menu .dropdown-option.Mui-selected:focus {
     background-color: var(--hs-logo);
 }
 
-.sort-menu .sort-option:hover,
-.sort-menu .sort-option.Mui-selected:hover {
+.dropdown-menu .dropdown-option:hover,
+.dropdown-menu .dropdown-option.Mui-selected:hover {
     background-color: var(--green-hover);
 }
 

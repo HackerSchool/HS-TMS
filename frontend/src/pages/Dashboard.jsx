@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import '../styles/Dashboard.css'
-import chart from '../assets/chart.png'
+import BalanceTimeSeries from '../components/BalanceTimeSeries';
 import axios_instance from '../Axios';
 import { showErrorMsg, showSuccessMsg } from "../Alerts"
 import DashboardCard from '../components/DashboardCard';
@@ -25,24 +25,23 @@ function DashboardPage() {
 
     // Treasury overview stats
     const [totalBalance, setTotalBalance] = useState();
-    const [activeProjects, setActiveProjects] = useState();
+    const [activeProjectsCount, setActiveProjectsCount] = useState();
     const [transactionsLastMonth, setTransactionsLastMonth] = useState();
-    const [authorizedUsersNumber, setAuthorizedUsersNumber] = useState();
+    const [authorizedUsersCount, setAuthorizedUsersCount] = useState();
 
     // active projects
     useEffect(() => {
-        axios_instance.get("projects")
+        axios_instance.get("projects", {
+            params: {
+                active: true
+            }
+        })
             .then(res => {
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
             .then(data => {
-                const activeProjCount = data.reduce((count, proj) => {
-                    if (proj.active === true) return count + 1;
-                    return count;
-                }, 0);
-
-                setActiveProjects(activeProjCount);
+                setActiveProjectsCount(data.length);
             })
             .catch(err => {
                 if (err.handledByMiddleware) return;
@@ -57,6 +56,8 @@ function DashboardPage() {
             });
     }, []);
 
+    const [transactionsLastMonthLoading, setTransactionsLastMonthLoading] = useState(true);
+
     // Transactions last month
     useEffect(() => {
         const lastMonthDate = new Date();
@@ -65,14 +66,16 @@ function DashboardPage() {
         axios_instance.get("transactions", {
             params: {
                 initialDate: formatDate(lastMonthDate),
-                finalDate: formatDate(new Date())
+                finalDate: formatDate(new Date()),
+                orderBy: "date",
+                order: "DESC"
             }
         })
             .then(res => {
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
-            .then(data => setTransactionsLastMonth(data.length))
+            .then(data => setTransactionsLastMonth(data))
             .catch(err => {
                 if (err.handledByMiddleware) return;
 
@@ -83,7 +86,8 @@ function DashboardPage() {
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
-            });
+            })
+            .finally(() => setTransactionsLastMonthLoading(false));
     }, []);
 
     // Authorized members
@@ -93,7 +97,7 @@ function DashboardPage() {
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
-            .then(data => setAuthorizedUsersNumber(data.length))
+            .then(data => setAuthorizedUsersCount(data.length))
             .catch(err => {
                 if (err.handledByMiddleware) return;
 
@@ -141,23 +145,24 @@ function DashboardPage() {
         }
     }, [fetchReminders]);
 
-    // Balance chart
-    const [chartData, setChartData] = useState();
-
     // Transactions to display on the recent transactions table
-    const [transactions, setTransactions] = useState([]);
-    const [transactionsLoading, setTransactionsLoading] = useState(true);
+    const [latestTransactions, setLatestTransactions] = useState([]);
+    const [latestTransactionsLoading, setLatestTransactionsLoading] = useState(true);
 
     useEffect(() => {
         axios_instance.get("transactions", {
-            params: { limit: 10 }
+            params: {
+                limit: 10,
+                orderBy: "date",
+                order: "DESC"
+            }
         })
             .then(res => {
                 if (res.status === 200) return res.data;
                 else throw new Error();
             })
             .then(data => {
-                setTransactions(data);
+                setLatestTransactions(data);
                 setTotalBalance(data[0]?.balance ?? 0);
             })
             .catch(err => {
@@ -171,7 +176,7 @@ function DashboardPage() {
 
                 showErrorMsg(msg);
             })
-            .finally(() => setTransactionsLoading(false));
+            .finally(() => setLatestTransactionsLoading(false));
     }, []);
 
 
@@ -239,7 +244,7 @@ function DashboardPage() {
                                     bolderMain
                                 />
                                 <DashboardCard
-                                    headingText={activeProjects ?? "?"}
+                                    headingText={activeProjectsCount ?? "?"}
                                     mainText="Active"
                                     subText="Projects"
                                     icon={<TaskAltIcon />}
@@ -247,14 +252,14 @@ function DashboardPage() {
                             </div>
                             <div className="dashboard-card-row">
                                 <DashboardCard
-                                    headingText={transactionsLastMonth ?? "?"}
+                                    headingText={transactionsLastMonth?.length ?? "?"}
                                     mainText="Transactions"
                                     subText='in the past 30 days'
                                     smallerMain
                                 />
                                 <DashboardCard
-                                    headingText={authorizedUsersNumber ?? "?"}
-                                    mainText={authorizedUsersNumber === 1 ? "Person" : "People"}
+                                    headingText={authorizedUsersCount ?? "?"}
+                                    mainText={authorizedUsersCount === 1 ? "Person" : "People"}
                                     subText="in the system"
                                     icon={<ManageAccountsIcon />}
                                 />
@@ -299,11 +304,27 @@ function DashboardPage() {
 
                 <div className="dashboard-row last">
                     <div className="dashboard-item" id='dashboard-balance'>
-                        <h3 className='dashboard-item-title'>Balance over the last 30 days</h3>
+                        <h3 className='dashboard-item-title' style={{ position: 'relative' }}>
+                            Balance over the last 30 days
+                            {transactionsLastMonthLoading && (
+                                <CircularProgress
+                                    className='loading-circle small'
+                                    style={{
+                                        position: 'absolute',
+                                        right: 0,
+                                        top: "50%",
+                                        translate: "150% -50%"
+                                    }}
+                                />
+                            )}
+                        </h3>
                         <div className="dashboard-item-content">
-                            <div className="dashboard-item-content-container">
-                                <img src={chart} alt="Balance chart" style={{ maxHeight: "95%" }} />
-                            </div>
+                            <BalanceTimeSeries
+                                transactions={transactionsLastMonth ?? []}
+                                loading={transactionsLastMonthLoading}
+                                disableRange={true}
+                                inDashboard={true}
+                            />
                         </div>
                     </div>
 
@@ -314,8 +335,8 @@ function DashboardPage() {
                         <div className="dashboard-item-content">
                             <div className="dashboard-item-content-container">
                                 <RecentTransactionsTable
-                                    data={transactions}
-                                    loading={transactionsLoading}
+                                    data={latestTransactions}
+                                    loading={latestTransactionsLoading}
                                 />
                             </div>
                         </div>

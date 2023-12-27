@@ -56,15 +56,15 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
         selectedSortOptionIdx: findSelectedOptionIdx(),
     })
 
-    function findSelectedOptionIdx(selectedOptionText = null) {
+    function findSelectedOptionIdx(selectedOptionName = null) {
         let idx = -1;
-        if (selectedOptionText === null) {
+        if (selectedOptionName === null) {
             if (params.get("orderBy") && params.get("order")) {
                 idx = sortOptions.findIndex((option) => option.orderBy === params.get("orderBy") &&
                     option.order === params.get("order"));
             }
         } else {
-            idx = sortOptions.findIndex((option) => option.text === selectedOptionText);
+            idx = sortOptions.findIndex((option) => option.name === selectedOptionName);
         }
         return idx === -1 ? 0 : idx;
     }
@@ -78,8 +78,8 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
         }));
     }
 
-    // Memoize sort options text to avoid computing them in every re-render
-    const sortOptionsText = useMemo(() => sortOptions.map(opt => opt.text), [sortOptions])
+    // Memoize sort options names to avoid computing them in every re-render
+    const sortOptionsNames = useMemo(() => sortOptions.map(opt => opt.name), [sortOptions])
 
     // Handle form changes
     function handleChange(e) {
@@ -398,8 +398,8 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                             <div className="form-group" id='transactions-report-sort-group'>
                                 <label htmlFor="sort">Sort transactions by:</label>
                                 <SelectDropdown
-                                    options={sortOptionsText}
-                                    selectedOptions={sortOptions[formData.selectedSortOptionIdx].text}
+                                    options={sortOptionsNames}
+                                    selectedOptions={sortOptions[formData.selectedSortOptionIdx].name}
                                     handleChange={handleSortOptionsChange}
                                 />
                             </div>

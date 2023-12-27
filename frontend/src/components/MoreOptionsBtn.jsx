@@ -9,7 +9,7 @@ import MenuList from '@mui/material/MenuList';
 
 /**
  * 
- * @interface Option = { icon, text, callback }
+ * @interface Option = { icon, name, callback }
  * @param {Array} options
  * @param {String} className - classes to apply to the more-options button
  */
@@ -55,10 +55,10 @@ function MoreOptionsBtn({ options, className }) {
                                             className='option'
                                             onClick={(event) => option.callback()}
                                             tabIndex={0}
-                                            key={option.text}
+                                            key={option.name}
                                             >
                                                 {option.icon}
-                                                {option.text}
+                                                {option.name}
                                             </MenuItem>
                                         )
                                     })}

@@ -10,6 +10,12 @@ import ProjectsFilterBtn from '../components/ProjectsFilterBtn';
 import ProjectEditModal from '../components/ProjectsEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
+const sortOptions = [
+    { name: 'Name ASC', orderBy: 'name', order: 'ASC' },
+    { name: 'Name DESC', orderBy: 'name', order: 'DESC' },
+    { name: 'Balance ASC', orderBy: 'balance', order: 'ASC' },
+    { name: 'Balance DESC', orderBy: 'balance', order: 'DESC' }
+];
 
 function ProjectsPage() {
     const [projects, setProjects] = useState([]);
@@ -64,7 +70,7 @@ function ProjectsPage() {
         )
     }
 
-    // To show loading state while fetching transactions
+    // To show loading state while fetching projects
     const [loading, setLoading] = useState(false);
 
     // To fetch projects when needed
@@ -133,12 +139,8 @@ function ProjectsPage() {
                         params={queryParams}
                         setParams={setQueryParams}
                         refetch={refetchProjects}
-                        options={[
-                            {text: 'Name ASC', orderBy: 'name', order: 'ASC'},
-                            {text: 'Name DESC', orderBy: 'name', order: 'DESC'},
-                            {text: 'Balance ASC', orderBy: 'balance', order: 'ASC'},
-                            {text: 'Balance DESC', orderBy: 'balance', order: 'DESC'}
-                        ]}
+                        options={sortOptions}
+                        loading={loading}
                     />
 
                     <ProjectsFilterBtn

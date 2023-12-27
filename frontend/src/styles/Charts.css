@@ -1,0 +1,146 @@
+.charts {
+    max-height: 100%;
+    padding: 3rem 3rem 0rem 3rem;
+    margin-bottom: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    column-gap: 0.5rem;
+}
+
+.chart {
+    background-color: var(--cinza-4);
+    display: flex;
+    height: fit-content;
+    margin-bottom: 2rem;
+    border-radius: 30px;
+    -webkit-box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.chart-box .chart-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chart-box .chartTitle {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 0.8rem;
+}
+
+/* Dropdown button */
+.charts .dropdown-btn {
+    padding: 0.2rem 0.4rem 0.2rem 0.8rem;
+    margin-top: -0.25rem;
+    font-size: 0.885rem;
+    gap: 4px;
+}
+
+.charts .dropdown-btn svg {
+    font-size: 1.35rem;
+}
+
+.charts .dropdown-menu {
+    background-color: var(--green);
+    border-radius: 0.5rem;
+    top: 0.3rem;
+}
+
+.charts .dropdown-menu .dropdown-option {
+    color: white;
+    font-size: 0.85rem;
+    justify-content: center;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+
+/* Chart built-in dropdown button */
+
+.updatemenu-header-group rect.updatemenu-item-rect {
+    fill: var(--hs-logo) !important;
+    fill-opacity: 1 !important;
+    stroke: var(--hs-logo) !important;
+}
+
+.updatemenu-header-group .updatemenu-header-arrow {
+    fill: white !important;
+}
+
+/* dropdown option */
+rect.updatemenu-item-rect {
+    fill: var(--green) !important;
+    fill-opacity: 1 !important;
+    stroke: var(--green) !important;
+}
+/* the active (selected) option */
+rect.updatemenu-item-rect:where([style*="fill: rgb(244, 250, 255)"]) {
+    fill: var(--hs-logo) !important;
+    stroke: var(--hs-logo) !important;
+}
+
+.updatemenu-dropdown-button *:hover {
+    fill: var(--green-hover) !important;
+    stroke: var(--green-hover) !important;
+}
+
+/* to prevent the text from being hoverable, which would paint the text instead
+ of the button background */
+.updatemenu-dropdown-button text {
+    pointer-events: none;
+}
+
+/* range selector buttons */
+
+rect.selector-rect {
+    fill: var(--green) !important;
+    stroke: var(--green) !important;
+}
+
+/* the active (selected) option */
+rect.selector-rect:where([style*="fill: rgb(212, 212, 212)"]) {
+    fill: var(--hs-logo) !important;
+    stroke: var(--hs-logo) !important;
+}
+.rangeselector .button *:hover {
+    fill: var(--green-hover) !important;
+    stroke: var(--green-hover) !important;
+}
+
+.rangeselector .button text {
+    pointer-events: none;
+}
+
+/* remove text label from range slider */
+.rangeslider-rangeplot.xy .plot .scatterlayer.mlayer .text {
+    display: none;
+}
+
+
+/* center the modebar */
+.js-plotly-plot .plotly .modebar-container {
+    top: 50% !important;
+}
+
+.js-plotly-plot .plotly .modebar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0.5rem;
+}
+
+/* div displayed when there are not enough transactions to plot */
+#ChartsPage .transaction-warn-container {
+    width: 580px;
+    height: 383px;
+    background-color: var(--cinza-4);
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 30px;
+}

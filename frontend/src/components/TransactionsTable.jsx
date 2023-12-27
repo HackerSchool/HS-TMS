@@ -117,7 +117,7 @@ export function DownloadIcon({id}) {
             }}
         >
         {pending ? 
-            <CircularProgress className="loading-circle twenty-four-px" />
+            <CircularProgress className="loading-circle small" />
             : <RequestPageIcon className="receipt-download-icon" />
         }
         </div>
@@ -210,12 +210,12 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
                                         options={[
                                             {
                                                 icon: <EditIcon />,
-                                                text: "Edit",
+                                                name: "Edit",
                                                 callback: () => openEditModal(row)
                                             },
                                             {
                                                 icon: <DeleteIcon />,
-                                                text: "Delete",
+                                                name: "Delete",
                                                 callback: () => openDeleteModal(row)
                                             }
                                         ]}
