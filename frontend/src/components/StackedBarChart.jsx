@@ -9,8 +9,9 @@ const transactionTypeOptions = [
     { name: "Costs", bool: false }
 ];
 
-const bars_color = ["#7FA8FD","#6BBA75","#FFDC82","#FF787C"];
-const bar_lines_color = ["#4274C4","#0E9553", "#CEA54E", "#9F5C5C"];
+// The first color (red) is reserved for the group "Projects" (all non-symbolic projects)
+const bars_color = ["#FF787C", "#7FA8FD", "#6BBA75", "#FFDC82", "#e377c2", "#c7825b"];
+const bar_lines_color = ["#9F5C5C", "#4274C4", "#0E9553", "#CEA54E", "#9c4f84", "#875940"];
 
 function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loading }){
     const [years, setYears] = useState([]);
@@ -134,7 +135,6 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
                         return {
                             x: months.map(String),
                             y: project_y,
-                            // sque isto FIXME
                             name: projects[project_idx % (projects.length + 1)]
                                 ? projects[project_idx % (projects.length + 1)]
                                 : "Projects",
@@ -144,25 +144,26 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
                             visible: year_index === 0,
                             hoverinfo: "x+y",
                             marker: {
-                                // é seguro meter cores, de certeza que só são 3 defaults? FIXME
                                 color: projects[
                                     project_idx % (projects.length + 1)
                                 ]
+                                    // symbolic project
                                     ? bars_color[
-                                          project_idx % (projects.length + 1)
+                                          project_idx % (projects.length + 1) + 1
                                       ]
-                                    : bars_color[bars_color.length - 1],
+                                    // "Projects" group
+                                    : bars_color[0],
                                 line: {
                                     color: projects[
                                         project_idx % (projects.length + 1)
                                     ]
+                                        // symbolic project
                                         ? bar_lines_color[
                                               project_idx %
-                                                  (projects.length + 1)
+                                                  (projects.length + 1) + 1
                                           ]
-                                        : bar_lines_color[
-                                              bar_lines_color.length - 1
-                                          ],
+                                        // "Projects" group
+                                        : bar_lines_color[0],
                                     width: 2,
                                 },
                             },

@@ -5,11 +5,6 @@ import ProjectSelectBtn from "./ProjectSelectBtn";
 import BalanceTimeSeries from "./BalanceTimeSeries";
 import CircularProgress from '@mui/material/CircularProgress';
 
-//Botão visível dependendo do valor de disableProjectSelectBtn
-//Talvez faça mais sentido só adicionar os projetos ativos às opções?
-//Possivelmente fazer opção na página dos projetos para se ver os gráficos relativos aos mesmos independentemente se são ativos ou não?
-//Título dependente do projeto escolhido? FIXME
-
 function ProjectLineChart({ title, projectList, projectsLoading }) {
     
     // projectIID is undefined until a project is selected

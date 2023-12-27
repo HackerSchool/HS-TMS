@@ -10,10 +10,6 @@ import DropdownBtn from '../components/DropdownBtn';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 
-//time series da evolução do balance
-//gráfico de earnings com a data real em vez de ser por mês?
-//Talvez fazer comparação dos gastos dos projetos com os gastos médios de todos os projetos? FIXME
-
 const yearTypeOptions = [
     { name: 'Civic Years', type:'civic' },
     { name: 'Academic Years', type:'academic' },
