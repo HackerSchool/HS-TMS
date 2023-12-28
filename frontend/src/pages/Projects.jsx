@@ -10,6 +10,12 @@ import ProjectsFilterBtn from '../components/ProjectsFilterBtn';
 import ProjectEditModal from '../components/ProjectsEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
+const sortOptions = [
+    { name: 'Name ASC', orderBy: 'name', order: 'ASC' },
+    { name: 'Name DESC', orderBy: 'name', order: 'DESC' },
+    { name: 'Balance ASC', orderBy: 'balance', order: 'ASC' },
+    { name: 'Balance DESC', orderBy: 'balance', order: 'DESC' }
+];
 
 function ProjectsPage() {
     const [projects, setProjects] = useState([]);
@@ -31,7 +37,6 @@ function ProjectsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`projects/${projectToDelete.id}`)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("Project deleted successfully");
                     refetchProjects();
@@ -39,7 +44,15 @@ function ProjectsPage() {
                 else throw new Error();
             })
             .catch(err => {
-                showErrorMsg(`Couldn't delete project ${projectToDelete.name}`);
+                if (err.handledByMiddleware) return;
+
+                let msg = `Couldn't delete project ${projectToDelete.name}`;
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             });
 
         setOpenConfirmationModal(false);
@@ -57,7 +70,7 @@ function ProjectsPage() {
         )
     }
 
-    // To show loading state while fetching transactions
+    // To show loading state while fetching projects
     const [loading, setLoading] = useState(false);
 
     // To fetch projects when needed
@@ -69,7 +82,6 @@ function ProjectsPage() {
                 params: queryParams,
             })
                 .then(res => {
-                    if (res.handledByMiddleware) return;
                     if (res.status == 200) return res.data;
                     throw new Error ("Couldn't fetch projects");
                 })
@@ -82,8 +94,12 @@ function ProjectsPage() {
                     setProjects(data);
                 })
                 .catch(err => {
+                    if (err.handledByMiddleware) return;
+
                     let msg = "Couldn't fetch projects";
-                    if (err.response) 
+                    if (err.reqTimedOut)
+                        msg += ". Request timed out";
+                    else if (err.response) 
                         msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                     showErrorMsg(msg);
@@ -123,12 +139,8 @@ function ProjectsPage() {
                         params={queryParams}
                         setParams={setQueryParams}
                         refetch={refetchProjects}
-                        options={[
-                            {text: 'Name ASC', orderBy: 'name', order: 'ASC'},
-                            {text: 'Name DESC', orderBy: 'name', order: 'DESC'},
-                            {text: 'Balance ASC', orderBy: 'balance', order: 'ASC'},
-                            {text: 'Balance DESC', orderBy: 'balance', order: 'DESC'}
-                        ]}
+                        options={sortOptions}
+                        loading={loading}
                     />
 
                     <ProjectsFilterBtn

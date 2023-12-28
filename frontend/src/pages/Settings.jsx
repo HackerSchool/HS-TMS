@@ -8,7 +8,6 @@ import NewUserBtn from '../components/NewUserBtn';
 
 function SettingsPage() {
 
-
     const [users, setUsers] = useState([]);
     const [usersLoading, setUsersLoading] = useState(false);
     const [fetchUsers, setFetchUsers] = useState(true);
@@ -19,14 +18,17 @@ function SettingsPage() {
 
             axios_instance.get("users")
                 .then(res => {
-                    if (res.handledByMiddleware) return;
                     if (res.status === 200) return res.data;
                     throw new Error();
                 })
                 .then(data => setUsers(data))
                 .catch(err => {
+                    if (err.handledByMiddleware) return;
+
                     let msg = "Couldn't fetch users";
-                    if (err.response)
+                    if (err.reqTimedOut)
+                        msg += ". Request timed out";
+                    else if (err.response)
                         msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                     showErrorMsg(msg);
@@ -50,7 +52,6 @@ function SettingsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`users/${userToDelete.username}`)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("User no longer allowed");
                     refetchUsers();
@@ -58,7 +59,15 @@ function SettingsPage() {
                 else throw new Error();
             })
             .catch(err => {
-                showErrorMsg(`Couldn't revoke ${userToDelete.username}'s access`);
+                if (err.handledByMiddleware) return;
+
+                let msg = `Couldn't revoke ${userToDelete.username}'s access`;
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             });
 
         setOpenConfirmationModal(false);

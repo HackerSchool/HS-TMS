@@ -74,7 +74,6 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
 
         axios_instance.put(`reminders/${reminder.id}`, body)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) {
                     showSuccessMsg("Reminder updated successfully");
                     refetch();
@@ -82,8 +81,12 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't update Reminder";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);

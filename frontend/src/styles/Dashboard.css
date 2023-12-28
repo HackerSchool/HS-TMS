@@ -266,6 +266,17 @@
     flex-grow: 1;
 }
 
+/* balance chart */
+#DashboardPage .transaction-warn-container {
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 30px;
+}
+
 /* latest transactions */
 #dashboard-latest-transactions {
     flex-grow: 1;

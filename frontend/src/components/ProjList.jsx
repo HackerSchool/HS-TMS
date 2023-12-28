@@ -18,7 +18,7 @@ export default function ProjList({ data, openEditModal, openDeleteModal, loading
     // display message when there's no data to display
     if (data.length === 0)
         return (
-            <div className="project-container" style={{ margin: "0 auto" }}>
+            <div className="no-projects-container" style={{ margin: "0 auto" }}>
                 <p>No projects found</p>
             </div>
         )
@@ -43,12 +43,12 @@ export default function ProjList({ data, openEditModal, openDeleteModal, loading
                             options={[
                                 {
                                     icon: <EditIcon />,
-                                    text: 'Edit',
+                                    name: 'Edit',
                                     callback: () => openEditModal(project)
                                 },
                                 {
                                     icon: <DeleteIcon />,
-                                    text: 'Delete',
+                                    name: 'Delete',
                                     callback: () => openDeleteModal(project)
                                 }
                             ]}

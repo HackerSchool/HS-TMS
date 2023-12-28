@@ -11,16 +11,17 @@ import TransactionsFilterBtn from '../components/TransactionsFilterBtn';
 import TransactionEditModal from '../components/TransactionEditModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
+const sortOptions = [
+    { name: 'Newest first', orderBy: 'date', order: 'DESC' },
+    { name: 'Oldest first', orderBy: 'date', order: 'ASC' },
+    { name: 'Value Asc', orderBy: 'value', order: 'ASC' },
+    { name: 'Value Desc', orderBy: 'value', order: 'DESC' }
+];
+
 function TransactionsPage() {
     const [transactions, setTransactions] = useState([]);
     const [fetchTransactions, setFetchTransactions] = useState(true);
     const [queryParams, setQueryParams] = useSearchParams();
-    const sortOptions = [
-        {text: 'Newest first', orderBy: 'date', order: 'DESC'},
-        {text: 'Oldest first', orderBy: 'date', order: 'ASC'},
-        {text: 'Value Asc', orderBy: 'value', order: 'ASC'},
-        {text: 'Value Desc', orderBy: 'value', order: 'DESC'}
-    ]
 
     // Transaction Edit Modal
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -37,7 +38,6 @@ function TransactionsPage() {
     function onDeleteConfirmation() {
         axios_instance.delete(`transactions/${transactionToDelete.id}`)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 204) {
                     showSuccessMsg("Transaction deleted successfully");
                     refetchTransactions();
@@ -45,7 +45,15 @@ function TransactionsPage() {
                 else throw new Error();
             })
             .catch(err => {
-                showErrorMsg(`Couldn't delete transaction ${transactionToDelete.id}`);
+                if (err.handledByMiddleware) return;
+
+                let msg = `Couldn't delete transaction ${transactionToDelete.id}`;
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
+                    msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
+
+                showErrorMsg(msg);
             });
 
         setOpenConfirmationModal(false);
@@ -77,9 +85,8 @@ function TransactionsPage() {
                 params: queryParams,
             })
                 .then(res => {
-                    if (res.handledByMiddleware) return;
                     if (res.status == 200) return res.data;
-                    throw new Error("Couldn't fetch transactions")
+                    throw new Error("Couldn't fetch transactions");
                 })
                 .then(data => {
 
@@ -90,8 +97,12 @@ function TransactionsPage() {
                     setTransactions(data);
                 })
                 .catch(err => {
+                    if (err.handledByMiddleware) return;
+
                     let msg = "Couldn't fetch transactions";
-                    if (err.response)
+                    if (err.reqTimedOut)
+                        msg += ". Request timed out";
+                    else if (err.response)
                         msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                     showErrorMsg(msg);
@@ -111,14 +122,17 @@ function TransactionsPage() {
     useEffect(() => {
         axios_instance.get("projects")
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 200) return res.data;
                 throw new Error();
             })
             .then(data => setProjectsList(data))
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't fetch projects";
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
@@ -160,6 +174,7 @@ function TransactionsPage() {
                         setParams={setQueryParams}
                         refetch={refetchTransactions}
                         options={sortOptions}
+                        loading={loading}
                     />
 
                     <TransactionsFilterBtn

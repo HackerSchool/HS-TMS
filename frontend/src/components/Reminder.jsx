@@ -14,12 +14,12 @@ function Reminder({ reminder, openEditModal, openDeleteModal, hideOptions = fals
                     options={[
                         {
                             icon: <EditIcon />,
-                            text: "Edit",
+                            name: "Edit",
                             callback: () => openEditModal(reminder)
                         },
                         {
                             icon: <DeleteIcon />,
-                            text: "Delete",
+                            name: "Delete",
                             callback: () => openDeleteModal(reminder)
                         }
                     ]}

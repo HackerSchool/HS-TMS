@@ -76,7 +76,6 @@ function NewReminderBtn({ refetch }) {
 
         axios_instance.post("reminders", body)
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 201) {
                     showSuccessMsg("Reminder created successfully");
                     refetch();
@@ -84,8 +83,12 @@ function NewReminderBtn({ refetch }) {
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+
                 let msg = "Couldn't create reminder"
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);

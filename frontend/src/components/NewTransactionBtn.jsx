@@ -143,7 +143,6 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
             }
         })
             .then(res => {
-                if (res.handledByMiddleware) return;
                 if (res.status === 201) {
                     showSuccessMsg("Transaction created successfully");
                     refetch();
@@ -151,8 +150,12 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                 else throw new Error();
             })
             .catch(err => {
+                if (err.handledByMiddleware) return;
+                
                 let msg = "Couldn't create transaction"
-                if (err.response)
+                if (err.reqTimedOut)
+                    msg += ". Request timed out";
+                else if (err.response)
                     msg += `. ${("" + err.response.status)[0] === '4' ? "Bad client request" : "Internal server error"}`;
 
                 showErrorMsg(msg);
