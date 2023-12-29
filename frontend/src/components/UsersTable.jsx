@@ -21,14 +21,15 @@ export default function UsersTable({ data, loading, openDeleteModal }) {
                         <TableCell align="center">Photo</TableCell>
                         <TableCell align="center">Name</TableCell>
                         <TableCell align="center">Username</TableCell>
-                        <TableCell align="center" >Status</TableCell>
+                        <TableCell align="center" padding="checkbox">E-mail</TableCell>
+                        <TableCell align="center">Status</TableCell>
                         <TableCell align="center" padding="none"></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {data.length === 0 && !loading && ( // display message when there's no data to display
                         <TableRow>
-                            <TableCell colSpan={5} align="center" sx={{ fontSize: 18, border: 0 }}>
+                            <TableCell colSpan={6} align="center" sx={{ fontSize: 18, border: 0 }}>
                                 No users found
                             </TableCell>
                         </TableRow>
@@ -36,7 +37,7 @@ export default function UsersTable({ data, loading, openDeleteModal }) {
 
                     {loading && (
                         <TableRow>
-                            <TableCell colSpan={5} align="center" sx={{ border: 0 }} >
+                            <TableCell colSpan={6} align="center" sx={{ border: 0 }} >
                                 <CircularProgress className="loading-circle large" sx={{ m: 5 }} />
                             </TableCell>
                         </TableRow>
@@ -58,6 +59,7 @@ export default function UsersTable({ data, loading, openDeleteModal }) {
                             </TableCell>
                             <TableCell align="center">{row.name}</TableCell>
                             <TableCell align="center">{row.username}</TableCell>
+                            <TableCell align="center">{row.email ?? "none"}</TableCell>
                             <TableCell align="center">
                                 <span className={row.active ? "active" : "pending"}>
                                     {row.active ? "Active" : "Pending activation"}
