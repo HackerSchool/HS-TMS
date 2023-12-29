@@ -60,7 +60,7 @@ app.listen(process.env.PORT, () => {
 });
 
 new CronJob(
-	"0 0 * * 2", // Every Tuesday at midnight
+	"0 4 * * 2", // Every Tuesday at 4 am
 	weeklyBackup,
 	null,
 	true,

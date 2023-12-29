@@ -67,4 +67,16 @@ const emailLogger = winston.createLogger({
 	]
 });
 
-module.exports = { logger, emailLogger };
+function emailLoggerFn(author, resource, method, before, after) {
+	emailLogger.info(
+		JSON.stringify({
+			author,
+			resource,
+			method,
+			before,
+			after
+		})
+	);
+}
+
+module.exports = { logger, emailLoggerFn };

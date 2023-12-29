@@ -3,7 +3,8 @@ const Transaction = require("../models/Transaction");
 const Project = require("../models/Project");
 const fileUtils = require("../utils/fileUtils");
 const { isValidDate } = require("../utils/dateUtils");
-const report = require("../modules/report")
+const report = require("../modules/report");
+const { emailLoggerFn } = require("../modules/logging");
 
 async function createTransaction(req, res) {
 	const pool = req.pool;
@@ -17,19 +18,23 @@ async function createTransaction(req, res) {
 
 		if (hasNif === undefined || typeof hasNif !== "boolean") throw Error();
 
-		if (description === undefined || typeof description !== "string" ||
-            description.trim() === "")
-            throw Error();
+		if (
+			description === undefined ||
+			typeof description !== "string" ||
+			description.trim() === ""
+		)
+			throw Error();
 
 		if (
 			projects !== undefined &&
 			(!Array.isArray(projects) ||
 				!projects.every((v) => Number.isInteger(parseFloat(v))) ||
 				!(await Project.assertAllExist(pool, projects)) ||
-                // symbolic projects transactions can only be associated with 1 project
-                ((await Project.getAll(pool, undefined, undefined, undefined, true))
-                            .some(proj => projects.some(id => id === proj.id))
-                            && projects.length > 1))
+				// symbolic projects transactions can only be associated with 1 project
+				((await Project.getAll(pool, undefined, undefined, undefined, true)).some(
+					(proj) => projects.some((id) => id === proj.id)
+				) &&
+					projects.length > 1))
 		)
 			throw Error();
 	} catch (err) {
@@ -63,21 +68,32 @@ async function createTransaction(req, res) {
 					await Transaction.deleteOne(pool, transaction.id);
 					fs.unlink(fileUtils.generateReceiptPath(transaction.id), (err) => {});
 					res.status(500).send("Receipt upload failed");
-				} else res.status(201).send(transaction);
+				} else {
+					res.status(201).send(transaction);
+
+					emailLoggerFn(
+						req.user.name,
+						"Transaction",
+						req.method,
+						null,
+						transaction
+					);
+				}
 			}
 		);
 	} else {
-		res.status(201).send(
-			await Transaction.createOne(
-				pool,
-				date,
-				description,
-				value,
-				false,
-				hasNif,
-				projects
-			)
+		const transaction = await Transaction.createOne(
+			pool,
+			date,
+			description,
+			value,
+			false,
+			hasNif,
+			projects
 		);
+		res.status(201).send(transaction);
+
+		emailLoggerFn(req.user.name, "Transaction", req.method, null, transaction);
 	}
 }
 
@@ -125,25 +141,30 @@ async function updateTransaction(req, res) {
 
 		if (hasFile === undefined || typeof hasFile !== "boolean") throw Error();
 
-		if (description === undefined || typeof description !== "string" ||
-            description.trim() === "")
-            throw Error();
+		if (
+			description === undefined ||
+			typeof description !== "string" ||
+			description.trim() === ""
+		)
+			throw Error();
 
 		if (
 			projects !== undefined &&
 			(!Array.isArray(projects) ||
 				!projects.every((v) => Number.isInteger(parseFloat(v))) ||
 				!(await Project.assertAllExist(pool, projects)) ||
-                // symbolic projects transactions can only be associated with 1 project
-                ((await Project.getAll(pool, undefined, undefined, undefined, true))
-                            .some(proj => projects.some(id => id === proj.id))
-                            && projects.length > 1))
+				// symbolic projects transactions can only be associated with 1 project
+				((await Project.getAll(pool, undefined, undefined, undefined, true)).some(
+					(proj) => projects.some((id) => id === proj.id)
+				) &&
+					projects.length > 1))
 		)
 			throw Error();
 	} catch (err) {
 		return res.status(400).send("Invalid params");
 	}
 
+	const oldTransaction = await Transaction.getOne(pool, parseInt(id));
 	const transaction = await Transaction.updateOne(
 		pool,
 		parseInt(id),
@@ -158,6 +179,8 @@ async function updateTransaction(req, res) {
 	if (transaction === undefined) return res.status(404).send("Transaction not found");
 
 	res.status(200).send(transaction);
+
+	emailLoggerFn(req.user.name, "Transaction", req.method, oldTransaction, transaction);
 }
 
 async function deleteTransaction(req, res) {
@@ -175,6 +198,8 @@ async function deleteTransaction(req, res) {
 	fs.unlink(fileUtils.generateReceiptPath(id), (err) => {});
 
 	res.status(204).end();
+
+	emailLoggerFn(req.user.name, "Transaction", req.method, deletedTransaction, null);
 }
 
 async function getAllTransactions(req, res) {
@@ -254,7 +279,7 @@ async function getAllTransactions(req, res) {
 async function generateReport(req, res) {
 	const pool = req.pool;
 
-	let queryParams = {
+	let queryParams = ({
 		initialMonth,
 		finalMonth,
 		initialValue,
@@ -264,8 +289,8 @@ async function generateReport(req, res) {
 		projects,
 		orderBy,
 		order,
-        includeReceipts,
-	} = req.query;
+		includeReceipts
+	} = req.query);
 
 	// input validation
 	try {
@@ -292,23 +317,26 @@ async function generateReport(req, res) {
 			throw Error();
 		if (order !== undefined && !(order === "ASC" || order === "DESC")) throw Error();
 
-        if (includeReceipts !== undefined && includeReceipts !== "true"
-                && includeReceipts !== "false")
-            throw Error()
+		if (
+			includeReceipts !== undefined &&
+			includeReceipts !== "true" &&
+			includeReceipts !== "false"
+		)
+			throw Error();
 	} catch (err) {
 		return res.status(400).send("Invalid params");
 	}
 
-    // Parse the params
-    queryParams = {
-        ...queryParams,
-        includeReceipts: includeReceipts && JSON.parse(includeReceipts),
+	// Parse the params
+	queryParams = {
+		...queryParams,
+		includeReceipts: includeReceipts && JSON.parse(includeReceipts),
 		initialValue: initialValue && parseFloat(initialValue),
 		finalValue: finalValue && parseFloat(finalValue),
 		hasNif: hasNif && JSON.parse(hasNif),
 		hasFile: hasFile && JSON.parse(hasFile),
-		projects: projects && JSON.parse(projects),
-    }
+		projects: projects && JSON.parse(projects)
+	};
 
 	const transactions = await Transaction.getAll(
 		pool,
@@ -327,16 +355,16 @@ async function generateReport(req, res) {
 		undefined
 	);
 
-    // map project id's to their corresponding names to display in the report
-    if (queryParams.projects !== undefined)
-        queryParams.projects = await Project.getNamesByIds(pool, queryParams.projects);
+	// map project id's to their corresponding names to display in the report
+	if (queryParams.projects !== undefined)
+		queryParams.projects = await Project.getNamesByIds(pool, queryParams.projects);
 
-    const pathToReport = await report(
-        transactions,
-        queryParams.includeReceipts,
-        queryParams,
-        req.user.username === "demo"
-    )
+	const pathToReport = await report(
+		transactions,
+		queryParams.includeReceipts,
+		queryParams,
+		req.user.username === "demo"
+	);
 
 	res.download(pathToReport, function (err) {
 		if (err) {

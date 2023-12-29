@@ -3,6 +3,7 @@ const OAuth2Strategy = require("passport-oauth2").Strategy;
 const User = require("../models/User");
 const axios = require("axios");
 require("dotenv").config();
+const { emailLoggerFn } = require("../modules/logging");
 
 passport.use(
 	"fenix",
@@ -29,8 +30,9 @@ passport.use(
 					name = `${fullName[0]} ${fullName[fullName.length - 1]}`;
 					photo = photo.data;
 
-					if (await User.getOne(require("../models/pool"), username)) {
-						await User.updateOne(
+					const user = await User.getOne(require("../models/pool"), username);
+					if (user) {
+						const updatedUser = await User.updateOne(
 							require("../models/pool"),
 							username,
 							true,
@@ -38,6 +40,18 @@ passport.use(
 							photo,
 							email
 						);
+
+						if (!user.active) {
+							delete user.photo;
+							delete updatedUser.photo;
+							emailLoggerFn(
+								name,
+								"User",
+								"PUT",
+								user,
+								updatedUser
+							);
+						}
 					}
 
 					cb(null, { username, name, photo, email });
