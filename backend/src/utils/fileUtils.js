@@ -49,6 +49,11 @@ async function readLogFile(filePath) {
 	for await (const line of rl) {
 		try {
 			const logObject = JSON.parse(line);
+
+			try {
+				logObject.message = JSON.parse(logObject.message);
+			} catch (error) {}
+
 			logs.push(logObject);
 		} catch (error) {
 			console.error("Error parsing log entry:", error);
