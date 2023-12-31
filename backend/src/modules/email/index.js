@@ -36,11 +36,7 @@ async function sendWeeklySummary(recipients, logs) {
 			subject: "[HS-TMS] Weekly Summary",
 			html: htmlTable
 		});
-
-		console.log(res);
-	} catch (error) {
-		console.error(error);
-	}
+	} catch (error) {}
 }
 
 module.exports = { sendWeeklySummary };

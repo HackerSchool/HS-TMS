@@ -2,7 +2,8 @@ CREATE TABLE reminders (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     "description" TEXT,
-    "date" DATE NOT NULL
+    "date" DATE NOT NULL,
+    notified BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE users (

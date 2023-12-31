@@ -59,7 +59,7 @@ class Reminder {
 				[id, title, description, date]
 			)
 		).rows[0];
-        
+
 		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
 		return res;
 	}
@@ -71,23 +71,38 @@ class Reminder {
 	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		return (await pool.query(
-			`
+		return (
+			await pool.query(
+				`
 		DELETE FROM reminders
 		WHERE id = $1::integer
         RETURNING *;
 	    `,
-			[id]
-		)).rows[0];
+				[id]
+			)
+		).rows[0];
 	}
 
 	/**
 	 * @async
 	 * @param {pg.Pool} pool
+	 * @param {boolean} pendingNotification
 	 * @returns {Array<Object>}
 	 */
-	async getAll(pool) {
-		const res = await pool.query(`SELECT * FROM reminders ORDER BY date`);
+	async getAll(pool, pendingNotification = false) {
+		let query = `SELECT * FROM reminders`;
+
+		if (pendingNotification) {
+			query += ` 
+				WHERE
+					NOT notified
+					AND CURRENT_DATE >= date - INTERVAL '7 days'
+			`;
+		}
+
+		query += ` ORDER BY date`;
+
+		const res = await pool.query(query);
 
 		return res.rows.map((row) => {
 			return {
@@ -95,6 +110,29 @@ class Reminder {
 				date: dateUtils.convertToLocalTimezone(row.date)
 			};
 		});
+	}
+
+	/**
+	 * @async
+	 * @param {pg.Pool} pool
+	 * @param {integer} id
+	 * @returns {Object}
+	 */
+	async setNotified(pool, id) {
+		const res = (
+			await pool.query(
+				`
+				UPDATE reminders
+				SET notified = true
+				WHERE id = $1::integer
+				RETURNING *;
+			`,
+				[id]
+			)
+		).rows[0];
+
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		return res;
 	}
 }
 
