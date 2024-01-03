@@ -90,17 +90,23 @@ class Reminder {
 	 * @returns {Array<Object>}
 	 */
 	async getAll(pool, pendingNotification = false) {
-		let query = `SELECT * FROM reminders`;
+		let query;
 
 		if (pendingNotification) {
-			query += ` 
+			query = ` 
+				SELECT
+					*,
+					(CURRENT_DATE = date) AS today
+				FROM
+					reminders
 				WHERE
-					NOT notified
-					AND CURRENT_DATE >= date - INTERVAL '7 days'
+					(NOT notified AND CURRENT_DATE >= date - INTERVAL '7 days')
+					OR (CURRENT_DATE = date)
+				ORDER BY date
 			`;
+		} else {
+			query = `SELECT * FROM reminders ORDER BY date`;
 		}
-
-		query += ` ORDER BY date`;
 
 		const res = await pool.query(query);
 
