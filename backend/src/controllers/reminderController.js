@@ -68,6 +68,10 @@ async function updateReminder(req, res) {
 	res.status(200).send(reminder);
 
 	emailLoggerFn(req.user.name, "Reminder", req.method, oldReminder, reminder);
+
+	if (oldReminder.date !== reminder.date) {
+		await Reminder.setNotified(pool, reminder.id, false);
+	}
 }
 
 async function deleteReminder(req, res) {

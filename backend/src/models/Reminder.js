@@ -122,18 +122,19 @@ class Reminder {
 	 * @async
 	 * @param {pg.Pool} pool
 	 * @param {integer} id
+	 * @param {boolean} value
 	 * @returns {Object}
 	 */
-	async setNotified(pool, id) {
+	async setNotified(pool, id, value) {
 		const res = (
 			await pool.query(
 				`
 				UPDATE reminders
-				SET notified = true
+				SET notified = $2::boolean
 				WHERE id = $1::integer
 				RETURNING *;
 			`,
-				[id]
+				[id, value]
 			)
 		).rows[0];
 
