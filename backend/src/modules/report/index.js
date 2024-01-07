@@ -46,8 +46,9 @@ async function report(transactions, includeReceipts, filters = {}, fakeCredentia
     }
 
     const { receiptsPdf, pageMap, receiptPdfProps } = await generateReceiptsPDF(
-        IDsOfTransactionsWithFile
-    );
+		IDsOfTransactionsWithFile,
+		fakeCredentials // fakeCredentials = (req.user.username === "demo")
+	);
 
     // To create a link in the report from the transactions to the pages that
     // contain their receipt, we need to generate a dummy report that's exactly

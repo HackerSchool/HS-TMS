@@ -6,10 +6,11 @@ const { generateReceiptPath } = require("../../utils/fileUtils");
  * Given a list of transaction IDs, returns the resulting PDFDocument of
  * attaching all the receipts
  * @param {Array<integer>} transactionsIDs
+ * @param {boolean} isDemo
  * @returns PDFDocument containing all receipts or null in case there are none
  * @returns Map<integer, integer[]> (id => pageNumber[])
  */
-async function generateReceiptsPDF(transactionsIDs) {
+async function generateReceiptsPDF(transactionsIDs, isDemo) {
     try {
         const A4PageDim = { width: 595, height: 842 };
         const paddingY = 40;
@@ -24,7 +25,7 @@ async function generateReceiptsPDF(transactionsIDs) {
         let pageCount = 0;
 
         for (const id of transactionsIDs) {
-            const pathToReceipt = generateReceiptPath(id);
+            const pathToReceipt = generateReceiptPath(id, isDemo);
 
             // Load the existing PDF file from disk
             const existingPdfBuffer = fs.readFileSync(pathToReceipt);

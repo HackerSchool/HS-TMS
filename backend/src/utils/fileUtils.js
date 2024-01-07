@@ -7,12 +7,15 @@ const User = require("../models/User");
 
 /**
  * @param {integer} id
+ * @param {boolean} isDemo
  * @returns {string}
  */
-function generateReceiptPath(id) {
+function generateReceiptPath(id, isDemo = false) {
 	return (
 		__dirname +
-		"/../../storage/receipts/transaction" +
+		"/../../storage/receipts/" +
+		(isDemo ? "demo-" : "") +
+		"transaction" +
 		String(id).padStart(4, "0") +
 		".pdf"
 	);

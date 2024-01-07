@@ -62,11 +62,17 @@ async function createTransaction(req, res) {
 		);
 
 		uploadedFile.mv(
-			fileUtils.generateReceiptPath(transaction.id),
+			fileUtils.generateReceiptPath(transaction.id, req.user.username === "demo"),
 			async function (err) {
 				if (err) {
 					await Transaction.deleteOne(pool, transaction.id);
-					fs.unlink(fileUtils.generateReceiptPath(transaction.id), (err) => {});
+					fs.unlink(
+						fileUtils.generateReceiptPath(
+							transaction.id,
+							req.user.username === "demo"
+						),
+						(err) => {}
+					);
 					res.status(500).send("Receipt upload failed");
 				} else {
 					res.status(201).send(transaction);
@@ -117,11 +123,14 @@ async function downloadReceipt(req, res) {
 	// input validation
 	if (!Number.isInteger(parseFloat(id))) return res.status(400).send("Invalid params");
 
-	res.download(fileUtils.generateReceiptPath(parseInt(id)), function (err) {
-		if (err) {
-			res.status(404).end();
+	res.download(
+		fileUtils.generateReceiptPath(parseInt(id), req.user.username === "demo"),
+		function (err) {
+			if (err) {
+				res.status(404).end();
+			}
 		}
-	});
+	);
 }
 
 async function updateTransaction(req, res) {
@@ -195,7 +204,10 @@ async function deleteTransaction(req, res) {
 	if (deletedTransaction === undefined)
 		return res.status(404).send("Transaction not found");
 
-	fs.unlink(fileUtils.generateReceiptPath(id), (err) => {});
+	fs.unlink(
+		fileUtils.generateReceiptPath(id, req.user.username === "demo"),
+		(err) => {}
+	);
 
 	res.status(204).end();
 
