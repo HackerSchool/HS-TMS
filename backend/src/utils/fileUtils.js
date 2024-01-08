@@ -114,7 +114,18 @@ async function weeklyBackup() {
 	clearLogFile(__dirname + "/../../storage/logs/combined.log");
 	clearLogFile(__dirname + "/../../storage/logs/email.log");
 	clearLogFile(__dirname + "/../../storage/logs/error.log");
+	deleteReports();
 	deleteOldBackups();
+}
+
+function deleteReports() {
+	const reportFiles = fs.readdirSync(__dirname + "/../../storage/reports");
+
+	reportFiles.forEach((file) => {
+		if (file !== ".gitkeep") {
+			fs.unlink(__dirname + "/../../storage/reports/" + file, (err) => {});
+		}
+	});
 }
 
 function deleteOldBackups() {
@@ -133,10 +144,7 @@ function deleteOldBackups() {
 					(currentWeek >= fileWeek && currentWeek - fileWeek > 4) ||
 					(currentWeek < fileWeek && currentWeek + 52 - fileWeek > 4)
 				) {
-					fs.unlink(
-						__dirname + "/../../storage/backups" + "/" + file,
-						(err) => {}
-					);
+					fs.unlink(__dirname + "/../../storage/backups/" + file, (err) => {});
 				}
 			}
 		}
