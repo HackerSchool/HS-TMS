@@ -1,5 +1,8 @@
 FROM node:20
 
+# Install the PostgreSQL client tools
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Create app directory
 WORKDIR /usr/src/app/backend
 

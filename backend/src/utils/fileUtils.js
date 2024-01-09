@@ -2,6 +2,8 @@ const fs = require("fs");
 const readline = require("readline");
 const AdmZip = require("adm-zip");
 const moment = require("moment");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 const { sendWeeklySummaryEmail } = require("../modules/email");
 const User = require("../models/User");
 
@@ -98,24 +100,19 @@ function zipFolder(sourceFolder, outputZipFile) {
 	zip.writeZip(outputZipFile);
 }
 
-async function weeklyBackup() {
-	await sendWeeklySummaryEmail(
-		(await User.getAll(require("../models/pool")))
-			.filter((user) => user.active)
-			.map((user) => user.email),
-		await readLogFile(__dirname + "/../../storage/logs/email.log")
-	);
+async function backupDatabase() {
+	const bashCommand = `PGPASSWORD=${process.env.DB_PASSWORD} pg_dump -h ${process.env.DB_HOST} -U ${process.env.DB_USER} -d ${process.env.DB_NAME} -a -f ../../storage/backup.sql`;
+	const options = {
+		cwd: __dirname
+	};
 
-	zipFolder(
-		__dirname + "/../../storage",
-		__dirname + "/../../storage/backups/" + moment().format("YYYY-WW") + ".zip"
-	);
+	try {
+		const { stderr } = await exec(bashCommand, options);
 
-	clearLogFile(__dirname + "/../../storage/logs/combined.log");
-	clearLogFile(__dirname + "/../../storage/logs/email.log");
-	clearLogFile(__dirname + "/../../storage/logs/error.log");
-	deleteReports();
-	deleteOldBackups();
+		if (stderr) {
+			throw new Error(stderr);
+		}
+	} catch (error) {}
 }
 
 function deleteReports() {
@@ -149,6 +146,28 @@ function deleteOldBackups() {
 			}
 		}
 	});
+}
+
+async function weeklyBackup() {
+	await sendWeeklySummaryEmail(
+		(await User.getAll(require("../models/pool")))
+			.filter((user) => user.active)
+			.map((user) => user.email),
+		await readLogFile(__dirname + "/../../storage/logs/email.log")
+	);
+
+	await backupDatabase();
+
+	zipFolder(
+		__dirname + "/../../storage",
+		__dirname + "/../../storage/backups/" + moment().format("YYYY-WW") + ".zip"
+	);
+
+	clearLogFile(__dirname + "/../../storage/logs/combined.log");
+	clearLogFile(__dirname + "/../../storage/logs/email.log");
+	clearLogFile(__dirname + "/../../storage/logs/error.log");
+	deleteReports();
+	deleteOldBackups();
 }
 
 module.exports = {
