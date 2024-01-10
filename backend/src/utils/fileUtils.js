@@ -166,8 +166,9 @@ async function weeklyBackup() {
 	clearLogFile(__dirname + "/../../storage/logs/combined.log");
 	clearLogFile(__dirname + "/../../storage/logs/email.log");
 	clearLogFile(__dirname + "/../../storage/logs/error.log");
-	deleteReports();
 	deleteOldBackups();
+	deleteReports();
+	fs.unlink(__dirname + "/../../storage/backup.sql", (err) => {});
 }
 
 module.exports = {
