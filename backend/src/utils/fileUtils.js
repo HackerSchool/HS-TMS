@@ -130,6 +130,8 @@ function deleteOldBackups() {
 	const backupFiles = fs.readdirSync(__dirname + "/../../storage/backups");
 
 	backupFiles.forEach((file) => {
+		if (file.length !== 11) return; // skip unscheduled backups
+
 		const dotIndex = file.lastIndexOf(".");
 
 		if (dotIndex !== -1) {
@@ -171,12 +173,24 @@ async function weeklyBackup() {
 	fs.unlink(__dirname + "/../../storage/backup.sql", (err) => {});
 }
 
+async function unscheduledBackup() {
+	await backupDatabase();
+
+	zipFolder(
+		__dirname + "/../../storage",
+		__dirname + "/../../storage/backups/" + moment().format("YYYY-MM-DD") + ".zip"
+	);
+
+	fs.unlink(__dirname + "/../../storage/backup.sql", (err) => {});
+}
+
 module.exports = {
 	generateReceiptPath,
 	generateReportPath,
 	readLogFile,
 	clearLogFile,
 	zipFolder,
+	deleteOldBackups,
 	weeklyBackup,
-	deleteOldBackups
+	unscheduledBackup
 };
