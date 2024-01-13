@@ -1,4 +1,5 @@
 const { Resend } = require("resend");
+const { generateReminderHtml } = require("./templates");
 require("dotenv").config();
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -56,7 +57,7 @@ async function sendReminderEmail(recipients, reminder) {
 			from: "HackerSchool <no-reply@hackerschool.io>",
 			to: recipients,
 			subject: `[HS-TMS] Reminder: ${reminder.title}`,
-			html: JSON.stringify(reminder)
+			html: generateReminderHtml(reminder)
 		});
 	} catch (error) {
 		return false;
