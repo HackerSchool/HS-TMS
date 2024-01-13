@@ -15,7 +15,7 @@ function generateReminderHtml(reminder) {
                         ReminderStyles.td +
                         ReminderStyles.td_title
                     }">
-                        <center>
+                        <center style="${ReminderStyles.global}">
                             <h1 class="title" style="${
                                 ReminderStyles.global + ReminderStyles.title
                             }">HS-TMS Reminder</h1>
