@@ -3,7 +3,8 @@
 // Navigate to the backend directory before executing the script.
 //
 // Usage: node src/scripts/restoreState.js <backup file basename>
-// Example: node src/scripts/restoreState.js 2024-02.zip
+// Example 1: node src/scripts/restoreState.js 2024-02.zip		(scheduled backup)
+// Example 2: node src/scripts/restoreState.js 2024-01-12.zip	(unscheduled backup)
 
 const { execSync } = require("child_process");
 const path = require("path");
@@ -27,6 +28,13 @@ if (args.length !== 1) {
 const backupBasename = args[0];
 const backupDir = path.parse(backupBasename).name;
 
+// Check if backup file basename is valid
+if (backupBasename.length !== 11 && backupBasename.length !== 14) {
+	console.error("Please provide a valid backup file basename.");
+	process.exit(1);
+}
+const isUnscheduledBackup = backupBasename.length === 14;
+
 // Unzip backup file
 execSync(`unzip -o storage/backups/${backupBasename} -d ${backupDir}`, {
 	stdio: "inherit"
@@ -37,10 +45,21 @@ const folders = ["logs", "receipts", "reports"];
 for (const folder of folders) {
 	execSync(`rm -f storage/${folder}/*`, { stdio: "inherit" });
 
-	if (folder === "receipts" && fs.readdirSync(`${backupDir}/${folder}`).length > 1) {
-		execSync(`mv -f ${backupDir}/${folder}/* storage/${folder}/`, {
-			stdio: "inherit"
-		});
+	if (isUnscheduledBackup) {
+		if (fs.readdirSync(`${backupDir}/${folder}`).length > 1) {
+			execSync(`mv -f ${backupDir}/${folder}/* storage/${folder}/`, {
+				stdio: "inherit"
+			});
+		}
+	} else {
+		if (
+			folder === "receipts" &&
+			fs.readdirSync(`${backupDir}/${folder}`).length > 1
+		) {
+			execSync(`mv -f ${backupDir}/${folder}/* storage/${folder}/`, {
+				stdio: "inherit"
+			});
+		}
 	}
 }
 execSync(`mv -f ${backupDir}/backup.sql storage`, { stdio: "inherit" });
