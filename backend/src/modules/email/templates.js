@@ -1,5 +1,19 @@
+const moment = require("moment");
+
 function generateReminderHtml(reminder) {
-    // TODO: number of days until reminder is due
+    let dueDateText = "";
+    if (reminder.today) {
+        dueDateText = "today";
+    } else {
+        const currentMoment = moment().startOf("day");
+        const dueMoment = moment(reminder.date);
+
+        // Calculate the difference in days
+        const dayDifference = dueMoment.diff(currentMoment, "days");
+
+        dueDateText =
+            dayDifference === 1 ? "tomorrow" : `in ${dayDifference} days`;
+    }
 
     return `
     <center class="wrapper" style="${
@@ -27,7 +41,7 @@ function generateReminderHtml(reminder) {
                         <p style="${
                             ReminderStyles.global + ReminderStyles.p
                         }">You are receiving this e-mail because the following
-                        reminder is due in 7 days:</p>
+                        reminder is due <b>${dueDateText}</b>:</p>
                     </td>
                 </tr>
                 <tr style="${ReminderStyles.global}">

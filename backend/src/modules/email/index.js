@@ -50,8 +50,6 @@ async function sendReminderEmail(recipients, reminder) {
 		return false;
 	}
 
-	// TODO: check if reminder is due today (reminder.today)
-
 	try {
 		await resend.emails.send({
 			from: "HackerSchool <no-reply@hackerschool.io>",
