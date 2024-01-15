@@ -52,17 +52,13 @@ async function readLogFile(filePath) {
 
 	const logs = [];
 	for await (const line of rl) {
+		const logObject = JSON.parse(line);
+
 		try {
-			const logObject = JSON.parse(line);
+			logObject.message = JSON.parse(logObject.message);
+		} catch (error) {}
 
-			try {
-				logObject.message = JSON.parse(logObject.message);
-			} catch (error) {}
-
-			logs.push(logObject);
-		} catch (error) {
-			console.error("Error parsing log entry:", error);
-		}
+		logs.push(logObject);
 	}
 
 	return logs;
@@ -72,9 +68,7 @@ async function readLogFile(filePath) {
  * @param {string} filePath
  */
 async function clearLogFile(filePath) {
-	try {
-		fs.writeFileSync(filePath, "");
-	} catch (error) {}
+	fs.writeFileSync(filePath, "");
 }
 
 /**
@@ -106,13 +100,11 @@ async function backupDatabase() {
 		cwd: __dirname
 	};
 
-	try {
-		const { stderr } = await exec(bashCommand, options);
+	const { stderr } = await exec(bashCommand, options);
 
-		if (stderr) {
-			throw new Error(stderr);
-		}
-	} catch (error) {}
+	if (stderr) {
+		throw new Error(stderr);
+	}
 }
 
 function deleteReports() {
@@ -120,7 +112,7 @@ function deleteReports() {
 
 	reportFiles.forEach((file) => {
 		if (file !== ".gitkeep") {
-			fs.unlink(__dirname + "/../../storage/reports/" + file, (err) => {});
+			fs.unlinkSync(__dirname + "/../../storage/reports/" + file);
 		}
 	});
 }
@@ -143,7 +135,7 @@ function deleteOldBackups() {
 					(currentWeek >= fileWeek && currentWeek - fileWeek > 4) ||
 					(currentWeek < fileWeek && currentWeek + 52 - fileWeek > 4)
 				) {
-					fs.unlink(__dirname + "/../../storage/backups/" + file, (err) => {});
+					fs.unlinkSync(__dirname + "/../../storage/backups/" + file);
 				}
 			}
 		}
@@ -170,7 +162,7 @@ async function weeklyBackup() {
 	clearLogFile(__dirname + "/../../storage/logs/error.log");
 	deleteOldBackups();
 	deleteReports();
-	fs.unlink(__dirname + "/../../storage/backup.sql", (err) => {});
+	fs.unlinkSync(__dirname + "/../../storage/backup.sql");
 }
 
 async function unscheduledBackup() {
@@ -181,7 +173,7 @@ async function unscheduledBackup() {
 		__dirname + "/../../storage/backups/" + moment().format("YYYY-MM-DD") + ".zip"
 	);
 
-	fs.unlink(__dirname + "/../../storage/backup.sql", (err) => {});
+	fs.unlinkSync(__dirname + "/../../storage/backup.sql");
 }
 
 module.exports = {
