@@ -40,10 +40,11 @@ class Transaction {
 				)
 			).rows[0].id;
 
-			if (projects) await Promise.all(
-				projects.map(async (projectId) => {
-					await client.query(
-						`INSERT INTO transaction_project (
+			if (projects)
+				await Promise.all(
+					projects.map(async (projectId) => {
+						await client.query(
+							`INSERT INTO transaction_project (
 							transaction_id,
 							project_id
 						)
@@ -55,10 +56,10 @@ class Transaction {
 							)
 						ON CONFLICT DO NOTHING;
 					`,
-						[transactionId, projectId]
-					);
-				})
-			);
+							[transactionId, projectId]
+						);
+					})
+				);
 
 			await client.query("COMMIT");
 
@@ -102,10 +103,10 @@ class Transaction {
 			)
 		).rows[0];
 
-        if (res) {
-            res.date = dateUtils.convertToLocalTimezone(res.date);
-            res.value = parseFloat(res.value);
-        }
+		if (res) {
+			res.date = dateUtils.convertToLocalTimezone(res.date);
+			res.value = parseFloat(res.value);
+		}
 		return res;
 	}
 
@@ -151,10 +152,11 @@ class Transaction {
 				[id]
 			);
 
-			if (projects) await Promise.all(
-				projects.map(async (projectId) => {
-					await client.query(
-						`
+			if (projects)
+				await Promise.all(
+					projects.map(async (projectId) => {
+						await client.query(
+							`
 					INSERT INTO transaction_project (
 						transaction_id,
 						project_id
@@ -165,10 +167,10 @@ class Transaction {
 							$2::integer
 						)
 					ON CONFLICT DO NOTHING;`,
-						[id, projectId]
-					);
-				})
-			);
+							[id, projectId]
+						);
+					})
+				);
 
 			await client.query("COMMIT");
 
@@ -188,14 +190,22 @@ class Transaction {
 	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		return (await pool.query(
-			`
+		const res = (
+			await pool.query(
+				`
 		DELETE FROM transactions
 		WHERE id = $1::integer
         RETURNING *;
 	    `,
-			[id]
-		)).rows[0];
+				[id]
+			)
+		).rows[0];
+
+		if (res) {
+			res.date = dateUtils.convertToLocalTimezone(res.date);
+			res.value = parseFloat(res.value);
+		}
+		return res;
 	}
 
 	/**

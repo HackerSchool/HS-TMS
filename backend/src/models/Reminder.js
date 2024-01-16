@@ -71,7 +71,7 @@ class Reminder {
 	 * @returns {Object}
 	 */
 	async deleteOne(pool, id) {
-		return (
+		const res = (
 			await pool.query(
 				`
 		DELETE FROM reminders
@@ -81,6 +81,9 @@ class Reminder {
 				[id]
 			)
 		).rows[0];
+
+		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		return res;
 	}
 
 	/**
