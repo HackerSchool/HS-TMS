@@ -104,7 +104,7 @@ class Transaction {
 		).rows[0];
 
 		if (res) {
-			res.date = dateUtils.convertToLocalTimezone(res.date);
+			res.date = dateUtils.dateToString(res.date);
 			res.value = parseFloat(res.value);
 		}
 		return res;
@@ -202,7 +202,7 @@ class Transaction {
 		).rows[0];
 
 		if (res) {
-			res.date = dateUtils.convertToLocalTimezone(res.date);
+			res.date = dateUtils.dateToString(res.date);
 			res.value = parseFloat(res.value);
 		}
 		return res;
@@ -355,7 +355,7 @@ class Transaction {
 		return res.rows.map((row) => {
 			return {
 				...row,
-				date: dateUtils.convertToLocalTimezone(row.date),
+				date: dateUtils.dateToString(row.date),
 				value: parseFloat(row.value),
 				balance: parseFloat(row.balance)
 			};

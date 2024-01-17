@@ -2,45 +2,37 @@
  * @param {Date} date
  * @returns {string}
  */
-function convertToLocalTimezone(date) {
-    const timezoneOffset = new Date().getTimezoneOffset();
-    const localDate = new Date(date.getTime() - timezoneOffset * 60000);
-
-    return localDate.toISOString().substring(0, 10);
+function dateToString(date) {
+	return date.toISOString().substring(0, 10);
 }
 
 /**
- * @param {Date} dateString 
+ * @param {Date} dateString
  * @returns {boolean}
  */
 function isValidDate(dateString, isMonth = false) {
-    try {
-      const parsedDate = new Date(dateString);
-      // Check if the parsed date is a valid date
-      if (isNaN(parsedDate.getTime()))
-        return false; // Invalid date
+	try {
+		const parsedDate = new Date(dateString);
+		// Check if the parsed date is a valid date
+		if (isNaN(parsedDate.getTime())) return false; // Invalid date
 
-  
-      // Check if the parsed day matches the original input day since the Date
-      // class normalizes dates, i.e.: turns '2000-06-31' to '2000-07-01'
+		// Check if the parsed day matches the original input day since the Date
+		// class normalizes dates, i.e.: turns '2000-06-31' to '2000-07-01'
 
-      // If the date was just a month (YYYY-MM), there's no problem
-      if (isMonth)
-        return true;
+		// If the date was just a month (YYYY-MM), there's no problem
+		if (isMonth) return true;
 
-      const dateParts = dateString.split('-');
-      const day = parseInt(dateParts[2]);
-      if (day !== parsedDate.getDate())
-        return false; // Invalid date (day mismatch)
+		const dateParts = dateString.split("-");
+		const day = parseInt(dateParts[2]);
+		if (day !== parsedDate.getDate()) return false; // Invalid date (day mismatch)
 
-  
-      return true; // Valid date
-    } catch (error) {
-      return false; // An error occurred during parsing, so it's not a valid date
-    }
-  }
+		return true; // Valid date
+	} catch (error) {
+		return false; // An error occurred during parsing, so it's not a valid date
+	}
+}
 
 module.exports = {
-    convertToLocalTimezone,
-    isValidDate
+	dateToString,
+	isValidDate
 };

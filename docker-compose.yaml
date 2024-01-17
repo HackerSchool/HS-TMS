@@ -9,6 +9,8 @@ services:
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
+      - TZ=Europe/Lisbon
+      - PGTZ=Europe/Lisbon
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
@@ -19,6 +21,8 @@ services:
     volumes:
       - ./backend/init-demo.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
+      - TZ=Europe/Lisbon
+      - PGTZ=Europe/Lisbon
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
@@ -33,6 +37,8 @@ services:
     volumes:
       - ./backend/src:/usr/src/app/backend/src
       - ./backend/storage:/usr/src/app/backend/storage
+    environment:
+      - TZ=Europe/Lisbon
 
   frontend:
     container_name: frontend
@@ -44,3 +50,5 @@ services:
       - 5173:5173
     volumes:
       - ./frontend/src:/usr/src/app/frontend/src
+    environment:
+      - TZ=Europe/Lisbon

@@ -17,7 +17,7 @@ class Reminder {
 			)
 		).rows[0];
 
-		res.date = dateUtils.convertToLocalTimezone(res.date);
+		res.date = dateUtils.dateToString(res.date);
 		return res;
 	}
 
@@ -32,7 +32,7 @@ class Reminder {
 			await pool.query(`SELECT * FROM reminders WHERE id = $1::integer`, [id])
 		).rows[0];
 
-		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		if (res) res.date = dateUtils.dateToString(res.date);
 		return res;
 	}
 
@@ -60,7 +60,7 @@ class Reminder {
 			)
 		).rows[0];
 
-		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		if (res) res.date = dateUtils.dateToString(res.date);
 		return res;
 	}
 
@@ -82,7 +82,7 @@ class Reminder {
 			)
 		).rows[0];
 
-		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		if (res) res.date = dateUtils.dateToString(res.date);
 		return res;
 	}
 
@@ -116,7 +116,7 @@ class Reminder {
 		return res.rows.map((row) => {
 			return {
 				...row,
-				date: dateUtils.convertToLocalTimezone(row.date)
+				date: dateUtils.dateToString(row.date)
 			};
 		});
 	}
@@ -141,7 +141,7 @@ class Reminder {
 			)
 		).rows[0];
 
-		if (res) res.date = dateUtils.convertToLocalTimezone(res.date);
+		if (res) res.date = dateUtils.dateToString(res.date);
 		return res;
 	}
 }
