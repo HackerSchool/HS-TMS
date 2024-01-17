@@ -1,7 +1,7 @@
 const fs = require("fs");
 const readline = require("readline");
 const AdmZip = require("adm-zip");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 const { sendWeeklySummaryEmail } = require("../modules/email");
@@ -118,7 +118,7 @@ function deleteReports() {
 }
 
 function deleteOldBackups() {
-	const currentWeek = moment().isoWeek();
+	const currentWeekDate = moment().startOf('isoWeek');
 	const backupFiles = fs.readdirSync(__dirname + "/../../storage/backups");
 
 	backupFiles.forEach((file) => {
@@ -127,23 +127,17 @@ function deleteOldBackups() {
 		const dotIndex = file.lastIndexOf(".");
 
 		if (dotIndex !== -1) {
-			const fileParts = file.substring(0, dotIndex).split("-");
-			if (fileParts.length === 2) {
-				const fileWeek = parseInt(fileParts[1], 10);
-
-				if (
-					(currentWeek >= fileWeek && currentWeek - fileWeek > 4) ||
-					(currentWeek < fileWeek && currentWeek + 52 - fileWeek > 4)
-				) {
-					fs.unlinkSync(__dirname + "/../../storage/backups/" + file);
-				}
-			}
+            const fileWeek = file.substring(0, dotIndex);
+            const fileWeekDate = moment(fileWeek, 'YYYY-WW');
+            if (currentWeekDate.diff(fileWeekDate, 'weeks') > 4) {
+                fs.unlinkSync(__dirname + "/../../storage/backups/" + file);
+            }
 		}
 	});
 }
 
 async function weeklyBackup() {
-	await sendWeeklySummaryEmail(
+    	await sendWeeklySummaryEmail(
 		(await User.getAll(require("../models/pool")))
 			.filter((user) => user.active)
 			.map((user) => user.email),
