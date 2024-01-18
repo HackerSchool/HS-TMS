@@ -137,7 +137,7 @@ function deleteOldBackups() {
 }
 
 async function weeklyBackup() {
-    	await sendWeeklySummaryEmail(
+    await sendWeeklySummaryEmail(
 		(await User.getAll(require("../models/pool")))
 			.filter((user) => user.active)
 			.map((user) => user.email),

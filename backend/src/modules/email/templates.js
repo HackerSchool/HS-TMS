@@ -108,9 +108,7 @@ function generateReminderHtml(reminder) {
     `;
 }
 
-function generateSummaryHtml(logs) {
-    // TODO: week date range
-    // TODO: logs ordered by timestamp?
+function generateSummaryHtml(logs, rangeString) {
 
     const filteredLogs = logs.map(log => log.message).map((log) => {
         if (log.resource === "Project") {
@@ -315,7 +313,7 @@ function generateSummaryHtml(logs) {
                                         SummaryStyles.title__h4
                                     }"
                                 >
-                                    Jan 1 - Jan 7, 2024
+                                    ${rangeString}
                                 </h4>
                             </center>
                         </td>
