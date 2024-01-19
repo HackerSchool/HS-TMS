@@ -1,5 +1,5 @@
 const { CronJob } = require("cron");
-const { weeklyBackup } = require("../utils/fileUtils");
+const { weeklyBackup } = require("../modules/backup");
 
 new CronJob(
 	"0 4 * * 2", // Every Tuesday at 4 am

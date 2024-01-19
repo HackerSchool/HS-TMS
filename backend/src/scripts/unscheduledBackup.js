@@ -13,6 +13,6 @@ if (path.basename(process.cwd()) !== "backend") {
 	process.exit(1);
 }
 
-const { unscheduledBackup } = require("../utils/fileUtils");
+const { unscheduledBackup } = require("../modules/backup");
 
 unscheduledBackup();

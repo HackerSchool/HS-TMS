@@ -2,10 +2,6 @@ const fs = require("fs");
 const readline = require("readline");
 const AdmZip = require("adm-zip");
 const moment = require("moment-timezone");
-const util = require("util");
-const exec = util.promisify(require("child_process").exec);
-const { sendWeeklySummaryEmail } = require("../modules/email");
-const User = require("../models/User");
 
 /**
  * @param {integer} id
@@ -94,19 +90,6 @@ function zipFolder(sourceFolder, outputZipFile) {
 	zip.writeZip(outputZipFile);
 }
 
-async function backupDatabase() {
-	const bashCommand = `PGPASSWORD=${process.env.DB_PASSWORD} pg_dump -h ${process.env.DB_HOST} -U ${process.env.DB_USER} -d ${process.env.DB_NAME} -a -f ../../storage/backup.sql`;
-	const options = {
-		cwd: __dirname
-	};
-
-	const { stderr } = await exec(bashCommand, options);
-
-	if (stderr) {
-		throw new Error(stderr);
-	}
-}
-
 function deleteReports() {
 	const reportFiles = fs.readdirSync(__dirname + "/../../storage/reports");
 
@@ -118,7 +101,7 @@ function deleteReports() {
 }
 
 function deleteOldBackups() {
-	const currentWeekDate = moment().startOf('isoWeek');
+	const currentWeekDate = moment().startOf("isoWeek");
 	const backupFiles = fs.readdirSync(__dirname + "/../../storage/backups");
 
 	backupFiles.forEach((file) => {
@@ -127,47 +110,13 @@ function deleteOldBackups() {
 		const dotIndex = file.lastIndexOf(".");
 
 		if (dotIndex !== -1) {
-            const fileWeek = file.substring(0, dotIndex);
-            const fileWeekDate = moment(fileWeek, 'YYYY-WW');
-            if (currentWeekDate.diff(fileWeekDate, 'weeks') > 4) {
-                fs.unlinkSync(__dirname + "/../../storage/backups/" + file);
-            }
+			const fileWeek = file.substring(0, dotIndex);
+			const fileWeekDate = moment(fileWeek, "YYYY-WW");
+			if (currentWeekDate.diff(fileWeekDate, "weeks") > 4) {
+				fs.unlinkSync(__dirname + "/../../storage/backups/" + file);
+			}
 		}
 	});
-}
-
-async function weeklyBackup() {
-    await sendWeeklySummaryEmail(
-		(await User.getAll(require("../models/pool")))
-			.filter((user) => user.active)
-			.map((user) => user.email),
-		await readLogFile(__dirname + "/../../storage/logs/email.log")
-	);
-
-	await backupDatabase();
-
-	zipFolder(
-		__dirname + "/../../storage",
-		__dirname + "/../../storage/backups/" + moment().format("YYYY-WW") + ".zip"
-	);
-
-	clearLogFile(__dirname + "/../../storage/logs/combined.log");
-	clearLogFile(__dirname + "/../../storage/logs/email.log");
-	clearLogFile(__dirname + "/../../storage/logs/error.log");
-	deleteOldBackups();
-	deleteReports();
-	fs.unlinkSync(__dirname + "/../../storage/backup.sql");
-}
-
-async function unscheduledBackup() {
-	await backupDatabase();
-
-	zipFolder(
-		__dirname + "/../../storage",
-		__dirname + "/../../storage/backups/" + moment().format("YYYY-MM-DD") + ".zip"
-	);
-
-	fs.unlinkSync(__dirname + "/../../storage/backup.sql");
 }
 
 module.exports = {
@@ -176,7 +125,6 @@ module.exports = {
 	readLogFile,
 	clearLogFile,
 	zipFolder,
-	deleteOldBackups,
-	weeklyBackup,
-	unscheduledBackup
+	deleteReports,
+	deleteOldBackups
 };
