@@ -2,7 +2,6 @@ const passport = require("passport");
 const OAuth2Strategy = require("passport-oauth2").Strategy;
 const User = require("../models/User");
 const axios = require("axios");
-require("dotenv").config();
 const { emailLoggerFn } = require("../modules/logging");
 
 passport.use(

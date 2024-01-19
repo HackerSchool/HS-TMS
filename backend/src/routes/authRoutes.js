@@ -1,6 +1,5 @@
 const express = require("express");
 const passport = require("passport");
-require("dotenv").config()
 const { asyncHandler } = require("../middleware/error");
 const isLoggedIn = require("../middleware/isLoggedIn");
 

@@ -1,6 +1,5 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-require("dotenv").config();
 
 passport.use(
 	"demo",

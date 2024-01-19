@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const session = require("express-session");
@@ -6,7 +7,6 @@ const cors = require("cors");
 const morgan = require("morgan");
 require("./auth/fenixOAuth2");
 require("./auth/demoLocal");
-require("dotenv").config();
 const isLoggedIn = require("./middleware/isLoggedIn");
 const { logger } = require("./modules/logging");
 
