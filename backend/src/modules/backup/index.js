@@ -37,7 +37,7 @@ async function weeklyBackup() {
 
 	zipFolder(
 		__dirname + "/../../../storage",
-		__dirname + "/../../../storage/backups/" + moment().format("YYYY-WW") + ".zip"
+		__dirname + "/../../../storage/backups/" + moment().subtract(1, 'weeks').format("YYYY-WW") + ".zip"
 	);
 
 	clearLogFile(__dirname + "/../../../storage/logs/combined.log");
