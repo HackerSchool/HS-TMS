@@ -383,7 +383,7 @@ const transactionsTable = (transactions, displayNIF, receiptPagesMap) => {
     ];
 };
 
-tableLayouts = {
+const tableLayouts = {
     dashedLines: {
         hLineWidth: function (i, node) {
             return i === 0 || i === 1 || i === node.table.body.length ? 1.2 : 1;
