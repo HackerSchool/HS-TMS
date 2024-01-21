@@ -40,6 +40,10 @@ const logger = winston.createLogger({
   ],
 });
 
+function logInfo(functionPath, message, prefix = null) {
+  logger.info(`${prefix ? `[${prefix}] ` : ""}@ ${functionPath}: ${message}`);
+}
+
 const emailFileTransport = new winston.transports.File({
   filename: __dirname + "/../../../storage/logs/email.log",
   format: combine(
@@ -79,4 +83,4 @@ function emailLoggerFn(author, resource, method, before, after) {
   );
 }
 
-module.exports = { logger, emailLoggerFn };
+module.exports = { logger, emailLoggerFn, logInfo };

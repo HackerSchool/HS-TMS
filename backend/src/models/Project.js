@@ -209,6 +209,30 @@ class Project {
   /**
    * @async
    * @param {pg.pool} pool
+   * @param {string} name
+   * @returns {boolean}
+   */
+  async exists(pool, name) {
+    return (
+      (
+        await pool.query(
+          `
+                SELECT
+                    name
+                FROM
+                    projects
+                WHERE
+                    name = $1::text
+                `,
+          [name],
+        )
+      ).rows[0] !== undefined
+    );
+  }
+
+  /**
+   * @async
+   * @param {pg.pool} pool
    * @param {Array<integer>} ids
    * @returns {boolean}
    */

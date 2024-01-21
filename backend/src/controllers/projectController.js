@@ -1,21 +1,28 @@
 const Project = require("../models/Project");
-const { emailLoggerFn } = require("../modules/logging");
+const { emailLoggerFn, logInfo } = require("../modules/logging");
 
 async function createProject(req, res) {
   const pool = req.pool;
   const { name, active, symbolic } = req.body;
 
   // input validation
-  if (
-    name === undefined ||
-    typeof name !== "string" ||
-    name === "" ||
-    active === undefined ||
-    typeof active !== "boolean" ||
-    symbolic === undefined ||
-    typeof symbolic !== "boolean"
-  )
+  try {
+    if (name === undefined || typeof name !== "string" || name === "") {
+      throw new Error(`invalid name '${JSON.stringify(name)}' (${typeof name})`);
+    }
+    if (active === undefined || typeof active !== "boolean") {
+      throw new Error(`invalid active flag '${JSON.stringify(active)}' (${typeof active})`);
+    }
+    if (symbolic === undefined || typeof symbolic !== "boolean") {
+      throw new Error(`invalid symbolic flag '${JSON.stringify(symbolic)}' (${typeof symbolic})`);
+    }
+    if ((await Project.exists(pool, name)) === true) {
+      throw new Error(`duplicate name '${name}'`);
+    }
+  } catch (error) {
+    logInfo("projectController/createProject", error.message, "Validation");
     return res.status(400).send("Invalid params");
+  }
 
   const project = await Project.createOne(pool, name, active, symbolic);
   res.status(201).send(project);
@@ -28,9 +35,11 @@ async function getProject(req, res) {
   const { id } = req.params;
 
   // input validation
-  if (!Number.isInteger(parseFloat(id)))
+  if (!Number.isInteger(parseFloat(id))) {
     // assure id is an integer
+    logInfo("projectController/getProject", `invalid id '${id}'`, "Validation");
     return res.status(400).send("Invalid params");
+  }
 
   const project = await Project.getOne(pool, parseInt(id));
 
@@ -45,15 +54,23 @@ async function updateProject(req, res) {
   const { name, active } = req.body;
 
   // input validation
-  if (
-    name === undefined ||
-    typeof name !== "string" ||
-    name === "" ||
-    active === undefined ||
-    typeof active !== "boolean" ||
-    !Number.isInteger(parseFloat(id))
-  )
+  try {
+    if (!Number.isInteger(parseFloat(id))) {
+      throw new Error(`invalid id '${id}'`);
+    }
+    if (name === undefined || typeof name !== "string" || name === "") {
+      throw new Error(`invalid name '${JSON.stringify(name)}' (${typeof name})`);
+    }
+    if (active === undefined || typeof active !== "boolean") {
+      throw new Error(`invalid active flag '${JSON.stringify(active)}' (${typeof active})`);
+    }
+    if ((await Project.exists(pool, name)) === true) {
+      throw new Error(`duplicate name '${name}'`);
+    }
+  } catch (error) {
+    logInfo("projectController/updateProject", error.message, "Validation");
     return res.status(400).send("Invalid params");
+  }
 
   const oldProject = await Project.getOne(pool, parseInt(id));
   const project = await Project.updateOne(pool, parseInt(id), name, active);
@@ -70,7 +87,11 @@ async function deleteProject(req, res) {
   const { id } = req.params;
 
   // input validation
-  if (!Number.isInteger(parseFloat(id))) return res.status(400).send("Invalid params");
+  if (!Number.isInteger(parseFloat(id))) {
+    // assure id is an integer
+    logInfo("projectController/deleteProject", `invalid id '${id}'`, "Validation");
+    return res.status(400).send("Invalid params");
+  }
 
   const deletedProject = await Project.deleteOne(pool, parseInt(id));
 
@@ -88,16 +109,26 @@ async function getAllProjects(req, res) {
 
   // input validation
   try {
-    if (initialBalance !== undefined && isNaN(parseFloat(initialBalance))) throw Error();
-    if (finalBalance !== undefined && isNaN(parseFloat(finalBalance))) throw Error();
-
-    if (active !== undefined && active !== "true" && active !== "false") throw Error();
-
-    if (symbolic !== undefined && symbolic !== "true" && symbolic !== "false") throw Error();
-
-    if (orderBy !== undefined && !(orderBy === "name" || orderBy === "balance")) throw Error();
-    if (order !== undefined && !(order === "ASC" || order === "DESC")) throw Error();
-  } catch (err) {
+    if (initialBalance !== undefined && isNaN(parseFloat(initialBalance))) {
+      throw Error(`invalid initialBalance '${initialBalance}'`);
+    }
+    if (finalBalance !== undefined && isNaN(parseFloat(finalBalance))) {
+      throw Error(`invalid finalBalance '${finalBalance}'`);
+    }
+    if (active !== undefined && active !== "true" && active !== "false") {
+      throw Error(`invalid active flag '${active}'`);
+    }
+    if (symbolic !== undefined && symbolic !== "true" && symbolic !== "false") {
+      throw Error(`invalid symbolic flag '${symbolic}'`);
+    }
+    if (orderBy !== undefined && !(orderBy === "name" || orderBy === "balance")) {
+      throw Error(`invalid orderBy '${orderBy}'`);
+    }
+    if (order !== undefined && !(order === "ASC" || order === "DESC")) {
+      throw Error(`invalid order '${order}'`);
+    }
+  } catch (error) {
+    logInfo("projectController/getAllProjects", error.message, "Validation");
     return res.status(400).send("Invalid params");
   }
 
