@@ -1,142 +1,142 @@
 #ProjectsPage .content {
-    padding: 2.5rem;
+  padding: 2.5rem;
 }
 
 .project-list {
-    display: grid;
-    grid-template: auto / repeat(5, 1fr);
-    justify-items: center;
-    gap: 1.5rem;
+  display: grid;
+  grid-template: auto / repeat(5, 1fr);
+  justify-items: center;
+  gap: 1.5rem;
 }
 
 .project-container {
-    width: 13rem;
-    background-color: #333333;
-    padding: 1rem 0.5rem;
-    border-radius: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    gap: 0.5rem;
-    position: relative;
+  width: 13rem;
+  background-color: #333333;
+  padding: 1rem 0.5rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  gap: 0.5rem;
+  position: relative;
 }
 
 .project-container h1 {
-    text-align: center;
-    font-size: 1.5rem;
-    color: white;
-    padding: 0rem 0.5rem;
-    max-width: 85%;
+  text-align: center;
+  font-size: 1.5rem;
+  color: white;
+  padding: 0rem 0.5rem;
+  max-width: 85%;
 }
 
 .project-symbolic-indicator-container {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }
 
 .project-symbolic-indicator {
-    display: inline-flex;
-    position: relative;
-    background-color: var(--hs-logo);
-    border-radius: 1rem;
-    padding: 0.3rem;
+  display: inline-flex;
+  position: relative;
+  background-color: var(--hs-logo);
+  border-radius: 1rem;
+  padding: 0.3rem;
 }
 
 .project-symbolic-indicator:hover::after,
 .project-symbolic-indicator:focus::after {
-    display: block;
-    position: absolute;
-    left: 50%;
-    top: 10%;
-    transform: translateX(-50%) translateY(-100%);
-    width: fit-content;
-    height: fit-content;
-    text-wrap: nowrap;
-    font-size: 0.8rem;
-    background-color: var(--hs-logo);
-    color: white;
-    content: "Symbolic project";
-    border-radius: 0.8rem;
-    padding: 0.25rem 0.5rem;
-    z-index: 1400;
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  transform: translateX(-50%) translateY(-100%);
+  width: fit-content;
+  height: fit-content;
+  text-wrap: nowrap;
+  font-size: 0.8rem;
+  background-color: var(--hs-logo);
+  color: white;
+  content: "Symbolic project";
+  border-radius: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  z-index: 1400;
 }
 
 .project-symbolic-indicator svg {
-    font-size: 1rem
+  font-size: 1rem;
 }
 
 .project-container hr {
-    width: 85%;
-    border: none;
-    border-radius: 1rem;
-    border-bottom: 1px solid var(--hs-logo);
-    margin-top: -3px;
+  width: 85%;
+  border: none;
+  border-radius: 1rem;
+  border-bottom: 1px solid var(--hs-logo);
+  margin-top: -3px;
 }
 
 .no-projects-container {
-    width: fit-content;
-    background-color: #333333;
-    padding: 0.6rem 1.2rem;
-    border-radius: 1rem;
-    font-size: 1.2rem;
+  width: fit-content;
+  background-color: #333333;
+  padding: 0.6rem 1.2rem;
+  border-radius: 1rem;
+  font-size: 1.2rem;
 }
 
 /* Project Modal */
 .project-modal {
-    margin: auto;
-    max-width: 35%;
-    max-height: 45%;
+  margin: auto;
+  max-width: 35%;
+  max-height: 45%;
 }
 
 .project-box {
-    border-radius: 2rem;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 2rem;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
 .project-modal .form-row {
-    align-items: flex-start;
+  align-items: flex-start;
 }
 
 .project-name-group {
-    width: 11.5rem;
+  width: 11.5rem;
 }
 
 .project-modal hr {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .project-row {
-    justify-content: center;
+  justify-content: center;
 }
 
 /* Projects Filter Modal */
 #projects-filter-modal {
-    margin-left: auto;
-    height: 60svh;
-    max-width: 30%;
+  margin-left: auto;
+  height: 60svh;
+  max-width: 30%;
 }
 
 .filters-box {
-    border-radius: 2rem 0 0 2rem;
-    box-shadow: -2px 4px 4px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 2rem 0 0 2rem;
+  box-shadow: -2px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
 .projects-filter-balance {
-    width: 11.5rem;
+  width: 11.5rem;
 }
 
 #projects-filter-save-btn {
-    font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 
 #projects-filter-clear-btn {
-    font-size: 1.2rem;
+  font-size: 1.2rem;
 }
 
 #projects-filter-modal .form-row.last {
-    margin-top: 0;
+  margin-top: 0;
 }

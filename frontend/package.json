@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-		"prettier:check": "prettier --check \"**/*.{js,json,md,jsx,html,css}\"",
+    "prettier:check": "prettier --check \"**/*.{js,json,md,jsx,html,css}\"",
     "prettier:format": "prettier --write \"**/*.{js,json,md,jsx,html,css}\""
   },
   "dependencies": {

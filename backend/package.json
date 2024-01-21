@@ -1,47 +1,47 @@
 {
-	"name": "hs_tms_backend",
-	"version": "1.0.0",
-	"description": "HackerSchool's Treasury Management System",
-	"main": "index.js",
-	"scripts": {
-		"start": "nodemon src/index.js",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"prettier:check": "prettier --check \"**/*.{js,json,md}\"",
-  		"prettier:format": "prettier --write \"**/*.{js,json,md}\""
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/HackerSchool/HS-TMS.git"
-	},
-	"author": "HackerSchool",
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/HackerSchool/HS-TMS/issues"
-	},
-	"homepage": "https://github.com/HackerSchool/HS-TMS#readme",
-	"dependencies": {
-		"adm-zip": "^0.5.10",
-		"axios": "^1.6.0",
-		"cors": "^2.8.5",
-		"cron": "^3.1.6",
-		"dotenv": "^16.0.3",
-		"express": "^4.18.2",
-		"express-fileupload": "^1.4.0",
-		"express-session": "^1.17.3",
-		"fs": "^0.0.1-security",
-		"moment-timezone": "^0.5.44",
-		"morgan": "^1.10.0",
-		"passport": "^0.6.0",
-		"passport-local": "^1.0.0",
-		"passport-oauth2": "^1.7.0",
-		"pdf-lib": "^1.17.1",
-		"pdfmake": "^0.2.7",
-		"pg": "^8.10.0",
-		"resend": "^2.0.0",
-		"winston": "^3.11.0"
-	},
-	"devDependencies": {
-		"nodemon": "^2.0.22",
-		"prettier": "3.2.4"
-	}
+  "name": "hs_tms_backend",
+  "version": "1.0.0",
+  "description": "HackerSchool's Treasury Management System",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier:check": "prettier --check \"**/*.{js,json,md}\"",
+    "prettier:format": "prettier --write \"**/*.{js,json,md}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HackerSchool/HS-TMS.git"
+  },
+  "author": "HackerSchool",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/HackerSchool/HS-TMS/issues"
+  },
+  "homepage": "https://github.com/HackerSchool/HS-TMS#readme",
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "cron": "^3.1.6",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
+    "moment-timezone": "^0.5.44",
+    "morgan": "^1.10.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "passport-oauth2": "^1.7.0",
+    "pdf-lib": "^1.17.1",
+    "pdfmake": "^0.2.7",
+    "pg": "^8.10.0",
+    "resend": "^2.0.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "prettier": "3.2.4"
+  }
 }

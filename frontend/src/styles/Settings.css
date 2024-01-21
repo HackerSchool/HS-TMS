@@ -1,98 +1,97 @@
 .settings-category {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
 }
 
 .settings-category-title-container {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .settings-category-title-container h2 {
-    color: var(--hs-logo);
-    width: fit-content;
-    padding-right: 0.5rem;
-    border-bottom: 2px var(--separator-color) solid;
+  color: var(--hs-logo);
+  width: fit-content;
+  padding-right: 0.5rem;
+  border-bottom: 2px var(--separator-color) solid;
 }
 
 .setting {
-    height: fit-content;
+  height: fit-content;
 }
 
 /* Authorized users */
 
 /* New User modal */
 .user-modal {
-    margin: auto;
-    max-width: 45%;
-    max-height: 50%;
+  margin: auto;
+  max-width: 45%;
+  max-height: 50%;
 }
 
 .user-box {
-    border-radius: 2rem;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 2rem;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
 /* Users Table */
 .MuiTableContainer-root:has(.users-table) {
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 1rem;
-    max-height: 20rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 1rem;
+  max-height: 20rem;
 }
 
 .MuiTableContainer-root:has(.users-table)::-webkit-scrollbar-thumb {
-    border: 7px solid transparent;
-    background-clip: content-box;
+  border: 7px solid transparent;
+  background-clip: content-box;
 }
 
 .MuiTableContainer-root:has(.users-table)::-webkit-scrollbar {
-	width: 20px;
+  width: 20px;
 }
 
 .users-table thead.MuiTableHead-root th.MuiTableCell-head {
-    color: white;
-    background-color: var(--cinza-1);
-    font-size: 1.2rem;
+  color: white;
+  background-color: var(--cinza-1);
+  font-size: 1.2rem;
 }
 
-
 .users-table .user-photo {
-    max-width: 3rem;
-    border: 2px solid var(--hs-logo);
-    border-radius: 1.5rem;
-    user-select: none;
-    -webkit-user-drag: none;
+  max-width: 3rem;
+  border: 2px solid var(--hs-logo);
+  border-radius: 1.5rem;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .users-table svg.user-photo {
-    width: 3rem;
-    height: 3rem;
-    user-select: none;
+  width: 3rem;
+  height: 3rem;
+  user-select: none;
 }
 
 .users-table span.active {
-    font-weight: bold;
-    background-color: var(--green);
-    border-radius: 0.5rem;
-    padding: 0.2rem 0.8rem;
-    user-select: none;
+  font-weight: bold;
+  background-color: var(--green);
+  border-radius: 0.5rem;
+  padding: 0.2rem 0.8rem;
+  user-select: none;
 }
 
 .users-table span.pending {
-    color: white;
-    background-color:  var(--cinza-4);
-    border-radius: 0.5rem;
-    padding: 0.2rem 0.8rem;
-    user-select: none;
+  color: white;
+  background-color: var(--cinza-4);
+  border-radius: 0.5rem;
+  padding: 0.2rem 0.8rem;
+  user-select: none;
 }
 
 .users-table td {
-    font-size: 1rem;
+  font-size: 1rem;
 }
 
-.users-table :is(td,th) {
-    padding: 0.7rem;
+.users-table :is(td, th) {
+  padding: 0.7rem;
 }

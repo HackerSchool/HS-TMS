@@ -9,8 +9,8 @@ require("dotenv").config();
 
 // Check if the script is being run from the backend directory
 if (path.basename(process.cwd()) !== "backend") {
-	console.error("Please run this script from the backend directory.");
-	process.exit(1);
+  console.error("Please run this script from the backend directory.");
+  process.exit(1);
 }
 
 const { unscheduledBackup } = require("../modules/backup");

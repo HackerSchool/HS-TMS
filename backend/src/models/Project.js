@@ -1,33 +1,33 @@
 class Project {
-	/**
-	 * @async
-	 * @param {pg.Pool} pool
-	 * @param {string} name
-	 * @param {boolean} active
-	 * @param {boolean} symbolic
-	 * @returns {Object}
-	 */
-	async createOne(pool, name, active, symbolic) {
-		const projectId = (
-			await pool.query(
-				`INSERT INTO projects (name, active, symbolic) VALUES($1::text, $2::boolean, $3::boolean) RETURNING *;`,
-				[name, active, symbolic]
-			)
-		).rows[0].id;
+  /**
+   * @async
+   * @param {pg.Pool} pool
+   * @param {string} name
+   * @param {boolean} active
+   * @param {boolean} symbolic
+   * @returns {Object}
+   */
+  async createOne(pool, name, active, symbolic) {
+    const projectId = (
+      await pool.query(
+        `INSERT INTO projects (name, active, symbolic) VALUES($1::text, $2::boolean, $3::boolean) RETURNING *;`,
+        [name, active, symbolic],
+      )
+    ).rows[0].id;
 
-		return await this.getOne(pool, projectId);
-	}
+    return await this.getOne(pool, projectId);
+  }
 
-	/**
-	 * @async
-	 * @param {pg.Pool} pool
-	 * @param {integer} id
-	 * @returns {Object}
-	 */
-	async getOne(pool, id) {
-		return (
-			await pool.query(
-				`
+  /**
+   * @async
+   * @param {pg.Pool} pool
+   * @param {integer} id
+   * @returns {Object}
+   */
+  async getOne(pool, id) {
+    return (
+      await pool.query(
+        `
 			SELECT
 				*
 			FROM (
@@ -54,73 +54,73 @@ class Project {
 			) AS projects
 			WHERE id = $1::integer
 			`,
-				[id]
-			)
-		).rows[0];
-	}
+        [id],
+      )
+    ).rows[0];
+  }
 
-	/**
-	 * @async
-	 * @param {pg.Pool} pool
-	 * @param {integer} id
-	 * @param {string} name
-	 * @param {boolean} active
-	 * @returns {Object}
-	 */
-	async updateOne(pool, id, name, active) {
-		await pool.query(
-			`
+  /**
+   * @async
+   * @param {pg.Pool} pool
+   * @param {integer} id
+   * @param {string} name
+   * @param {boolean} active
+   * @returns {Object}
+   */
+  async updateOne(pool, id, name, active) {
+    await pool.query(
+      `
 			UPDATE projects
 			SET name = $2::text,
 				active = $3::boolean
 			WHERE id = $1::integer;
 			`,
-			[id, name, active]
-		);
+      [id, name, active],
+    );
 
-		return await this.getOne(pool, id);
-	}
+    return await this.getOne(pool, id);
+  }
 
-	/**
-	 * @async
-	 * @param {pg.Pool} pool
-	 * @param {integer} id
-	 * @returns {Object}
-	 */
-	async deleteOne(pool, id) {
-		return (
-			await pool.query(
-				`
+  /**
+   * @async
+   * @param {pg.Pool} pool
+   * @param {integer} id
+   * @returns {Object}
+   */
+  async deleteOne(pool, id) {
+    return (
+      await pool.query(
+        `
 				DELETE FROM projects
 				WHERE id = $1::integer
 				RETURNING *;
 				`,
-				[id]
-			)
-		).rows[0];
-	}
+        [id],
+      )
+    ).rows[0];
+  }
 
-	/**
-	 * @async
-	 * @param {pg.Pool} pool
-	 * @param {float} [initialBalance=null]
-	 * @param {float} [finalBalance=null]
-	 * @param {boolean} [active=null]
-	 * @param {boolean} [symbolic=null]
-	 * @param {string} [orderBy="name"]
-	 * @param {string} [order="ASC"]
-	 * @returns {Array<Object>}
-	 */
-	async getAll(
-		pool,
-		initialBalance = null,
-		finalBalance = null,
-		active = null,
-		symbolic = null,
-		orderBy = "name",
-		order = "ASC"
-	) {
-		let query = `
+  /**
+   * @async
+   * @param {pg.Pool} pool
+   * @param {float} [initialBalance=null]
+   * @param {float} [finalBalance=null]
+   * @param {boolean} [active=null]
+   * @param {boolean} [symbolic=null]
+   * @param {string} [orderBy="name"]
+   * @param {string} [order="ASC"]
+   * @returns {Array<Object>}
+   */
+  async getAll(
+    pool,
+    initialBalance = null,
+    finalBalance = null,
+    active = null,
+    symbolic = null,
+    orderBy = "name",
+    order = "ASC",
+  ) {
+    let query = `
 		SELECT
 			*
 		FROM (
@@ -147,86 +147,85 @@ class Project {
 		) AS projects
 		`;
 
-		let filterConditions = [];
-		let queryParams = [];
+    let filterConditions = [];
+    let queryParams = [];
 
-		if (initialBalance !== null) {
-			filterConditions.push(`balance >= $${queryParams.length + 1}::numeric`);
-			queryParams.push(initialBalance);
-		}
+    if (initialBalance !== null) {
+      filterConditions.push(`balance >= $${queryParams.length + 1}::numeric`);
+      queryParams.push(initialBalance);
+    }
 
-		if (finalBalance !== null) {
-			filterConditions.push(`balance <= $${queryParams.length + 1}::numeric`);
-			queryParams.push(finalBalance);
-		}
+    if (finalBalance !== null) {
+      filterConditions.push(`balance <= $${queryParams.length + 1}::numeric`);
+      queryParams.push(finalBalance);
+    }
 
-		if (active !== null) {
-			filterConditions.push(`active = $${queryParams.length + 1}::boolean`);
-			queryParams.push(active);
-		}
+    if (active !== null) {
+      filterConditions.push(`active = $${queryParams.length + 1}::boolean`);
+      queryParams.push(active);
+    }
 
-		if (symbolic !== null) {
-			filterConditions.push(`symbolic = $${queryParams.length + 1}::boolean`);
-			queryParams.push(symbolic);
-		}
+    if (symbolic !== null) {
+      filterConditions.push(`symbolic = $${queryParams.length + 1}::boolean`);
+      queryParams.push(symbolic);
+    }
 
-		query +=
-			filterConditions.length > 0 ? ` WHERE ${filterConditions.join(" AND ")}` : "";
+    query += filterConditions.length > 0 ? ` WHERE ${filterConditions.join(" AND ")}` : "";
 
-		if (orderBy === "name" && (order === "ASC" || order === "DESC")) {
-			query += ` ORDER BY name ${order}`;
-		} else if (orderBy === "balance" && (order === "ASC" || order === "DESC")) {
-			query += ` ORDER BY balance ${order}, name ASC`;
-		} else {
-			query += ` ORDER BY name ASC`;
-		}
+    if (orderBy === "name" && (order === "ASC" || order === "DESC")) {
+      query += ` ORDER BY name ${order}`;
+    } else if (orderBy === "balance" && (order === "ASC" || order === "DESC")) {
+      query += ` ORDER BY balance ${order}, name ASC`;
+    } else {
+      query += ` ORDER BY name ASC`;
+    }
 
-		return (await pool.query(query, queryParams)).rows;
-	}
+    return (await pool.query(query, queryParams)).rows;
+  }
 
-	/**
-	 * @async
-	 * @param {pg.pool} pool
-	 * @param {Array<integer>} ids
-	 * @returns {string}
-	 */
-	async getNamesByIds(pool, ids = null) {
-		let query = `
+  /**
+   * @async
+   * @param {pg.pool} pool
+   * @param {Array<integer>} ids
+   * @returns {string}
+   */
+  async getNamesByIds(pool, ids = null) {
+    let query = `
 		SELECT
 			string_agg(name, ' / ') AS projects
 		FROM
 			projects
 		`;
-		let queryParams = [];
+    let queryParams = [];
 
-		if (ids !== null && ids.length !== 0) {
-			query += ` WHERE id = ANY($1::int[])`;
-			queryParams.push(ids);
-		}
+    if (ids !== null && ids.length !== 0) {
+      query += ` WHERE id = ANY($1::int[])`;
+      queryParams.push(ids);
+    }
 
-		return (await pool.query(query, queryParams)).rows[0].projects;
-	}
+    return (await pool.query(query, queryParams)).rows[0].projects;
+  }
 
-	/**
-	 * @async
-	 * @param {pg.pool} pool
-	 * @param {Array<integer>} ids
-	 * @returns {boolean}
-	 */
-	async assertAllExist(pool, ids) {
-		const missingIds = (
-			await pool.query(
-				`
+  /**
+   * @async
+   * @param {pg.pool} pool
+   * @param {Array<integer>} ids
+   * @returns {boolean}
+   */
+  async assertAllExist(pool, ids) {
+    const missingIds = (
+      await pool.query(
+        `
             SELECT unnest($1::int[]) AS project_id
             FROM unnest($1::int[]) AS project_ids(project_id)
             WHERE project_id NOT IN (SELECT id FROM projects);
             `,
-				[ids]
-			)
-		).rows[0];
+        [ids],
+      )
+    ).rows[0];
 
-		return missingIds === undefined;
-	}
+    return missingIds === undefined;
+  }
 }
 
 module.exports = new Project();

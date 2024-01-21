@@ -15,17 +15,17 @@ const app = express();
 app.use(express.json());
 app.use(fileUpload());
 app.use(
-	cors({
-		origin: process.env.CLIENT_ADDRESS,
-		credentials: true
-	})
+  cors({
+    origin: process.env.CLIENT_ADDRESS,
+    credentials: true,
+  }),
 );
 app.use(
-	session({
-		secret: process.env.SESSION_SECRET,
-		resave: false,
-		saveUninitialized: true
-	})
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  }),
 );
 app.use(passport.initialize());
 app.use(passport.session());
@@ -33,14 +33,14 @@ app.use(require("./middleware/parseMultipartFormData"));
 app.use(require("./middleware/selectPool"));
 app.use(require("./middleware/error").errorHandler);
 app.use(
-	morgan(
-		':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]',
-		{
-			stream: {
-				write: (message) => logger.http(message.trim())
-			}
-		}
-	)
+  morgan(
+    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]',
+    {
+      stream: {
+        write: (message) => logger.http(message.trim()),
+      },
+    },
+  ),
 );
 
 app.use("/projects", isLoggedIn, require("./routes/projectRoutes"));
@@ -50,11 +50,11 @@ app.use("/users", isLoggedIn, require("./routes/userRoutes"));
 app.use("/auth", require("./routes/authRoutes"));
 
 app.get("/health", (req, res) => {
-	res.status(200).send("OK");
+  res.status(200).send("OK");
 });
 
 app.listen(process.env.PORT, () => {
-	console.log(`Server listening on port ${process.env.PORT}`);
+  console.log(`Server listening on port ${process.env.PORT}`);
 });
 
 require("./cron/weeklyBackup");
