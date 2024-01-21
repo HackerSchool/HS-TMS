@@ -1,0 +1,39 @@
+name: Prettier Check
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prettier-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Use Node.js 20
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm install -D
+
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm install -D
+
+    - name: Frontend Prettier check
+      run: |
+        cd frontend
+        npm run prettier:check
+
+    - name: Backend Prettier check
+      run: |
+        cd backend
+        npm run prettier:check

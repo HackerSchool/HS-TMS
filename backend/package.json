@@ -5,7 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "nodemon src/index.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"prettier:check": "prettier --check \"**/*.{js,json,md}\"",
+  		"prettier:format": "prettier --write \"**/*.{js,json,md}\""
 	},
 	"repository": {
 		"type": "git",
@@ -39,6 +41,7 @@
 		"winston": "^3.11.0"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.22"
+		"nodemon": "^2.0.22",
+		"prettier": "3.2.4"
 	}
 }
