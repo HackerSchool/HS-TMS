@@ -59,6 +59,7 @@
 }
 
 .users-table .user-photo {
+  color: var(--light-gray);
   max-width: 3rem;
   border: 2px solid var(--hs-logo);
   border-radius: 1.5rem;

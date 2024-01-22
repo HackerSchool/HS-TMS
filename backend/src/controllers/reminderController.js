@@ -1,20 +1,29 @@
 const Reminder = require("../models/Reminder");
 const { isValidDate } = require("../utils/dateUtils");
-const { emailLoggerFn } = require("../modules/logging");
+const { emailLoggerFn, logInfo } = require("../modules/logging");
 
 async function createReminder(req, res) {
   const pool = req.pool;
   const { title, description, date } = req.body;
 
   // input validation
-  if (
-    title === undefined ||
-    typeof title !== "string" ||
-    title === "" ||
-    !isValidDate(date) ||
-    (description !== undefined && typeof description !== "string")
-  )
-    return res.status(400).send("Invalid params");
+  try {
+    if (title === undefined || typeof title !== "string" || title === "") {
+      throw new Error(`invalid title '${JSON.stringify(title)}' (${typeof title})`);
+    }
+    if (!isValidDate(date)) {
+      throw new Error(`invalid date '${JSON.stringify(date)}' (${typeof date})`);
+    }
+    if (description !== undefined && typeof description !== "string") {
+      throw new Error(
+        `invalid description '${JSON.stringify(description)}' (${typeof description})`,
+      );
+    }
+  } catch (error) {
+    res.status(400).send("Invalid params");
+    logInfo("reminderController/createReminder", error.message, "Validation");
+    return;
+  }
 
   const reminder = await Reminder.createOne(pool, title, description, date);
   res.status(201).send(reminder);
@@ -27,9 +36,12 @@ async function getReminder(req, res) {
   const { id } = req.params;
 
   // input validation
-  if (!Number.isInteger(parseFloat(id)))
+  if (!Number.isInteger(parseFloat(id))) {
     // assure id is an integer
-    return res.status(400).send("Invalid params");
+    res.status(400).send("Invalid params");
+    logInfo("reminderController/getReminder", `invalid id '${id}'`, "Validation");
+    return;
+  }
 
   const reminder = await Reminder.getOne(pool, parseInt(id));
 
@@ -44,15 +56,26 @@ async function updateReminder(req, res) {
   const { title, description, date } = req.body;
 
   // input validation
-  if (
-    title === undefined ||
-    typeof title !== "string" ||
-    title === "" ||
-    !isValidDate(date) ||
-    (description !== undefined && typeof description !== "string") ||
-    !Number.isInteger(parseFloat(id))
-  )
-    return res.status(400).send("Invalid params");
+  try {
+    if (!Number.isInteger(parseFloat(id))) {
+      throw new Error(`invalid id '${id}'`);
+    }
+    if (title === undefined || typeof title !== "string" || title === "") {
+      throw new Error(`invalid title '${JSON.stringify(title)}' (${typeof title})`);
+    }
+    if (!isValidDate(date)) {
+      throw new Error(`invalid date '${JSON.stringify(date)}' (${typeof date})`);
+    }
+    if (description !== undefined && typeof description !== "string") {
+      throw new Error(
+        `invalid description '${JSON.stringify(description)}' (${typeof description})`,
+      );
+    }
+  } catch (error) {
+    res.status(400).send("Invalid params");
+    logInfo("reminderController/updateReminder", error.message, "Validation");
+    return;
+  }
 
   const oldReminder = await Reminder.getOne(pool, parseInt(id));
   const reminder = await Reminder.updateOne(pool, parseInt(id), title, description, date);
@@ -73,7 +96,12 @@ async function deleteReminder(req, res) {
   const { id } = req.params;
 
   // input validation
-  if (!Number.isInteger(parseFloat(id))) return res.status(400).send("Invalid params");
+  if (!Number.isInteger(parseFloat(id))) {
+    // assure id is an integer
+    res.status(400).send("Invalid params");
+    logInfo("reminderController/deleteReminder", `invalid id '${id}'`, "Validation");
+    return;
+  }
 
   const deletedReminder = await Reminder.deleteOne(pool, parseInt(id));
 

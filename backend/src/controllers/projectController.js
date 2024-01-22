@@ -20,8 +20,9 @@ async function createProject(req, res) {
       throw new Error(`duplicate name '${name}'`);
     }
   } catch (error) {
+    res.status(400).send("Invalid params");
     logInfo("projectController/createProject", error.message, "Validation");
-    return res.status(400).send("Invalid params");
+    return;
   }
 
   const project = await Project.createOne(pool, name, active, symbolic);
@@ -37,8 +38,9 @@ async function getProject(req, res) {
   // input validation
   if (!Number.isInteger(parseFloat(id))) {
     // assure id is an integer
+    res.status(400).send("Invalid params");
     logInfo("projectController/getProject", `invalid id '${id}'`, "Validation");
-    return res.status(400).send("Invalid params");
+    return;
   }
 
   const project = await Project.getOne(pool, parseInt(id));
@@ -68,8 +70,9 @@ async function updateProject(req, res) {
       throw new Error(`duplicate name '${name}'`);
     }
   } catch (error) {
+    res.status(400).send("Invalid params");
     logInfo("projectController/updateProject", error.message, "Validation");
-    return res.status(400).send("Invalid params");
+    return;
   }
 
   const oldProject = await Project.getOne(pool, parseInt(id));
@@ -89,8 +92,9 @@ async function deleteProject(req, res) {
   // input validation
   if (!Number.isInteger(parseFloat(id))) {
     // assure id is an integer
+    res.status(400).send("Invalid params");
     logInfo("projectController/deleteProject", `invalid id '${id}'`, "Validation");
-    return res.status(400).send("Invalid params");
+    return;
   }
 
   const deletedProject = await Project.deleteOne(pool, parseInt(id));
@@ -128,8 +132,9 @@ async function getAllProjects(req, res) {
       throw Error(`invalid order '${order}'`);
     }
   } catch (error) {
+    res.status(400).send("Invalid params");
     logInfo("projectController/getAllProjects", error.message, "Validation");
-    return res.status(400).send("Invalid params");
+    return;
   }
 
   res

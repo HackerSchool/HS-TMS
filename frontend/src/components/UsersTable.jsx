@@ -20,7 +20,7 @@ export default function UsersTable({ data, loading, openDeleteModal }) {
               <TableCell align="center">Photo</TableCell>
               <TableCell align="center">Name</TableCell>
               <TableCell align="center">Username</TableCell>
-              <TableCell align="center" padding="checkbox">
+              <TableCell align="center" padding="checkbox" style={{ minWidth: 80 }}>
                 E-mail
               </TableCell>
               <TableCell align="center">Status</TableCell>
