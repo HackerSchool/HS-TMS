@@ -1,9 +1,10 @@
 const express = require("express");
 const projectController = require("../controllers/projectController");
 const { asyncHandler } = require("../middleware/error");
+const { demoUserNonGETRestriction } = require("../middleware/demoUserRestriction");
 
 const router = express.Router();
-router.use(require("../middleware/demoUserRestriction"));
+router.use(demoUserNonGETRestriction);
 
 router.get("/", asyncHandler(projectController.getAllProjects));
 router.get("/:id", asyncHandler(projectController.getProject));

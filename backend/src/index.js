@@ -48,6 +48,7 @@ app.use("/reminders", isLoggedIn, require("./routes/reminderRoutes"));
 app.use("/transactions", isLoggedIn, require("./routes/transactionRoutes"));
 app.use("/users", isLoggedIn, require("./routes/userRoutes"));
 app.use("/auth", require("./routes/authRoutes"));
+app.use("/logs", isLoggedIn, require("./routes/logRoutes"));
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");

@@ -1,9 +1,10 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const { asyncHandler } = require("../middleware/error");
+const { demoUserNonGETRestriction } = require("../middleware/demoUserRestriction");
 
 const router = express.Router();
-router.use(require("../middleware/demoUserRestriction"));
+router.use(demoUserNonGETRestriction);
 
 router.get("/", asyncHandler(userController.getAllUsers));
 router.post("/", asyncHandler(userController.createUser));
