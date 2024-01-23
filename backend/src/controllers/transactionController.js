@@ -4,7 +4,7 @@ const Project = require("../models/Project");
 const fileUtils = require("../utils/fileUtils");
 const { isValidDate } = require("../utils/dateUtils");
 const report = require("../modules/report");
-const { emailLoggerFn, logInfo } = require("../modules/logging");
+const { emailLoggerFn, logInfo, logError } = require("../modules/logging");
 
 async function createTransaction(req, res) {
   const pool = req.pool;
@@ -83,10 +83,10 @@ async function createTransaction(req, res) {
         await Transaction.deleteOne(pool, transaction.id);
         fs.unlink(receiptPath, (err) => {});
         res.status(500).send("Receipt upload failed");
-        logInfo(
+        logError(
           "transactionController/createTransaction",
           `could not store the given receipt ('${uploadedFile.name}') in '${receiptPath}'`,
-        ); // FIXME
+        );
       } else {
         res.status(201).send(transaction);
 
@@ -143,8 +143,16 @@ async function downloadReceipt(req, res) {
 
   res.download(receiptPath, function (err) {
     if (err) {
-      res.status(404).end();
-      logInfo("transactionController/downloadReceipt", `receipt "${receiptPath}" doesn't exist`); // FIXME
+      if (err.code === "ENOENT") {
+        res.status(404).end();
+        logInfo("transactionController/downloadReceipt", `receipt "${receiptPath}" doesn't exist`);
+      } else {
+        res.status(500).send("Receipt download failed");
+        logError(
+          "transactionController/downloadReceipt",
+          `couldn't download receipt "${receiptPath}"`,
+        );
+      }
     }
   });
 }
@@ -449,7 +457,10 @@ async function generateReport(req, res) {
   res.download(pathToReport, function (err) {
     if (err) {
       res.status(500).send("Report download failed");
-      logInfo("transactionController/generateReport", `couldn't download report "${pathToReport}"`); // FIXME
+      logError(
+        "transactionController/generateReport",
+        `couldn't download report "${pathToReport}"`,
+      );
     }
 
     if (req.user.username === "demo") {
