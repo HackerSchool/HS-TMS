@@ -13,9 +13,8 @@ new CronJob(
         .map((user) => user.email);
 
       for (const reminder of reminders) {
-        if (await sendReminderEmail(recipients, reminder)) {
-          await Reminder.setNotified(require("../models/pool"), reminder.id, true);
-        }
+        await sendReminderEmail(recipients, reminder);
+        await Reminder.setNotified(require("../models/pool"), reminder.id, true);
       }
     } catch (error) {}
   },

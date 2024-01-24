@@ -22,48 +22,39 @@ async function sendWeeklySummaryEmail(recipients, logs) {
     weeksMap.get(isoWeek).push(log);
   }
 
-  try {
-    for (const isoWeek of weeksMap.keys()) {
-      const firstDay = moment(isoWeek, "YYYY-WW").startOf("isoWeek");
-      const lastDay = moment(isoWeek, "YYYY-WW").endOf("isoWeek");
+  for (const isoWeek of weeksMap.keys()) {
+    const firstDay = moment(isoWeek, "YYYY-WW").startOf("isoWeek");
+    const lastDay = moment(isoWeek, "YYYY-WW").endOf("isoWeek");
 
-      const rangeString =
-        firstDay.year() === lastDay.year()
-          ? `${firstDay.format("MMM D")} - ${lastDay.format("MMM D")}, ${firstDay.year()}`
-          : `${firstDay.format("MMM D YYYY")} - ${lastDay.format("MMM D YYYY")}`;
+    const rangeString =
+      firstDay.year() === lastDay.year()
+        ? `${firstDay.format("MMM D")} - ${lastDay.format("MMM D")}, ${firstDay.year()}`
+        : `${firstDay.format("MMM D YYYY")} - ${lastDay.format("MMM D YYYY")}`;
 
-      await resend.emails.send({
-        from: "HackerSchool <no-reply@hackerschool.io>",
-        to: recipients,
-        subject: "[HS-TMS] Weekly Summary",
-        html: generateSummaryHtml(weeksMap.get(isoWeek), rangeString),
-      });
-    }
-  } catch (error) {}
+    await resend.emails.send({
+      from: "HackerSchool <no-reply@hackerschool.io>",
+      to: recipients,
+      subject: "[HS-TMS] Weekly Summary",
+      html: generateSummaryHtml(weeksMap.get(isoWeek), rangeString),
+    });
+  }
 }
 
 /**
  * @param {Array<string>} recipients
  * @param {object} reminder
- * @returns {boolean}
  */
 async function sendReminderEmail(recipients, reminder) {
   if (!reminder) {
-    return false;
+    return;
   }
 
-  try {
-    await resend.emails.send({
-      from: "HackerSchool <no-reply@hackerschool.io>",
-      to: recipients,
-      subject: `[HS-TMS] Reminder: ${reminder.title}`,
-      html: generateReminderHtml(reminder),
-    });
-  } catch (error) {
-    return false;
-  }
-
-  return true;
+  await resend.emails.send({
+    from: "HackerSchool <no-reply@hackerschool.io>",
+    to: recipients,
+    subject: `[HS-TMS] Reminder: ${reminder.title}`,
+    html: generateReminderHtml(reminder),
+  });
 }
 
 module.exports = { sendWeeklySummaryEmail, sendReminderEmail };

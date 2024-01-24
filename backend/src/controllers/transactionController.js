@@ -409,7 +409,7 @@ async function generateReport(req, res) {
     ) {
       throw new Error(`invalid includeReceipts flag '${includeReceipts}'`);
     }
-  } catch (err) {
+  } catch (error) {
     res.status(400).send("Invalid params");
     logInfo("transactionController/generateReport", error.message, "Validation");
     return;
