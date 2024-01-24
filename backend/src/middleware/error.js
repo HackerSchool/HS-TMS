@@ -1,8 +1,10 @@
+const { logError } = require("../modules/logging");
+
 const errorHandler = (err, req, res, next) => {
   if (!err) return next();
 
-  console.error(err);
   res.sendStatus(500);
+  logError("middleware/error", `${err}`);
 };
 
 const asyncHandler = (fn) => (req, res, next) =>

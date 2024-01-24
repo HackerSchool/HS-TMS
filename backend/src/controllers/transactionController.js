@@ -35,10 +35,10 @@ async function createTransaction(req, res) {
       }
       // symbolic projects transactions can only be associated with 1 project
       if (
+        projects.length > 1 &&
         (await Project.getAll(pool, undefined, undefined, undefined, true)).some((proj) =>
           projects.some((id) => id === proj.id),
-        ) &&
-        projects.length > 1
+        )
       ) {
         throw new Error(
           `Symbolic projects can't be combined with other projects in a single transaction` +
@@ -194,10 +194,10 @@ async function updateTransaction(req, res) {
       }
       // symbolic projects transactions can only be associated with 1 project
       if (
+        projects.length > 1 &&
         (await Project.getAll(pool, undefined, undefined, undefined, true)).some((proj) =>
           projects.some((id) => id === proj.id),
-        ) &&
-        projects.length > 1
+        )
       ) {
         throw new Error(
           `Symbolic projects can't be combined with other projects in a single transaction` +

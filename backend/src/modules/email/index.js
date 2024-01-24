@@ -1,6 +1,7 @@
 const { Resend } = require("resend");
 const moment = require("moment-timezone");
 const { generateReminderHtml, generateSummaryHtml } = require("./templates");
+const { logInfo } = require("../logging");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -34,9 +35,11 @@ async function sendWeeklySummaryEmail(recipients, logs) {
     await resend.emails.send({
       from: "HackerSchool <no-reply@hackerschool.io>",
       to: recipients,
-      subject: "[HS-TMS] Weekly Summary",
+      subject: `[HS-TMS] Weekly Summary (${rangeString})`,
       html: generateSummaryHtml(weeksMap.get(isoWeek), rangeString),
     });
+
+    logInfo("modules/email/sendWeeklySummaryEmail", `"${rangeString}" week summary email sent`);
   }
 }
 
@@ -55,6 +58,11 @@ async function sendReminderEmail(recipients, reminder) {
     subject: `[HS-TMS] Reminder: ${reminder.title}`,
     html: generateReminderHtml(reminder),
   });
+
+  logInfo(
+    "modules/email/sendReminderEmail",
+    `sent email notification for reminder "${reminder.title}" (due on ${reminder.date})`,
+  );
 }
 
 module.exports = { sendWeeklySummaryEmail, sendReminderEmail };

@@ -67,7 +67,7 @@ const emailLogger = winston.createLogger({
           format: "YYYY-MM-DD HH:mm:ss.SSS",
         }),
         printf((info) => {
-          return `[${info.timestamp}] ${info.level}: ${info.message}`;
+          return `[${info.timestamp}] ${info.level}: [Change] ${info.message}`;
         }),
       ),
     }),
