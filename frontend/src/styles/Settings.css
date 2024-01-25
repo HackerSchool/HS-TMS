@@ -1,3 +1,9 @@
+#SettingsPage .content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .settings-category {
   display: flex;
   flex-direction: column;
@@ -95,4 +101,58 @@
 
 .users-table :is(td, th) {
   padding: 0.7rem;
+}
+
+/* Logs table */
+.logs-container {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.logs-container .MuiTabs-root {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.logs-container .MuiTab-root.Mui-selected {
+  color: var(--hs-logo) !important;
+}
+
+.logs-container .MuiTabs-indicator {
+  background-color: var(--green) !important;
+}
+
+.logs-content {
+  padding: 0.5rem;
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logs-list {
+  font-size: 14px;
+  padding: 0.5rem;
+  max-height: 300px;
+  max-width: 100%;
+  word-break: break-all;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 10px;
+}
+
+.logs-list.combined .http {
+  color: var(--cinza-placeholder);
+}
+
+.logs-list.combined .error {
+  /* color: var(--red); */
+  color: #ff7474;
+}
+
+.logs-list.combined .info {
+  color: white;
 }

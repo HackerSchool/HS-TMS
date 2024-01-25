@@ -40,7 +40,7 @@ export default function UsersTable({ data, loading, openDeleteModal }) {
             {loading && (
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ border: 0 }}>
-                  <CircularProgress className="loading-circle large" sx={{ m: 5 }} />
+                  <CircularProgress className="loading-circle medium" sx={{ m: 5 }} />
                 </TableCell>
               </TableRow>
             )}

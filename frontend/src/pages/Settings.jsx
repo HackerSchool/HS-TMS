@@ -5,6 +5,7 @@ import { showErrorMsg, showSuccessMsg } from "../Alerts";
 import UsersTable from "../components/UsersTable";
 import ConfirmationModal from "../components/ConfirmationModal";
 import NewUserBtn from "../components/NewUserBtn";
+import LogsTable from "../components/LogsTable";
 
 function SettingsPage() {
   const [users, setUsers] = useState([]);
@@ -114,6 +115,15 @@ function SettingsPage() {
                 loading={usersLoading}
                 openDeleteModal={launchConfirmationModal}
               />
+            </div>
+          </div>
+          <div className="settings-category">
+            <div className="settings-category-title-container">
+              <h2>Server logs</h2>
+            </div>
+
+            <div className="setting">
+              <LogsTable />
             </div>
           </div>
         </div>

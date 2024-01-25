@@ -116,6 +116,12 @@ hr {
   height: 1.2rem !important;
 }
 
+.loading-circle.medium {
+  color: white !important;
+  width: 2.4rem !important;
+  height: 2.4rem !important;
+}
+
 .loading-circle.large {
   width: 4rem !important;
   height: 4rem !important;
