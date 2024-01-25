@@ -8,7 +8,7 @@ const morgan = require("morgan");
 require("./auth/fenixOAuth2");
 require("./auth/demoLocal");
 const isLoggedIn = require("./middleware/isLoggedIn");
-const { logger } = require("./modules/logging");
+const { logger, logInfo } = require("./modules/logging");
 
 const app = express();
 
@@ -49,13 +49,14 @@ app.use("/transactions", isLoggedIn, require("./routes/transactionRoutes"));
 app.use("/users", isLoggedIn, require("./routes/userRoutes"));
 app.use("/auth", require("./routes/authRoutes"));
 app.use("/logs", isLoggedIn, require("./routes/logRoutes"));
+app.use(require("./middleware/error").errorHandler);
 
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server listening on port ${process.env.PORT}`);
+  logInfo("index", `Server listening on port ${process.env.PORT}`);
 });
 
 require("./cron/weeklyBackup");
