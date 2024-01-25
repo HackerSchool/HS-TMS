@@ -10,7 +10,7 @@ new CronJob(
     } catch (error) {
       logError(
         "cron/weeklyBackup",
-        `a problem occurred while running the weeklyBackup job (${error})`,
+        `a problem occurred while running the weeklyBackup job\n${error.stack}`,
       );
     }
   },

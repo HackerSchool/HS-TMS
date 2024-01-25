@@ -20,7 +20,7 @@ new CronJob(
     } catch (error) {
       logError(
         "cron/dailyReminders",
-        `a problem occurred while running the dailyReminders job (${error})`,
+        `a problem occurred while running the dailyReminders job\n${error.stack}`,
       );
     }
   },
