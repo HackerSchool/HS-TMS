@@ -50,5 +50,6 @@ services:
       - 5173:5173
     volumes:
       - ./frontend/src:/usr/src/app/frontend/src
+      - ./frontend/dist:/usr/src/app/frontend/dist
     environment:
       - TZ=Europe/Lisbon

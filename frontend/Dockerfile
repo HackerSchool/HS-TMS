@@ -16,6 +16,7 @@ RUN npm install
 COPY ./.eslintrc.cjs .
 COPY ./index.html .
 COPY ./vite*.js .
+COPY .env* .
 
 EXPOSE 5173
 CMD [ "npm", "run", "dev" ]

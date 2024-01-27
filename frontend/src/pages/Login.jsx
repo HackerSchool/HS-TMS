@@ -54,7 +54,7 @@ export default function LoginPage() {
         <a
           className="button"
           id="fenix-login"
-          href="http://localhost:3000/auth/fenix"
+          href={`${import.meta.env.VITE_API_ADDRESS}/auth/fenix`}
           target="_self"
           tabIndex={0}
         >

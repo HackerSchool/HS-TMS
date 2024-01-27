@@ -12,7 +12,7 @@ passport.use(
       tokenURL: "https://fenix.tecnico.ulisboa.pt/oauth/access_token",
       clientID: process.env.FENIX_CLIENT_ID,
       clientSecret: process.env.FENIX_CLIENT_SECRET,
-      callbackURL: `http://localhost:${process.env.PORT}/auth/fenix/callback`,
+      callbackURL: `${process.env.API_ADDRESS}/auth/fenix/callback`,
       scope: ["Informação"],
     },
     function (accessToken, refreshToken, profile, cb) {
