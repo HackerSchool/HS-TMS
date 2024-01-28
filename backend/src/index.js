@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const session = require("express-session");
+const Redis = require("ioredis");
+const RedisStore = require("connect-redis").default;
 const passport = require("passport");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -14,21 +16,36 @@ const app = express();
 
 app.use(express.json());
 app.use(fileUpload());
+
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 app.use(
   cors({
     origin: process.env.CLIENT_ADDRESS,
     credentials: true,
   }),
 );
+
+const redisClient = new Redis(process.env.REDIS_PORT, process.env.REDIS_HOST);
 app.use(
   session({
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 2 * 60 * 60 * 1000, // 2 hours
+      sameSite: true,
+    },
   }),
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use(require("./middleware/parseMultipartFormData"));
 app.use(require("./middleware/selectPool"));
 app.use(require("./middleware/error").errorHandler);
