@@ -210,24 +210,22 @@ class Project {
    * @async
    * @param {pg.pool} pool
    * @param {string} name
-   * @returns {boolean}
+   * @returns {Object}
    */
-  async exists(pool, name) {
+  async getProjectByName(pool, name) {
     return (
-      (
-        await pool.query(
-          `
-                SELECT
-                    name
-                FROM
-                    projects
-                WHERE
-                    name = $1::text
-                `,
-          [name],
-        )
-      ).rows[0] !== undefined
-    );
+      await pool.query(
+        `
+        SELECT
+            *
+        FROM
+            projects
+        WHERE
+            name = $1::text
+        `,
+        [name],
+      )
+    ).rows[0];
   }
 
   /**
@@ -240,10 +238,10 @@ class Project {
     const missingIds = (
       await pool.query(
         `
-            SELECT unnest($1::int[]) AS project_id
-            FROM unnest($1::int[]) AS project_ids(project_id)
-            WHERE project_id NOT IN (SELECT id FROM projects);
-            `,
+        SELECT unnest($1::int[]) AS project_id
+        FROM unnest($1::int[]) AS project_ids(project_id)
+        WHERE project_id NOT IN (SELECT id FROM projects);
+        `,
         [ids],
       )
     ).rows[0];

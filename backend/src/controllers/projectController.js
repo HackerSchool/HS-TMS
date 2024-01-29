@@ -16,7 +16,7 @@ async function createProject(req, res) {
     if (symbolic === undefined || typeof symbolic !== "boolean") {
       throw new Error(`invalid symbolic flag '${JSON.stringify(symbolic)}' (${typeof symbolic})`);
     }
-    if ((await Project.exists(pool, name)) === true) {
+    if ((await Project.getProjectByName(pool, name)) !== undefined) {
       throw new Error(`duplicate name '${name}'`);
     }
   } catch (error) {
@@ -66,7 +66,8 @@ async function updateProject(req, res) {
     if (active === undefined || typeof active !== "boolean") {
       throw new Error(`invalid active flag '${JSON.stringify(active)}' (${typeof active})`);
     }
-    if ((await Project.exists(pool, name)) === true) {
+    const project = await Project.getProjectByName(pool, name);
+    if (project !== undefined && project.id !== parseInt(id)) {
       throw new Error(`duplicate name '${name}'`);
     }
   } catch (error) {

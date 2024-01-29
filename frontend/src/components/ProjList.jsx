@@ -35,7 +35,9 @@ export default function ProjList({ data, openEditModal, openDeleteModal, loading
           )}
           <h1>{project.name}</h1>
           <hr />
-          <p>{project.transaction_count} transactions</p>
+          <p>
+            {project.transaction_count} transaction{project.transaction_count !== 1 ? "s" : ""}
+          </p>
           <p>Balance: {project.balance.toFixed(2)}€</p>
           <p style={{ color: project.active ? "var(--hs-logo)" : "var(--light-gray)" }}>
             {project.active ? "Active" : "Inactive"}

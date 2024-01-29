@@ -40,7 +40,7 @@
 .MuiTableContainer-root:has(.users-table) {
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 1rem;
-  max-height: 20rem;
+  max-height: 26.5rem;
 }
 
 .MuiTableContainer-root:has(.users-table)::-webkit-scrollbar-thumb {
