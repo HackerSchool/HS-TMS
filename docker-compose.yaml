@@ -4,7 +4,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres
+    image: postgres:16
     restart: always
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -13,10 +13,12 @@ services:
       - PGTZ=Europe/Lisbon
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    networks:
+      - backend
 
   postgres-demo:
     container_name: postgres-demo
-    image: postgres
+    image: postgres:16
     restart: always
     volumes:
       - ./backend/init-demo.sql:/docker-entrypoint-initdb.d/init.sql
@@ -25,13 +27,17 @@ services:
       - PGTZ=Europe/Lisbon
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    networks:
+      - backend
     
   redis:
     container_name: redis
-    image: redis
+    image: redis:7.2
     restart: always
     environment:
       - TZ=Europe/Lisbon
+    networks:
+      - backend
 
   backend:
     container_name: backend
@@ -40,13 +46,14 @@ services:
     depends_on:
       - postgres
       - redis
-    ports:
-      - 3000:3000
     volumes:
       - ./backend/src:/usr/src/app/backend/src
       - ./backend/storage:/usr/src/app/backend/storage
     environment:
       - TZ=Europe/Lisbon
+    networks:
+      - backend
+      - caddy-backend
 
   frontend:
     container_name: frontend
@@ -54,10 +61,34 @@ services:
     restart: always
     depends_on:
       - backend
-    ports:
-      - 5173:5173
     volumes:
       - ./frontend/src:/usr/src/app/frontend/src
       - ./frontend/dist:/usr/src/app/frontend/dist
     environment:
       - TZ=Europe/Lisbon
+    networks:
+      - caddy-frontend
+  
+  caddy:
+    container_name: caddy
+    image: caddy:2.7
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+      - ./caddy_data:/data
+    networks:
+      - caddy-backend
+      - caddy-frontend
+
+networks:
+  backend:
+    driver: bridge
+  caddy-backend:
+    driver: bridge
+  caddy-frontend:
+    driver: bridge

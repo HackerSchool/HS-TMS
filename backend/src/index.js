@@ -10,7 +10,7 @@ const morgan = require("morgan");
 require("./auth/fenixOAuth2");
 require("./auth/demoLocal");
 const isLoggedIn = require("./middleware/isLoggedIn");
-const { logger, logInfo } = require("./modules/logging");
+const { logger, logInfo, logError } = require("./modules/logging");
 
 const app = express();
 
@@ -28,6 +28,7 @@ app.use(
 );
 
 const redisClient = new Redis(process.env.REDIS_PORT, process.env.REDIS_HOST);
+redisClient.on("error", (error) => logError("index", error.stack, "Redis"));
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
@@ -49,9 +50,10 @@ app.use(passport.session());
 app.use(require("./middleware/parseMultipartFormData"));
 app.use(require("./middleware/selectPool"));
 app.use(require("./middleware/error").errorHandler);
+morgan.token("protocol", (req) => req.protocol);
 app.use(
   morgan(
-    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]',
+    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] - :protocol',
     {
       stream: {
         write: (message) => logger.http(message.trim()),

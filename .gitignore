@@ -176,3 +176,6 @@ sketch
 
 # Ignore storage files
 backend/storage
+
+# Ignore caddy data
+caddy_data/

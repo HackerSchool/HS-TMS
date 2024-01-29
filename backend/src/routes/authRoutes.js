@@ -11,8 +11,8 @@ router.get(
   "/fenix/callback",
   asyncHandler(
     passport.authenticate("fenix", {
-      successRedirect: "/auth/fenix/success",
-      failureRedirect: "/auth/fenix/failure",
+      successRedirect: `${process.env.API_ADDRESS}/auth/fenix/success`,
+      failureRedirect: `${process.env.API_ADDRESS}/auth/fenix/failure`,
     }),
   ),
 );
@@ -29,8 +29,8 @@ router.post(
   "/demo",
   asyncHandler(
     passport.authenticate("demo", {
-      successRedirect: "/auth/demo/success",
-      failureRedirect: "/auth/demo/failure",
+      successRedirect: `${process.env.API_ADDRESS}/auth/demo/success`,
+      failureRedirect: `${process.env.API_ADDRESS}/auth/demo/failure`,
     }),
   ),
 );
