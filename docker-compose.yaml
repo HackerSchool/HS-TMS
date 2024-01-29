@@ -4,7 +4,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:16
+    image: postgres:15
     restart: always
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,7 +18,7 @@ services:
 
   postgres-demo:
     container_name: postgres-demo
-    image: postgres:16
+    image: postgres:15
     restart: always
     volumes:
       - ./backend/init-demo.sql:/docker-entrypoint-initdb.d/init.sql
@@ -81,6 +81,7 @@ services:
     volumes:
       - ./Caddyfile.dev:/etc/caddy/Caddyfile
       - ./caddy_data:/data
+      - ./frontend/dist:/var/www
     networks:
       - caddy-backend
       - caddy-frontend
