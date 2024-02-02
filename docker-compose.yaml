@@ -3,7 +3,7 @@ version: "3"
 services:
 
   postgres:
-    container_name: postgres
+    container_name: hs-tms_postgres
     image: postgres:15
     restart: always
     volumes:
@@ -17,7 +17,7 @@ services:
       - backend
 
   postgres-demo:
-    container_name: postgres-demo
+    container_name: hs-tms_postgres-demo
     image: postgres:15
     restart: always
     volumes:
@@ -31,7 +31,7 @@ services:
       - backend
     
   redis:
-    container_name: redis
+    container_name: hs-tms_redis
     image: redis:7.2
     restart: always
     environment:
@@ -40,7 +40,7 @@ services:
       - backend
 
   backend:
-    container_name: backend
+    container_name: hs-tms_backend
     build: ./backend
     restart: always
     depends_on:
@@ -56,7 +56,7 @@ services:
       - caddy-backend
 
   frontend:
-    container_name: frontend
+    container_name: hs-tms_frontend
     build: ./frontend
     restart: always
     depends_on:
@@ -70,7 +70,7 @@ services:
       - caddy-frontend
   
   caddy:
-    container_name: caddy
+    container_name: hs-tms_caddy
     image: caddy:2.7
     restart: unless-stopped
     cap_add:
@@ -79,7 +79,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+      - ./Caddyfile.${ENVIRONMENT}:/etc/caddy/Caddyfile
       - ./caddy_data:/data
       - ./frontend/dist:/var/www
     networks:
