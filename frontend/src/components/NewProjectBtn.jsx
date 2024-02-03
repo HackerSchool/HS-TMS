@@ -164,6 +164,7 @@ export default function NewProjectBtn({ refetch }) {
                       name="name"
                       className="project-name"
                       id="create-project-name"
+                      placeholder="Project Name"
                       required
                       value={formData.name}
                       onChange={handleChange}

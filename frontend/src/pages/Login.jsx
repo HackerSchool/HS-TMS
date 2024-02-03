@@ -43,7 +43,10 @@ export default function LoginPage() {
   return (
     <div className="LoginPage">
       <div className="login-container">
-        <h1>Welcome to HS-TMS!</h1>
+        <div className="login-header">
+          <div className="title">HackerSchool</div>
+          <div className="subtitle">Treasury Management System</div>
+        </div>
 
         {imageReady ? (
           <img src={hs_logo} alt="HS-logo" className="logo" />

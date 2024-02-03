@@ -88,7 +88,7 @@
 /* Project Modal */
 .project-modal {
   margin: auto;
-  max-width: 35%;
+  max-width: 40%;
   max-height: 45%;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .project-name-group {
-  width: 11.5rem;
+  min-width: 8rem;
 }
 
 .project-modal hr {

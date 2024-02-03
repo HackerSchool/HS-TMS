@@ -18,8 +18,16 @@
   max-width: 100%;
 }
 
-.LoginPage h1 {
+.login-header .title {
   font-size: 2.5rem;
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+}
+
+.login-header .subtitle {
+  font-size: 1.75rem;
+  text-align: center;
 }
 
 .LoginPage .logo {
@@ -77,16 +85,13 @@
   align-items: center;
 }
 
-.login-alert {
-  max-width: 400px;
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
-}
-
 @media (max-width: 600px) {
-  .LoginPage h1 {
+  .login-header .title {
     font-size: 1.8rem;
+  }
+
+  .login-header .subtitle {
+    font-size: 1.26rem;
   }
 
   .LoginPage .button {
@@ -96,12 +101,5 @@
   .LoginPage .logo {
     max-width: 8rem;
     max-height: 8rem;
-  }
-
-  .login-alert {
-    right: 0;
-    left: 0;
-    max-width: fit-content;
-    margin: 0 auto 0.8rem auto;
   }
 }

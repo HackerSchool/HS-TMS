@@ -1,15 +1,16 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useState, lazy, Suspense } from "react";
 import "./App.css";
 import axios_instance from "./Axios";
 import { showErrorMsg } from "./Alerts";
-import Home from "./components/Home";
-import LoginPage from "./pages/Login";
-import DashboardPage from "./pages/Dashboard";
-import TransactionsPage from "./pages/Transactions";
-import ProjectsPage from "./pages/Projects";
-import ChartsPage from "./pages/Charts";
-import SettingsPage from "./pages/Settings";
+const Home = lazy(() => import("./components/Home"));
+const LoginPage = lazy(() => import("./pages/Login"));
+const DashboardPage = lazy(() => import("./pages/Dashboard"));
+const TransactionsPage = lazy(() => import("./pages/Transactions"));
+const ProjectsPage = lazy(() => import("./pages/Projects"));
+const ChartsPage = lazy(() => import("./pages/Charts"));
+const SettingsPage = lazy(() => import("./pages/Settings"));
+import CircularProgress from "@mui/material/CircularProgress";
 
 function App() {
   const [user, setUser] = useState();
@@ -88,21 +89,39 @@ function App() {
   return (
     <div className="App">
       {user !== undefined && (
-        <Routes>
-          {!user && <Route path="/login" element={<LoginPage />} />}
-          {user && (
-            <Route path="/home" element={<Home user={user} />}>
-              <Route index element={<Navigate to="dashboard" />} />
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="transactions" element={<TransactionsPage />} />
-              <Route path="projects" element={<ProjectsPage />} />
-              <Route path="charts" element={<ChartsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="*" element={<Navigate to="dashboard" />} />
-            </Route>
-          )}
-          <Route path="*" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
-        </Routes>
+        <Suspense
+          fallback={
+            <div
+              style={{
+                height: "100svh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <CircularProgress className="loading-circle large" />
+              <p>Loading page...</p>
+            </div>
+          }
+        >
+          <Routes>
+            {!user && <Route path="/login" element={<LoginPage />} />}
+            {user && (
+              <Route path="/home" element={<Home user={user} />}>
+                <Route index element={<Navigate to="dashboard" />} />
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="transactions" element={<TransactionsPage />} />
+                <Route path="projects" element={<ProjectsPage />} />
+                <Route path="charts" element={<ChartsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="*" element={<Navigate to="dashboard" />} />
+              </Route>
+            )}
+            <Route path="*" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
+          </Routes>
+        </Suspense>
       )}
     </div>
   );

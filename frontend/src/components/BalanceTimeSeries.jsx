@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { NavLink } from "react-router-dom";
-import Plot from "react-plotly.js";
+const Plot = lazy(() => import("react-plotly.js"));
+import CircularProgress from "@mui/material/CircularProgress";
 
 const today = new Date().toISOString().slice(0, 10);
 const monthAgo = new Date();
@@ -98,53 +99,72 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard })
   }
 
   return (
-    <Plot
-      data={[
-        {
-          x: dates,
-          y: balanceVal,
-          type: "scatter",
-          mode: "lines+markers+text",
-          line: { color: "6bba75", width: 1.5 },
-          marker: { color: "white", size: 6 },
-          text: balanceVal,
-          textposition: "top center",
-          hoverinfo: "x+y",
-        },
-      ]}
-      config={{
-        modeBarButtonsToRemove: ["select2d", "lasso2d", "resetScale2d"],
-        displaylogo: false,
-      }}
-      layout={{
-        yaxis: {
-          showgrid: true,
-          gridcolor: "#474747",
-          showline: true,
-          zeroline: true,
-          zerolinecolor: "#ffffff",
-          hoverformat: ".2f",
-          linecolor: "#ffffff",
-          type: "linear",
-        },
-        modebar: { orientation: "v", bgcolor: "rgba(0,0,0,0)" },
-        xaxis: xaxisconfig,
-        width: 580,
-        height: inDashboard ? 283 : 383,
-        margin: {
-          t: disableRange ? 10 : 50,
-          b: disableRange ? 20 : 15,
-          l: inDashboard ? 40 : 45,
-          r: inDashboard ? 40 : 45,
-        },
-        autosize: false,
-        plot_bgcolor: "rgba(0,0,0,0)",
-        paper_bgcolor: "rgba(0,0,0,0)",
-        font: {
-          color: "#ffffff",
-        },
-      }}
-    />
+    <Suspense
+      fallback={
+        <div
+          style={{
+            width: 580,
+            height: inDashboard ? 283 : 383,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <CircularProgress className="loading-circle large" />
+          <p>Loading plot resources...</p>
+        </div>
+      }
+    >
+      <Plot
+        data={[
+          {
+            x: dates,
+            y: balanceVal,
+            type: "scatter",
+            mode: "lines+markers+text",
+            line: { color: "6bba75", width: 1.5 },
+            marker: { color: "white", size: 6 },
+            text: balanceVal,
+            textposition: "top center",
+            hoverinfo: "x+y",
+          },
+        ]}
+        config={{
+          modeBarButtonsToRemove: ["select2d", "lasso2d", "resetScale2d"],
+          displaylogo: false,
+        }}
+        layout={{
+          yaxis: {
+            showgrid: true,
+            gridcolor: "#474747",
+            showline: true,
+            zeroline: true,
+            zerolinecolor: "#ffffff",
+            hoverformat: ".2f",
+            linecolor: "#ffffff",
+            type: "linear",
+          },
+          modebar: { orientation: "v", bgcolor: "rgba(0,0,0,0)" },
+          xaxis: xaxisconfig,
+          width: 580,
+          height: inDashboard ? 283 : 383,
+          margin: {
+            t: disableRange ? 10 : 50,
+            b: disableRange ? 20 : 15,
+            l: inDashboard ? 40 : 45,
+            r: inDashboard ? 40 : 45,
+          },
+          autosize: false,
+          plot_bgcolor: "rgba(0,0,0,0)",
+          paper_bgcolor: "rgba(0,0,0,0)",
+          font: {
+            color: "#ffffff",
+          },
+        }}
+      />
+    </Suspense>
   );
 }
 

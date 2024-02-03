@@ -244,7 +244,7 @@
 /* New reminder modal */
 .reminder-modal {
   margin: auto;
-  max-width: 60%;
+  max-width: 45%;
   max-height: 60%;
 }
 
@@ -266,6 +266,18 @@
 }
 
 /* balance chart */
+#dashboard-balance .dashboard-item-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#dashboard-balance .dashboard-item-content-container {
+  padding: 0;
+  overflow: hidden;
+  width: fit-content;
+  height: fit-content;
+}
+
 #DashboardPage .transaction-warn-container {
   height: 100%;
   background-color: transparent;

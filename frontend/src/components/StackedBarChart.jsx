@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import Plot from "react-plotly.js";
+import React, { useEffect, useState, useMemo, Suspense, lazy } from "react";
+const Plot = lazy(() => import("react-plotly.js"));
 import CircularProgress from "@mui/material/CircularProgress";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import DropdownBtn from "./DropdownBtn";
@@ -170,108 +170,127 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
         </div>
       </div>
       <div className="chart">
-        <Plot
-          data={histogramData}
-          config={{
-            modeBarButtonsToRemove: ["select2d", "lasso2d"],
-            displaylogo: false,
-          }}
-          layout={{
-            legend: {
-              x: 1,
-              xanchor: "right",
-              y: 1.15,
-              bgcolor: "rgba(0,0,0,0)",
-              orientation: "h",
-            },
-            modebar: { orientation: "v", bgcolor: "rgba(0,0,0,0)" },
-            barmode: "stack",
-            yaxis: {
-              showgrid: true,
-              gridcolor: "#474747",
-              showline: true,
-              zeroline: true,
-              zerolinecolor: "#ffffff",
-              hoverformat: ".2f",
-              linecolor: "#ffffff",
-            },
-            xaxis: {
-              type: "category",
-              tickvals:
-                typeOfYear === "civic"
-                  ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(String)
-                  : [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8].map(String),
-              ticktext:
-                typeOfYear === "civic"
-                  ? [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ]
-                  : [
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                    ],
-              showgrid: false,
-              zeroline: true,
-              zerolinecolor: "#ffffff",
-              color: "#ffffff",
-            },
-            width: 580,
-            height: 383,
-            margin: { t: 60, b: 30, l: 45, r: 45 },
-            autosize: false,
-            plot_bgcolor: "rgba(0,0,0,0)",
-            paper_bgcolor: "rgba(0,0,0,0)",
-            font: {
-              color: "#ffffff",
-            },
-            // Dropdown menu for choosing the desired year
-            updatemenus: [
-              {
-                buttons: years.map((year, index, array) => {
-                  const visibleArray = Array(
-                    array.length * (symbolicProjectsNames.length + 1)
-                  ).fill(false);
-                  for (let i = 0; i < symbolicProjectsNames.length + 1; i++) {
-                    visibleArray[index * (symbolicProjectsNames.length + 1) + i] = true;
-                  }
-                  return {
-                    method: "restyle",
-                    args: ["visible", visibleArray],
-                    label: typeOfYear === "civic" ? year : `${String(year)}/${String(year + 1)}`,
-                  };
-                }),
-                type: "dropdown",
-                xanchor: "left",
-                x: 0,
-                y: 1.16,
-                font: { color: "#ffffff" },
-                borderwidth: 2,
-                showactive: true,
+        <Suspense
+          fallback={
+            <div
+              style={{
+                width: 580,
+                height: 383,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <CircularProgress className="loading-circle large" />
+              <p>Loading plot resources...</p>
+            </div>
+          }
+        >
+          <Plot
+            data={histogramData}
+            config={{
+              modeBarButtonsToRemove: ["select2d", "lasso2d"],
+              displaylogo: false,
+            }}
+            layout={{
+              legend: {
+                x: 1,
+                xanchor: "right",
+                y: 1.15,
+                bgcolor: "rgba(0,0,0,0)",
+                orientation: "h",
               },
-            ],
-          }}
-        />
+              modebar: { orientation: "v", bgcolor: "rgba(0,0,0,0)" },
+              barmode: "stack",
+              yaxis: {
+                showgrid: true,
+                gridcolor: "#474747",
+                showline: true,
+                zeroline: true,
+                zerolinecolor: "#ffffff",
+                hoverformat: ".2f",
+                linecolor: "#ffffff",
+              },
+              xaxis: {
+                type: "category",
+                tickvals:
+                  typeOfYear === "civic"
+                    ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(String)
+                    : [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8].map(String),
+                ticktext:
+                  typeOfYear === "civic"
+                    ? [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                      ]
+                    : [
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                      ],
+                showgrid: false,
+                zeroline: true,
+                zerolinecolor: "#ffffff",
+                color: "#ffffff",
+              },
+              width: 580,
+              height: 383,
+              margin: { t: 60, b: 30, l: 45, r: 45 },
+              autosize: false,
+              plot_bgcolor: "rgba(0,0,0,0)",
+              paper_bgcolor: "rgba(0,0,0,0)",
+              font: {
+                color: "#ffffff",
+              },
+              // Dropdown menu for choosing the desired year
+              updatemenus: [
+                {
+                  buttons: years.map((year, index, array) => {
+                    const visibleArray = Array(
+                      array.length * (symbolicProjectsNames.length + 1)
+                    ).fill(false);
+                    for (let i = 0; i < symbolicProjectsNames.length + 1; i++) {
+                      visibleArray[index * (symbolicProjectsNames.length + 1) + i] = true;
+                    }
+                    return {
+                      method: "restyle",
+                      args: ["visible", visibleArray],
+                      label: typeOfYear === "civic" ? year : `${String(year)}/${String(year + 1)}`,
+                    };
+                  }),
+                  type: "dropdown",
+                  xanchor: "left",
+                  x: 0,
+                  y: 1.16,
+                  font: { color: "#ffffff" },
+                  borderwidth: 2,
+                  showactive: true,
+                },
+              ],
+            }}
+          />
+        </Suspense>
       </div>
     </div>
   );

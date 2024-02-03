@@ -430,8 +430,7 @@ aside {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.7);
-  border-radius: 0 1rem 1rem 0;
+  box-shadow: -4px 0px 10px 4px rgba(0, 0, 0, 0.7);
   z-index: 3;
 }
 
@@ -441,11 +440,10 @@ aside {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 30px 10px;
   gap: 50px;
   height: 100%;
   max-width: 250px;
-  padding: 3.5rem 1.5rem;
+  padding: 3.5rem 0rem;
 }
 
 .sidebar-routes-container {
@@ -454,30 +452,38 @@ aside {
   justify-content: space-between;
   margin-bottom: auto;
   gap: 35px;
+  max-width: 100%;
 }
 
 .nav-item {
   border: 0 solid transparent;
-  border-radius: 2rem;
-  padding: 0.8rem 0 0.8rem 1.5rem;
+  padding: 0.8rem 0 0.8rem 3rem;
   font-size: 1.1rem;
-  min-width: 13rem;
+  width: 16rem;
+  max-width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 12px;
   color: var(--green);
-  transition: none 0.4s ease-in-out 0s;
+  transition: none 0.4s ease-out 0s;
   transition-property: color, background-color;
 }
 
 .nav-item.active {
+  background: linear-gradient(
+    to left,
+    var(--cinza-1) -2%,
+    rgba(0, 0, 0, 0.3) 15%,
+    rgba(0, 0, 0, 0.12) 20%,
+    rgba(0, 0, 0, 0.03) 23%,
+    transparent 25%
+  );
   background-color: var(--hs-logo);
   color: white;
-  box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.5);
-  transition: none 0.7s ease-out 0s;
-  transition-property: color, background-color, box-shadow;
+  transition: none 0.5s ease-out 0s;
+  transition-property: color, background;
 }
 
 #logo-img {
