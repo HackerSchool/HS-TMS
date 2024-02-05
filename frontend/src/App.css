@@ -7,7 +7,7 @@ html {
   --green-alpha-40: #0e95546c;
   --green-alpha-20: #0e955436;
   --green-hover: #0c7844;
-  --red: #f21313;
+  --red: #d52f2f;
   --cinza-1: #212121;
   --cinza-2: #252525;
   --cinza-3: #2c2c2c;
@@ -421,6 +421,10 @@ input[type="file"] {
   background-color: var(--green) !important;
 }
 
+.alert-error {
+  background-color: var(--red) !important;
+}
+
 /* Sidebar CSS */
 
 aside {
@@ -467,23 +471,44 @@ aside {
   justify-content: flex-start;
   gap: 12px;
   color: var(--green);
-  transition: none 0.4s ease-out 0s;
-  transition-property: color, background-color;
+}
+
+.sidebar-routes-container .nav-item {
+  color: var(--light-gray);
+  transition: none 0.2s ease 0s;
+  transition-property: color, margin-left;
+}
+
+.sidebar-routes-container .nav-item:hover {
+  margin-left: 5px;
+  color: var(--green);
 }
 
 .nav-item.active {
-  background: linear-gradient(
-    to left,
-    var(--cinza-1) -2%,
-    rgba(0, 0, 0, 0.3) 15%,
-    rgba(0, 0, 0, 0.12) 20%,
-    rgba(0, 0, 0, 0.03) 23%,
-    transparent 25%
-  );
+  margin-left: 5px;
+  color: var(--hs-logo);
+  position: relative;
+}
+
+.nav-item.active:hover {
+  color: var(--hs-logo);
+}
+
+.nav-item::before {
+  position: absolute;
+  left: -5px;
+  top: 0;
+  height: 100%;
+  width: 0px;
+  background-color: transparent;
+  content: "";
+  transition: none 0.2s ease;
+  transition-property: width, background-color;
+}
+
+.nav-item.active::before {
+  width: 5px;
   background-color: var(--hs-logo);
-  color: white;
-  transition: none 0.5s ease-out 0s;
-  transition-property: color, background;
 }
 
 #logo-img {

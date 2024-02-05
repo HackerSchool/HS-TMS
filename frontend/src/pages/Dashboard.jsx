@@ -9,7 +9,7 @@ import NewReminderBtn from "../components/NewReminderBtn";
 import ReminderEditModal from "../components/ReminderEditModal";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Reminder from "../components/Reminder";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import HandymanIcon from "@mui/icons-material/Handyman";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -243,7 +243,7 @@ function DashboardPage() {
                   headingText={activeProjectsCount ?? "?"}
                   mainText="Active"
                   subText="Projects"
-                  icon={<TaskAltIcon />}
+                  icon={<HandymanIcon />}
                 />
               </div>
               <div className="dashboard-card-row">
@@ -319,6 +319,7 @@ function DashboardPage() {
                   loading={transactionsLastMonthLoading}
                   disableRange={true}
                   inDashboard={true}
+                  orderAsc={false}
                 />
               </div>
             </div>

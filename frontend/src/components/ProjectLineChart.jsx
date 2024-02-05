@@ -26,6 +26,7 @@ function ProjectLineChart({ title, projectList, projectsLoading }) {
       axios_instance
         .get("transactions", {
           params: {
+            orderBy: "date",
             order: "ASC",
             balanceBy: projectID,
           },
@@ -80,6 +81,7 @@ function ProjectLineChart({ title, projectList, projectsLoading }) {
           loading={transactionsLoading || projectsLoading}
           disableRange={false}
           inDashboard={false}
+          orderAsc={true}
         />
       </div>
     </div>

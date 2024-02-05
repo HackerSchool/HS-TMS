@@ -7,15 +7,12 @@ const today = new Date().toISOString().slice(0, 10);
 const monthAgo = new Date();
 monthAgo.setMonth(monthAgo.getMonth() - 1);
 
-function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard }) {
+function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard, orderAsc }) {
   const [dates, setDates] = useState([]);
   const [balanceVal, setBalanceVal] = useState([]);
 
   useEffect(() => {
     if (loading) return;
-
-    const orderAsc =
-      transactions[0]?.date > transactions[transactions.length - 1]?.date ? false : true;
 
     const tempTransactions = orderAsc ? transactions : transactions.map(t => t).reverse();
 
@@ -75,11 +72,11 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard })
         }),
   };
 
-  if (!loading && transactions.length <= 1) {
+  if (!loading && dates.length === 0) {
     return (
       <div className="transaction-warn-container" style={inDashboard ? { width: 580 } : {}}>
         <span>
-          Not enough transactions to plot
+          Not enough data to plot
           {inDashboard ? (
             <>
               .<br />

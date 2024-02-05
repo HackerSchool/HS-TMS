@@ -51,7 +51,12 @@ function ChartsPage() {
       .finally(() => setProjectsLoading(false));
 
     axios_instance
-      .get("transactions")
+      .get("transactions", {
+        params: {
+          orderBy: "date",
+          order: "ASC",
+        },
+      })
       .then(res => {
         if (res.status === 200) return res.data;
         throw new Error();
@@ -114,6 +119,7 @@ function ChartsPage() {
                 loading={transactionsLoading}
                 disableRange={false}
                 inDashboard={false}
+                orderAsc={true}
               />
             </div>
           </div>
