@@ -62,8 +62,15 @@ function SettingsPage() {
 
         let msg = `Couldn't revoke ${userToDelete.username}'s access`;
         if (err.reqTimedOut) msg += ". Request timed out";
-        else if (err.response)
-          msg += `. ${("" + err.response.status)[0] === "4" ? "Bad client request" : "Internal server error"}`;
+        else if (err.response) {
+          const status = String(err.response.status);
+          if (status.startsWith("4")) {
+            msg += ". Bad client request";
+          } else if (status.startsWith("5")) {
+            msg += ". Internal server error";
+            refetchUsers();
+          }
+        }
 
         showErrorMsg(msg);
       });

@@ -86,8 +86,15 @@ function NewReminderBtn({ refetch }) {
 
         let msg = "Couldn't create reminder";
         if (err.reqTimedOut) msg += ". Request timed out";
-        else if (err.response)
-          msg += `. ${("" + err.response.status)[0] === "4" ? "Bad client request" : "Internal server error"}`;
+        else if (err.response) {
+          const status = String(err.response.status);
+          if (status.startsWith("4")) {
+            msg += ". Bad client request";
+          } else if (status.startsWith("5")) {
+            msg += ". Internal server error";
+            refetch();
+          }
+        }
 
         showErrorMsg(msg);
       })
