@@ -2,6 +2,7 @@ import React, { useEffect, useState, Suspense, lazy } from "react";
 const Plot = lazy(() => import("react-plotly.js"));
 import CircularProgress from "@mui/material/CircularProgress";
 
+// transactionsList needs to ordered by date in ascending order
 function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
   const [years, setYears] = useState([]);
   const [histogramData, setHistogramData] = useState(() => getHistData([]));
@@ -59,17 +60,17 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
     // (we only return the first year of the academic year). The same check is done for lastYear.
     const firstYear =
       typeOfYear === "civic"
-        ? parseInt(transactions[transactions.length - 1].date.substring(0, 4))
-        : parseInt(transactions[transactions.length - 1].date.substring(5, 7)) < 9
-          ? parseInt(transactions[transactions.length - 1].date.substring(0, 4)) - 1
-          : parseInt(transactions[transactions.length - 1].date.substring(0, 4));
-
-    const lastYear =
-      typeOfYear === "civic"
         ? parseInt(transactions[0].date.substring(0, 4))
         : parseInt(transactions[0].date.substring(5, 7)) < 9
           ? parseInt(transactions[0].date.substring(0, 4)) - 1
           : parseInt(transactions[0].date.substring(0, 4));
+
+    const lastYear =
+      typeOfYear === "civic"
+        ? parseInt(transactions[transactions.length - 1].date.substring(0, 4))
+        : parseInt(transactions[transactions.length - 1].date.substring(5, 7)) < 9
+          ? parseInt(transactions[transactions.length - 1].date.substring(0, 4)) - 1
+          : parseInt(transactions[transactions.length - 1].date.substring(0, 4));
 
     const yearsList = Array.from(
       { length: lastYear - firstYear + 1 },
@@ -92,11 +93,9 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
       const month_idx = months.indexOf(parseInt(transaction.date.substring(5, 7)));
 
       if (transaction.value >= 0) {
-        transaction_y[year_idx][0][month_idx] =
-          transaction_y[year_idx][0][month_idx] + transaction.value;
+        transaction_y[year_idx][0][month_idx] += transaction.value;
       } else {
-        transaction_y[year_idx][1][month_idx] =
-          transaction_y[year_idx][1][month_idx] + Math.abs(transaction.value);
+        transaction_y[year_idx][1][month_idx] += Math.abs(transaction.value);
       }
     });
 

@@ -13,6 +13,7 @@ const transactionTypeOptions = [
 const bars_color = ["#FF787C", "#7FA8FD", "#6BBA75", "#FFDC82", "#e377c2", "#c7825b"];
 const bar_lines_color = ["#9F5C5C", "#4274C4", "#0E9553", "#CEA54E", "#9c4f84", "#875940"];
 
+// transactionsList needs to ordered by date in ascending order
 function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loading }) {
   const [years, setYears] = useState([]);
   const [earningBool, setEarningBool] = useState(transactionTypeOptions[0].bool);
@@ -61,17 +62,17 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
 
     const firstYear =
       typeOfYear === "civic"
-        ? parseInt(transactions[transactions.length - 1].date.substring(0, 4))
-        : parseInt(transactions[transactions.length - 1].date.substring(5, 7)) < 9
-          ? parseInt(transactions[transactions.length - 1].date.substring(0, 4)) - 1
-          : parseInt(transactions[transactions.length - 1].date.substring(0, 4));
-
-    const lastYear =
-      typeOfYear === "civic"
         ? parseInt(transactions[0].date.substring(0, 4))
         : parseInt(transactions[0].date.substring(5, 7)) < 9
           ? parseInt(transactions[0].date.substring(0, 4)) - 1
           : parseInt(transactions[0].date.substring(0, 4));
+
+    const lastYear =
+      typeOfYear === "civic"
+        ? parseInt(transactions[transactions.length - 1].date.substring(0, 4))
+        : parseInt(transactions[transactions.length - 1].date.substring(5, 7)) < 9
+          ? parseInt(transactions[transactions.length - 1].date.substring(0, 4)) - 1
+          : parseInt(transactions[transactions.length - 1].date.substring(0, 4));
 
     const yearsList = Array.from(
       { length: lastYear - firstYear + 1 },
@@ -105,11 +106,9 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
       // If project_idx === -1 (project is not symbolic) then the value is
       // assigned to the last position of the transactions array
       if (project_idx === -1) {
-        transaction_y[year_idx][projects.length][month_idx] =
-          transaction_y[year_idx][projects.length][month_idx] + Math.abs(transaction.value);
+        transaction_y[year_idx][projects.length][month_idx] += Math.abs(transaction.value);
       } else {
-        transaction_y[year_idx][project_idx][month_idx] =
-          transaction_y[year_idx][project_idx][month_idx] + Math.abs(transaction.value);
+        transaction_y[year_idx][project_idx][month_idx] += Math.abs(transaction.value);
       }
     });
 
