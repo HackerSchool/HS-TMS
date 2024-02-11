@@ -125,7 +125,7 @@ rect.selector-rect:where([style*="fill: rgb(212, 212, 212)"]) {
 
 .js-plotly-plot .plotly .modebar {
   position: absolute;
-  top: 50%;
+  top: 0;
   transform: translateY(-50%);
   margin: 0.5rem;
 }
