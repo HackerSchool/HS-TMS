@@ -175,7 +175,9 @@ sketch
 # End of https://www.toptal.com/developers/gitignore/api/react,node,visualstudiocode
 
 # Ignore storage files
-backend/storage
-
+backend/storage/*
+!backend/storage/receipts
+backend/storage/receipts/*
+!backend/storage/receipts/demo-transaction*.pdf
 # Ignore caddy data
 caddy_data/
