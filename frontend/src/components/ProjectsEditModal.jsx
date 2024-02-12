@@ -136,7 +136,9 @@ function ProjectEditModal({ open, setOpen, project, refetch }) {
           >
             <div className="form-header">
               <CloseIcon className="modal-close-btn" onClick={handleClose} />
-              <h1>Edit Project {project.name}</h1>
+              <h1>
+                Edit {project.symbolic ? "Symbolic " : ""}Project {project.name}
+              </h1>
             </div>
 
             <div className="form-body">

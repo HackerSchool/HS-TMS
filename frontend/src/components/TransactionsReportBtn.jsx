@@ -469,7 +469,11 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
 
               <hr />
               <div className="form-row last">
-                <button className="btn transactions-filter-clear-btn" onClick={clearFilters}>
+                <button
+                  type="button"
+                  className="btn transactions-filter-clear-btn"
+                  onClick={clearFilters}
+                >
                   Clear filters
                 </button>
                 <button

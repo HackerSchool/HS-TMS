@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios_instance from "../Axios";
-import { showErrorMsg } from "../Alerts";
 import MoreOptionsBtn from "./MoreOptionsBtn";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -16,7 +14,6 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-import RequestPageIcon from "@mui/icons-material/RequestPage";
 import CircularProgress from "@mui/material/CircularProgress";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -70,60 +67,7 @@ function TablePaginationActions(props) {
   );
 }
 
-export function DownloadIcon({ id }) {
-  const [pending, setPending] = useState(false);
-
-  return (
-    <div
-      className="receipt-download-icon-container"
-      style={{ cursor: "pointer", position: "relative" }}
-      onClick={() => {
-        setPending(true);
-        axios_instance
-          .get(`transactions/download/${id}`, {
-            responseType: "blob",
-          })
-          .then(res => {
-            if (res.status === 200) return res.data;
-            else throw new Error();
-          })
-          .then(data => {
-            // create file link in browser's memory
-            const href = URL.createObjectURL(data);
-
-            const link = document.createElement("a");
-            link.href = href;
-            link.setAttribute("download", `receipt${id}.pdf`);
-            link.style.display = "none";
-            document.body.appendChild(link);
-            link.click();
-
-            document.body.removeChild(link);
-            URL.revokeObjectURL(href);
-          })
-          .catch(err => {
-            if (err.handledByMiddleware) return;
-
-            let msg = "Couldn't download the receipt";
-            if (err.reqTimedOut) msg += ". Request timed out";
-            else if (err.response)
-              msg += `. ${("" + err.response.status)[0] === "4" ? "Bad client request" : "Internal server error"}`;
-
-            showErrorMsg(msg);
-          })
-          .finally(() => setPending(false));
-      }}
-    >
-      {pending ? (
-        <CircularProgress className="loading-circle small" />
-      ) : (
-        <RequestPageIcon className="receipt-download-icon" />
-      )}
-    </div>
-  );
-}
-
-export default function TransactionsTable({ data, openEditModal, openDeleteModal, loading }) {
+export default function ProjectsTable({ data, openEditModal, openDeleteModal, loading }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
 
@@ -139,41 +83,22 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
     setPage(0);
   };
 
-  function formatString(str) {
-    let newStr = str;
-
-    if (str.length > 40) {
-      newStr = str.slice(0, 40);
-      newStr += "...";
-    }
-    return newStr;
-  }
-
   // Reset the page index when the data changes
   useEffect(() => {
     setPage(0);
   }, [data]);
 
   return (
-    <TableContainer>
+    <TableContainer className="projects-table">
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell align="center" padding="none">
-              Date
+              Name
             </TableCell>
-            <TableCell align="center">Description</TableCell>
-            <TableCell align="center">Value</TableCell>
-            <TableCell align="center" padding="none">
-              Balance
-            </TableCell>
-            <TableCell align="center">Projects</TableCell>
-            <TableCell align="center" padding="none">
-              NIF
-            </TableCell>
-            <TableCell align="center" padding="none">
-              Receipt
-            </TableCell>
+            <TableCell align="center">Transactions</TableCell>
+            <TableCell align="center">Balance</TableCell>
+            <TableCell align="center">Active</TableCell>
             <TableCell align="center" padding="none" width={24}></TableCell>
           </TableRow>
         </TableHead>
@@ -181,15 +106,15 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
           {data.length === 0 &&
             !loading && ( // display message when there's no data to display
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ fontSize: 18 }}>
-                  No transactions found
+                <TableCell colSpan={5} align="center" sx={{ fontSize: 18 }}>
+                  No projects found
                 </TableCell>
               </TableRow>
             )}
 
           {loading && (
             <TableRow>
-              <TableCell colSpan={8} align="center" sx={{ border: 0 }}>
+              <TableCell colSpan={5} align="center" sx={{ border: 0 }}>
                 <CircularProgress className="loading-circle large" sx={{ m: 5 }} />
               </TableCell>
             </TableRow>
@@ -200,22 +125,13 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
               ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : data
             ).map(row => (
-              <TableRow key={`${row.date}+${row.value}+${Math.random()}`} hover>
+              <TableRow key={row.name} hover>
                 <TableCell component="th" scope="row" align="center">
-                  {row.date}
+                  <span className={row.symbolic ? "symbolic-indicator" : ""}>{row.name}</span>
                 </TableCell>
-                <TableCell align="center">
-                  {row.description ? formatString(row.description) : "-"}
-                </TableCell>
-                <TableCell align="center">{`${row.value.toFixed(2)}€`}</TableCell>
+                <TableCell align="center">{row.transaction_count}</TableCell>
                 <TableCell align="center">{`${row.balance.toFixed(2)}€`}</TableCell>
-                <TableCell align="center">
-                  {row.projects ? formatString(row.projects) : "-"}
-                </TableCell>
-                <TableCell align="center">{row.has_nif ? "Yes" : "No"}</TableCell>
-                <TableCell align="center">
-                  {row.has_file ? <DownloadIcon id={row.id} /> : "-"}
-                </TableCell>
+                <TableCell align="center">{`${row.active ? "Yes" : "No"}`}</TableCell>
                 <TableCell align="center">
                   <MoreOptionsBtn
                     options={[
@@ -236,7 +152,7 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
             ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 62.18 * emptyRows }}>
-              <TableCell colSpan={8} />
+              <TableCell colSpan={5} />
             </TableRow>
           )}
         </TableBody>
@@ -245,7 +161,7 @@ export default function TransactionsTable({ data, openEditModal, openDeleteModal
             <TableRow>
               <TablePagination
                 rowsPerPageOptions={[15, 20, 25, { label: "All", value: -1 }]}
-                colSpan={8}
+                colSpan={5}
                 count={data.length}
                 rowsPerPage={rowsPerPage}
                 // If the data has been filtered and the current page doesn't exist anymore, pass 0

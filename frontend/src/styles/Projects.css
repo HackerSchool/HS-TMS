@@ -1,57 +1,20 @@
 #ProjectsPage .content {
-  padding: 2.5rem;
+  padding-top: 1.5rem;
 }
 
-.project-list {
-  display: grid;
-  grid-template: auto / repeat(5, 1fr);
-  justify-items: center;
-  gap: 1.5rem;
-}
-
-.project-container {
-  width: 13rem;
-  background-color: #333333;
-  padding: 1rem 0.5rem;
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-  gap: 0.5rem;
+.projects-table span.symbolic-indicator {
+  font-weight: bold;
+  color: var(--hs-logo);
   position: relative;
 }
 
-.project-container h1 {
-  text-align: center;
-  font-size: 1.5rem;
-  color: white;
-  padding: 0rem 0.5rem;
-  max-width: 85%;
-}
-
-.project-symbolic-indicator-container {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-}
-
-.project-symbolic-indicator {
-  display: inline-flex;
-  position: relative;
-  background-color: var(--hs-logo);
-  border-radius: 1rem;
-  padding: 0.3rem;
-}
-
-.project-symbolic-indicator:hover::after,
-.project-symbolic-indicator:focus::after {
+/* the "symbolic project" div */
+.projects-table span.symbolic-indicator:hover::after,
+.projects-table span.symbolic-indicator:focus::after {
   display: block;
   position: absolute;
   left: 50%;
-  top: 10%;
+  top: -5px;
   transform: translateX(-50%) translateY(-100%);
   width: fit-content;
   height: fit-content;
@@ -61,28 +24,24 @@
   color: white;
   content: "Symbolic project";
   border-radius: 0.8rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.15rem 0.5rem;
   z-index: 1400;
 }
 
-.project-symbolic-indicator svg {
-  font-size: 1rem;
-}
-
-.project-container hr {
-  width: 85%;
-  border: none;
-  border-radius: 1rem;
-  border-bottom: 1px solid var(--hs-logo);
-  margin-top: -3px;
-}
-
-.no-projects-container {
-  width: fit-content;
-  background-color: #333333;
-  padding: 0.6rem 1.2rem;
-  border-radius: 1rem;
-  font-size: 1.2rem;
+/* the arrow pointing downwards */
+.projects-table span.symbolic-indicator:hover::before,
+.projects-table span.symbolic-indicator:focus::before {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: -5.2px;
+  width: 10px;
+  height: 4px;
+  transform: translateX(-50%);
+  background-color: var(--hs-logo);
+  content: "";
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  z-index: 1400;
 }
 
 /* Project Modal */

@@ -120,11 +120,9 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard, o
             x: dates,
             y: balanceVal,
             type: "scatter",
-            mode: "lines+markers+text",
+            mode: "lines+markers",
             line: { color: "6bba75", width: 1.5 },
             marker: { color: "white", size: 6 },
-            text: balanceVal,
-            textposition: "top center",
             hoverinfo: "x+y",
           },
         ]}

@@ -247,7 +247,7 @@ function DashboardPage() {
                   bolderMain
                 />
                 <DashboardCard
-                  headingText={activeProjectsCount ?? "?"}
+                  headingText={`${activeProjectsCount ?? "?"}`}
                   mainText="Active"
                   subText="Projects"
                   icon={<HandymanIcon />}
@@ -255,13 +255,13 @@ function DashboardPage() {
               </div>
               <div className="dashboard-card-row">
                 <DashboardCard
-                  headingText={transactionsLastMonth?.length ?? "?"}
+                  headingText={`${transactionsLastMonth?.length ?? "?"}`}
                   mainText="Transactions"
                   subText="in the past 30 days"
                   smallerMain
                 />
                 <DashboardCard
-                  headingText={authorizedUsersCount ?? "?"}
+                  headingText={`${authorizedUsersCount ?? "?"}`}
                   mainText={authorizedUsersCount === 1 ? "Person" : "People"}
                   subText="in the system"
                   icon={<ManageAccountsIcon />}

@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import "../styles/Projects.css";
 import axios_instance from "../Axios";
 import { showErrorMsg, showSuccessMsg, showWarningMsg } from "../Alerts";
-import ProjList from "../components/ProjList";
+import ProjectsTable from "../components/ProjectsTable";
 import NewProjectBtn from "../components/NewProjectBtn";
 import SortButton from "../components/SortBtn";
 import ProjectsFilterBtn from "../components/ProjectsFilterBtn";
@@ -68,8 +68,8 @@ function ProjectsPage() {
     return (
       <div style={{ lineHeight: 1.5 }}>
         <b>Name:</b> {projectToDelete.name} <br />
-        <b># Transactions:</b> {projectToDelete.transaction_count} <br />
-        <b>Balance:</b> {projectToDelete.balance}€ <br />
+        <b>Transactions:</b> {projectToDelete.transaction_count} <br />
+        <b>Balance:</b> {projectToDelete.balance.toFixed(2)}€ <br />
         <b>Active:</b> {projectToDelete.active ? "Yes" : "No"} <br />
         <b>Symbolic:</b> {projectToDelete.symbolic ? "Yes" : "No"}
       </div>
@@ -159,7 +159,7 @@ function ProjectsPage() {
 
       <div className="content-container">
         <div className="content">
-          <ProjList
+          <ProjectsTable
             data={projects}
             openEditModal={launchEditModal}
             openDeleteModal={launchConfirmationModal}

@@ -578,9 +578,13 @@ tfoot.MuiTableFooter-root td.MuiTableCell-root {
   border-color: var(--separator-color);
 }
 
-/* Table footer icons */
-tfoot.MuiTableFooter-root svg {
+/* Table pagination icons */
+.MuiTablePagination-root svg {
   color: white;
+}
+
+.MuiTablePagination-root button.Mui-disabled svg {
+  opacity: 0.3;
 }
 
 /* Scrollbar */

@@ -224,7 +224,12 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
 
               <hr />
               <div className="form-row last">
-                <button className="btn" id="projects-filter-clear-btn" onClick={clearFilters}>
+                <button
+                  type="button"
+                  className="btn"
+                  id="projects-filter-clear-btn"
+                  onClick={clearFilters}
+                >
                   Clear
                 </button>
                 <button type="submit" className="btn" id="projects-filter-save-btn">
