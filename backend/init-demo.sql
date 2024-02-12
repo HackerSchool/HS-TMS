@@ -286,7 +286,7 @@ INSERT INTO users
 VALUES
 ('ist11xxxxx', TRUE, 'Demo User', '', 'xxxxx1@tecnico.ulisboa.pt'),
 ('ist12xxxxx', TRUE, 'Jane Smith', '', 'xxxxx2@tecnico.ulisboa.pt'),
-('ist13xxxxx', TRUE, 'John Doe', '', 'xxxxx3@tecnico.ulisboa.pt'),
+('ist13xxxxx', FALSE, 'John Doe', '', ''),
 ('ist14xxxxx', TRUE, 'Tom Bloggs', '', 'xxxxx4@tecnico.ulisboa.pt');
 
 INSERT INTO reminders(title, "description", "date")
