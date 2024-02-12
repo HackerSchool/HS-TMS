@@ -116,7 +116,7 @@ VALUES
 (CURRENT_DATE - INTERVAL '2 months 17 days' - INTERVAL '3 months', '3D Print Materials', -20, FALSE, TRUE),
 (CURRENT_DATE - INTERVAL '1 month 17 days' - INTERVAL '3 months', '3D Print Materials', -20, FALSE, TRUE),
 (CURRENT_DATE - INTERVAL '28 days' - INTERVAL '3 months', '3D Print Materials', -20, FALSE, TRUE),
-(CURRENT_DATE - INTERVAL '2 days' - INTERVAL '3 months', '3D Print Materials', -20, TRUE, TRUE),
+(CURRENT_DATE - INTERVAL '2 days' - INTERVAL '3 months', '3D Print Materials', -20, FALSE, TRUE),
 (CURRENT_DATE - INTERVAL '2 months' - INTERVAL '3 months', 'Print Request', 40, FALSE, TRUE),
 (CURRENT_DATE - INTERVAL '1 months' - INTERVAL '3 months', 'Print Request', 60, FALSE, TRUE),
 (CURRENT_DATE - INTERVAL '23 days' - INTERVAL '3 months', 'Print Request', 30, FALSE, TRUE),
@@ -284,9 +284,10 @@ VALUES
 
 INSERT INTO users
 VALUES
-('ist11xxxxx', TRUE, 'Jane Smith', '', 'xxxxx1@tecnico.ulisboa.pt'),
-('ist12xxxxx', TRUE, 'John Doe', '', 'xxxxx2@tecnico.ulisboa.pt'),
-('ist13xxxxx', TRUE, 'Tom Bloggs', '', 'xxxxx3@tecnico.ulisboa.pt');
+('ist11xxxxx', TRUE, 'Demo User', '', 'xxxxx1@tecnico.ulisboa.pt'),
+('ist12xxxxx', TRUE, 'Jane Smith', '', 'xxxxx2@tecnico.ulisboa.pt'),
+('ist13xxxxx', TRUE, 'John Doe', '', 'xxxxx3@tecnico.ulisboa.pt'),
+('ist14xxxxx', TRUE, 'Tom Bloggs', '', 'xxxxx4@tecnico.ulisboa.pt');
 
 INSERT INTO reminders(title, "description", "date")
 VALUES
