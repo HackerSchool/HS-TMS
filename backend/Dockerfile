@@ -17,6 +17,7 @@ RUN npm install
 
 # Bundle app source
 COPY .env* .
+COPY init-demo.sql .
 
 # Setup pdfmake VFS
 RUN mkdir node_modules/pdfmake/report

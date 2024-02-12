@@ -79,4 +79,5 @@ app.listen(process.env.PORT, () => {
 });
 
 require("./cron/weeklyBackup");
+require("./cron/monthlyDummyData");
 require("./cron/dailyReminders");
