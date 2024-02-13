@@ -52,6 +52,7 @@ function App() {
             showErrorMsg("Session expired or no longer authorized");
 
           setUser(false);
+          error.handledByMiddleware = true;
         }
 
         return Promise.reject(error);
@@ -67,8 +68,6 @@ function App() {
       })
       .then(data => setUser(data))
       .catch(err => {
-        if (err.handledByMiddleware) return;
-
         setUser(false);
 
         if (err.reqTimedOut) {
