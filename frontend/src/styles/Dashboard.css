@@ -318,6 +318,11 @@
   padding-top: 0;
 }
 
+#dashboard-latest-transactions table.latest-transactions-table {
+  min-width: 300px !important;
+  width: 100% !important;
+}
+
 hr.vl {
   transform: rotate("90deg");
   height: 65%;

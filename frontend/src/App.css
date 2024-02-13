@@ -357,11 +357,11 @@ input[type="file"] {
 }
 
 .MuiMenu-list .MuiMenuItem-root.Mui-selected {
-  background-color: var(--green-alpha-20);
+  background-color: var(--green-alpha-20) !important;
 }
 
 .MuiMenu-list .MuiMenuItem-root.Mui-selected:hover {
-  background-color: var(--green-alpha-40);
+  background-color: var(--green-alpha-40) !important;
 }
 
 /* Dropdown button */

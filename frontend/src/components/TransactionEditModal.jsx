@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios_instance from "../Axios";
 import { showErrorMsg, showSuccessMsg } from "../Alerts";
 import SelectDropdown from "./SelectDropdown";
-import { DownloadIcon } from "./TransactionsTable";
+import ReceiptDownloadIcon from "./ReceiptDownloadIcon";
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "@mui/material/Modal";
 import ToggleButton from "@mui/material/ToggleButton";
@@ -336,7 +336,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                     {transaction.has_file ? <CheckIcon /> : <CloseIcon />}
                     {transaction.has_file ? "Yes" : "No"}
                   </div>
-                  {transaction.has_file && <DownloadIcon id={transaction.id} />}
+                  {transaction.has_file && <ReceiptDownloadIcon id={transaction.id} />}
                 </div>
               </div>
             </div>

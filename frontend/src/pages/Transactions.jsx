@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import "../styles/Transactions.css";
 import axios_instance from "../Axios";
 import { showErrorMsg, showSuccessMsg, showWarningMsg } from "../Alerts";
-import Table, { DownloadIcon } from "../components/TransactionsTable";
+import Table from "../components/TransactionsTable";
+import ReceiptDownloadIcon from "../components/ReceiptDownloadIcon";
 import NewTransactionBtn from "../components/NewTransactionBtn";
 import TransactionsReportBtn from "../components/TransactionsReportBtn";
 import SortButton from "../components/SortBtn";
@@ -75,7 +76,7 @@ function TransactionsPage() {
         <b>Receipt:</b>{" "}
         {transactionToDelete.has_file ? (
           <div style={{ display: "inline-flex", alignItems: "center" }}>
-            Yes <DownloadIcon id={transactionToDelete.id} />
+            Yes <ReceiptDownloadIcon id={transactionToDelete.id} />
           </div>
         ) : (
           "No"
