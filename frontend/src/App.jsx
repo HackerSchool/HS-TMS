@@ -48,10 +48,12 @@ function App() {
 
         // logout user when unauthorized
         if (error.response.status === 403 || error.response.status === 401) {
-          if (window.location.pathname.match(/\/home\//g))
-            showErrorMsg("Session expired or no longer authorized");
-
-          setUser(false);
+          setUser(oldUser => {
+            if (oldUser) {
+              showErrorMsg("Session expired or no longer authorized");
+            }
+            return false;
+          });
           error.handledByMiddleware = true;
         }
 
