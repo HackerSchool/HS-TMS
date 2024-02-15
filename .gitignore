@@ -179,5 +179,3 @@ backend/storage/*
 !backend/storage/receipts
 backend/storage/receipts/*
 !backend/storage/receipts/demo-transaction*.pdf
-# Ignore caddy data
-caddy_data/

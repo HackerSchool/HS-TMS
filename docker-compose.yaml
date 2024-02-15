@@ -8,11 +8,13 @@ services:
     restart: always
     volumes:
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
     environment:
       - TZ=Europe/Lisbon
       - PGTZ=Europe/Lisbon
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
       - backend
 
@@ -22,11 +24,14 @@ services:
     restart: always
     volumes:
       - ./backend/init-demo.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/init-demo.sql:/usr/src/app/backend/init-demo.sql
+      - postgres-demo_data:/var/lib/postgresql/data
     environment:
       - TZ=Europe/Lisbon
       - PGTZ=Europe/Lisbon
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
       - backend
     
@@ -49,6 +54,7 @@ services:
     volumes:
       - ./backend/src:/usr/src/app/backend/src
       - ./backend/storage:/usr/src/app/backend/storage
+      - backend_storage:/var/lib/hs-tms/storage
     environment:
       - TZ=Europe/Lisbon
     networks:
@@ -80,7 +86,7 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile.${ENVIRONMENT}:/etc/caddy/Caddyfile
-      - ./caddy_data:/data
+      - caddy_data:/data
       - ./frontend/dist:/var/www
     networks:
       - caddy-backend
@@ -93,3 +99,9 @@ networks:
     driver: bridge
   caddy-frontend:
     driver: bridge
+
+volumes:
+  postgres_data:
+  postgres-demo_data:
+  backend_storage:
+  caddy_data:
