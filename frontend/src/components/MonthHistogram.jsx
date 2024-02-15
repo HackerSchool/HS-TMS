@@ -245,7 +245,7 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
               margin: { t: 60, b: 30, l: 45, r: 45 },
               autosize: false,
               plot_bgcolor: "rgba(0,0,0,0)", // transparent
-              paper_bgcolor: "rgba(0,0,0,0)",
+              paper_bgcolor: "#333333", // var(--cinza-4)
               font: {
                 color: "#ffffff",
               },

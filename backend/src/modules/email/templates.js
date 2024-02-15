@@ -3,7 +3,7 @@ const moment = require("moment-timezone");
 function generateReminderHtml(reminder) {
   let dueDateText = "";
   if (reminder.today) {
-    dueDateText = "today";
+    dueDateText = "is due today";
   } else {
     const currentMoment = moment().startOf("day");
     const dueMoment = moment(reminder.date);
@@ -11,7 +11,14 @@ function generateReminderHtml(reminder) {
     // Calculate the difference in days
     const dayDifference = dueMoment.diff(currentMoment, "days");
 
-    dueDateText = dayDifference === 1 ? "tomorrow" : `in ${dayDifference} days`;
+    if (dayDifference < 0) {
+      dueDateText = "expired ";
+      dueDateText += dayDifference === -1 ? "yesterday" : `${Math.abs(dayDifference)} days ago`;
+    } else {
+      // > 0 (== 0 was checked above with reminder.today)
+      dueDateText = "is due ";
+      dueDateText += dayDifference === 1 ? "tomorrow" : `in ${dayDifference} days`;
+    }
   }
 
   return `
@@ -36,7 +43,7 @@ function generateReminderHtml(reminder) {
                         <p style="${
                           ReminderStyles.global + ReminderStyles.p
                         }">You are receiving this e-mail because the following
-                        reminder is due <b>${dueDateText}</b>:</p>
+                        reminder <b>${dueDateText}</b>:</p>
                     </td>
                 </tr>
                 <tr style="${ReminderStyles.global}">

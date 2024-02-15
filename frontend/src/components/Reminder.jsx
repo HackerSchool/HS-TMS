@@ -4,7 +4,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 function Reminder({ reminder, openEditModal, openDeleteModal, hideOptions = false }) {
-  const overdue = new Date() > new Date(reminder.date);
+  const oneDayInMs = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+  // reminder is overdue if the day difference between today and the reminder date is greater than 0
+  const overdue = Math.floor((new Date() - new Date(reminder.date)) / oneDayInMs) > 0;
+
   return (
     <div className={`reminder ${overdue ? "overdue" : ""}`}>
       <div className="date-title-container">

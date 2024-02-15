@@ -153,7 +153,7 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard, o
           },
           autosize: false,
           plot_bgcolor: "rgba(0,0,0,0)",
-          paper_bgcolor: "rgba(0,0,0,0)",
+          paper_bgcolor: inDashboard ? "#252525" : "#333333", // var(--cinza-2) : var(--cinza-4)
           font: {
             color: "#ffffff",
           },
