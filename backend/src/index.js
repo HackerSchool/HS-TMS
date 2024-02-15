@@ -78,6 +78,7 @@ app.listen(process.env.PORT, () => {
   logInfo("index", `Server listening on port ${process.env.PORT}`);
 });
 
-require("./cron/weeklyBackup");
-require("./cron/monthlyDummyData");
 require("./cron/dailyReminders");
+require("./cron/dailyStorageBackup");
+require("./cron/monthlyDummyData");
+require("./cron/weeklyBackup");
