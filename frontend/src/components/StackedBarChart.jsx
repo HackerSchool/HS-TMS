@@ -173,8 +173,8 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
           fallback={
             <div
               style={{
-                width: 580,
-                height: 383,
+                width: "100%",
+                height: 400,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -192,6 +192,7 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
             config={{
               modeBarButtonsToRemove: ["select2d", "lasso2d"],
               displaylogo: false,
+              responsive: true,
             }}
             layout={{
               legend: {
@@ -253,10 +254,9 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
                 zerolinecolor: "#ffffff",
                 color: "#ffffff",
               },
-              width: 580,
-              height: 383,
+              height: 400,
               margin: { t: 60, b: 30, l: 45, r: 45 },
-              autosize: false,
+              autosize: true,
               plot_bgcolor: "rgba(0,0,0,0)",
               paper_bgcolor: "#333333", // var(--cinza-4)
               font: {
@@ -288,6 +288,7 @@ function StackedBarChart({ title, typeOfYear, projectList, transactionsList, loa
                 },
               ],
             }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Suspense>
       </div>

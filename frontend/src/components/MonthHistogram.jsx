@@ -160,8 +160,8 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
           fallback={
             <div
               style={{
-                width: 580,
-                height: 383,
+                width: "100%",
+                height: 400,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -179,6 +179,7 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
             config={{
               modeBarButtonsToRemove: ["select2d", "lasso2d"],
               displaylogo: false,
+              responsive: true,
             }}
             layout={{
               legend: {
@@ -240,10 +241,9 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
                 zerolinecolor: "#ffffff",
                 color: "#ffffff",
               },
-              width: 580,
-              height: 383,
+              height: 400,
               margin: { t: 60, b: 30, l: 45, r: 45 },
-              autosize: false,
+              autosize: true,
               plot_bgcolor: "rgba(0,0,0,0)", // transparent
               paper_bgcolor: "#333333", // var(--cinza-4)
               font: {
@@ -272,6 +272,7 @@ function MonthHistogram({ title, typeOfYear, transactionsList, loading }) {
                 },
               ],
             }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Suspense>
       </div>

@@ -74,7 +74,7 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard, o
 
   if (!loading && dates.length === 0) {
     return (
-      <div className="transaction-warn-container" style={inDashboard ? { width: 580 } : {}}>
+      <div className="transaction-warn-container" style={inDashboard ? {} : { height: 450 }}>
         <span>
           Not enough data to plot
           {inDashboard ? (
@@ -100,8 +100,8 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard, o
       fallback={
         <div
           style={{
-            width: 580,
-            height: inDashboard ? 283 : 383,
+            width: "100%",
+            height: inDashboard ? "100%" : 450,
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -129,6 +129,7 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard, o
         config={{
           modeBarButtonsToRemove: ["select2d", "lasso2d", "resetScale2d"],
           displaylogo: false,
+          responsive: true,
         }}
         layout={{
           yaxis: {
@@ -143,21 +144,21 @@ function BalanceTimeSeries({ transactions, loading, disableRange, inDashboard, o
           },
           modebar: { orientation: "v", bgcolor: "rgba(0,0,0,0)" },
           xaxis: xaxisconfig,
-          width: 580,
-          height: inDashboard ? 283 : 383,
+          height: inDashboard ? undefined : 450,
           margin: {
             t: disableRange ? 10 : 50,
             b: disableRange ? 20 : 15,
             l: inDashboard ? 40 : 45,
             r: inDashboard ? 40 : 45,
           },
-          autosize: false,
+          autosize: true,
           plot_bgcolor: "rgba(0,0,0,0)",
           paper_bgcolor: inDashboard ? "#252525" : "#333333", // var(--cinza-2) : var(--cinza-4)
           font: {
             color: "#ffffff",
           },
         }}
+        style={{ width: "100%", height: "100%" }}
       />
     </Suspense>
   );

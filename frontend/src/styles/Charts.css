@@ -1,14 +1,23 @@
+#ChartsPage {
+  container-type: inline-size;
+  container-name: charts;
+}
+
 .charts {
   max-height: 100%;
   padding: 3rem 3rem 0rem 3rem;
   margin-bottom: 50px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  column-gap: 0.5rem;
+  display: grid;
+  grid-template: auto / repeat(2, minmax(465px, 1fr));
+  column-gap: 2rem;
+}
+
+.chart-box {
+  max-width: 100%;
 }
 
 .chart {
+  max-width: 100%;
   background-color: var(--cinza-4);
   display: flex;
   height: fit-content;
@@ -132,8 +141,7 @@ rect.selector-rect:where([style*="fill: rgb(212, 212, 212)"]) {
 
 /* div displayed when there are not enough transactions to plot */
 #ChartsPage .transaction-warn-container {
-  width: 580px;
-  height: 383px;
+  width: 100%;
   background-color: var(--cinza-4);
   background-color: transparent;
   display: flex;
@@ -141,4 +149,10 @@ rect.selector-rect:where([style*="fill: rgb(212, 212, 212)"]) {
   justify-content: center;
   text-align: center;
   border-radius: 30px;
+}
+
+@container charts (width < calc(465px * 2 + 2rem + 6rem)) {
+  .charts {
+    grid-template: auto / minmax(400px, 1fr);
+  }
 }
