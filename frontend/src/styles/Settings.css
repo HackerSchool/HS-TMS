@@ -131,28 +131,24 @@
 }
 
 .logs-list {
-  font-size: 14px;
-  padding: 0.5rem;
-  max-height: 300px;
-  max-width: 100%;
-  word-break: break-all;
-  overflow-y: scroll;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: start;
-  gap: 10px;
+  padding: 0.5rem 0.1rem 0.5rem 0.5rem;
+  min-height: 100px;
+  width: 100%;
 }
 
-.logs-list.combined .http {
+.logs-list .log {
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.logs-list.combined .log.http {
   color: var(--cinza-placeholder);
 }
 
-.logs-list.combined .error {
-  /* color: var(--red); */
+.logs-list.combined .log.error {
   color: #ff7474;
 }
 
-.logs-list.combined .info {
+.logs-list.combined .log.info {
   color: white;
 }

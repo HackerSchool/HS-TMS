@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios_instance from "../Axios";
 import { showErrorMsg, showWarningMsg } from "../Alerts";
+import { Virtuoso } from "react-virtuoso";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -16,7 +17,17 @@ function LogsTable() {
     combined: false,
   });
 
+  const logsListRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (logsListRef.current && logs[tab] !== undefined && logs[tab].length > 0) {
+      logsListRef.current.scrollToIndex({ index: logs[tab].length - 1, align: "start" });
+    }
+  };
+
   useEffect(() => {
+    scrollToBottom();
+
     if (logs[tab] !== undefined || loading[tab]) return;
 
     setLoading(prevLoading => ({ ...prevLoading, [tab]: true }));
@@ -59,12 +70,25 @@ function LogsTable() {
           `No ${tab} logs found`
         ) : (
           <div className={`logs-list ${tab}`}>
-            {logs[tab].map((log, idx) => (
-              <span
-                key={idx}
-                className={log.level}
-              >{`[${log.timestamp}] ${log.level}: ${log.message}`}</span>
-            ))}
+            <Virtuoso
+              ref={logsListRef}
+              style={{ height: "350px", width: "100%" }}
+              totalCount={logs[tab].length}
+              initialTopMostItemIndex={logs[tab].length - 1}
+              itemContent={index => {
+                const log = logs[tab][index];
+                return (
+                  <div
+                    key={index}
+                    className={`log ${log.level}`}
+                    style={{
+                      paddingBottom: index < logs[tab].length - 1 ? "10px" : 0,
+                      paddingRight: 5,
+                    }}
+                  >{`[${log.timestamp}] ${log.level}: ${log.message}`}</div>
+                );
+              }}
+            />
           </div>
         )}
       </div>
