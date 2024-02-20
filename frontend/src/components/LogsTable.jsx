@@ -46,6 +46,8 @@ function LogsTable() {
       .catch(err => {
         if (err.handledByMiddleware) return;
 
+        if (err.isDemoUser) return showWarningMsg("Logs are disabled for demo account");
+
         let msg = `Couldn't fetch ${tab} logs`;
         if (err.reqTimedOut) msg += ". Request timed out";
         else if (err.response)

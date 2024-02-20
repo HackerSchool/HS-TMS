@@ -40,6 +40,10 @@ function App() {
 
         // Check for demo user trying to modify data
         if (error.response.status === 403 && error.response.data?.username === "demo") {
+          error.isDemoUser = true;
+          if (error.config.method === "get") {
+            return Promise.reject(error);
+          }
           console.log("Demo user can't modify data");
           showErrorMsg("Demo User can't modify data");
           error.handledByMiddleware = true;
