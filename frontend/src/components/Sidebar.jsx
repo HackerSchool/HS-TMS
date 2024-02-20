@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import ImageRenderer from "./ImageRenderer";
 import axios_instance from "../Axios";
 import { showErrorMsg } from "../Alerts";
+import { useUser } from "../context/UserContext";
 import hslogo from "../assets/hs-logo.png";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
@@ -12,7 +13,9 @@ import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-function Sidebar({ user }) {
+function Sidebar() {
+  const { user } = useUser();
+
   function logout() {
     axios_instance
       .post("auth/logout")

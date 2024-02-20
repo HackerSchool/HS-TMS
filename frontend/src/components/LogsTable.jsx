@@ -1,16 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios_instance from "../Axios";
-import { showErrorMsg, showWarningMsg } from "../Alerts";
+import { showErrorMsg } from "../Alerts";
+import { useUser } from "../context/UserContext";
 import { Virtuoso } from "react-virtuoso";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import CircularProgress from "@mui/material/CircularProgress";
 
 function LogsTable() {
+  const { isDemoUser } = useUser();
+
   const [tab, setTab] = useState("error");
   const [logs, setLogs] = useState({
-    error: undefined,
-    combined: undefined,
+    error: isDemoUser ? [] : undefined,
+    combined: isDemoUser ? [] : undefined,
   });
   const [loading, setLoading] = useState({
     error: false,
@@ -28,6 +31,9 @@ function LogsTable() {
   useEffect(() => {
     scrollToBottom();
 
+    // Logs are disabled for demo account
+    if (isDemoUser) return;
+
     if (logs[tab] !== undefined || loading[tab]) return;
 
     setLoading(prevLoading => ({ ...prevLoading, [tab]: true }));
@@ -38,15 +44,9 @@ function LogsTable() {
         if (res.status == 200) return res.data;
         throw new Error("Couldn't fetch logs");
       })
-      .then(data => {
-        if (data.length === 0) showWarningMsg(`No ${tab} logs found`);
-
-        setLogs(prevLogs => ({ ...prevLogs, [tab]: data }));
-      })
+      .then(data => setLogs(prevLogs => ({ ...prevLogs, [tab]: data })))
       .catch(err => {
         if (err.handledByMiddleware) return;
-
-        if (err.isDemoUser) return showWarningMsg("Logs are disabled for demo account");
 
         let msg = `Couldn't fetch ${tab} logs`;
         if (err.reqTimedOut) msg += ". Request timed out";
@@ -69,7 +69,11 @@ function LogsTable() {
         {loading[tab] ? (
           <CircularProgress className="loading-circle medium" sx={{ m: 5 }} />
         ) : logs[tab] === undefined || logs[tab].length === 0 ? (
-          `No ${tab} logs found`
+          isDemoUser ? (
+            "Logs are disabled for demo account"
+          ) : (
+            `No ${tab} logs found`
+          )
         ) : (
           <div className={`logs-list ${tab}`}>
             <Virtuoso

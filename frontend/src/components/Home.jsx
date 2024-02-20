@@ -3,10 +3,10 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import CircularProgress from "@mui/material/CircularProgress";
 
-function Home({ user }) {
+function Home() {
   return (
     <>
-      <Sidebar user={user} />
+      <Sidebar />
       <Suspense
         fallback={
           <div

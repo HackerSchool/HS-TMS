@@ -3,6 +3,7 @@ import { React, useEffect, useState, lazy, Suspense } from "react";
 import "./App.css";
 import axios_instance from "./Axios";
 import { showErrorMsg } from "./Alerts";
+import { useUser } from "./context/UserContext";
 const Home = lazy(() => import("./components/Home"));
 const LoginPage = lazy(() => import("./pages/Login"));
 const DashboardPage = lazy(() => import("./pages/Dashboard"));
@@ -13,7 +14,7 @@ const SettingsPage = lazy(() => import("./pages/Settings"));
 import CircularProgress from "@mui/material/CircularProgress";
 
 function App() {
-  const [user, setUser] = useState();
+  const { user, setUser } = useUser();
 
   useEffect(() => {
     // Add a timeout to requests
@@ -56,7 +57,7 @@ function App() {
             if (oldUser) {
               showErrorMsg("Session expired or no longer authorized");
             }
-            return false;
+            return null;
           });
           error.handledByMiddleware = true;
         }
@@ -74,7 +75,7 @@ function App() {
       })
       .then(data => setUser(data))
       .catch(err => {
-        setUser(false);
+        setUser(null);
 
         if (err.reqTimedOut) {
           showErrorMsg("Authentication failed! Request timed out");
@@ -114,7 +115,7 @@ function App() {
           <Routes>
             {!user && <Route path="/login" element={<LoginPage />} />}
             {user && (
-              <Route path="/home" element={<Home user={user} />}>
+              <Route path="/home" element={<Home />}>
                 <Route index element={<Navigate to="dashboard" />} />
                 <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="transactions" element={<TransactionsPage />} />
