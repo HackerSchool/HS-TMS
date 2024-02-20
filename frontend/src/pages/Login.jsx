@@ -9,12 +9,17 @@ import LanguageIcon from "@mui/icons-material/Language";
 
 export default function LoginPage() {
   const [imageReady, setImageReady] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const image = new Image();
   image.onload = () => setImageReady(true);
   image.src = hs_logo;
 
   function demoAccountLogin() {
+    if (loading) return;
+
+    setLoading(true);
+
     axios_instance
       .post("auth/demo", {
         username: "demo",
@@ -27,6 +32,7 @@ export default function LoginPage() {
         throw new Error();
       })
       .catch(err => {
+        setLoading(false);
         if (err.handledByMiddleware) return;
 
         let msg = "Demo login failed";

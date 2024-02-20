@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import ImageRenderer from "./ImageRenderer";
 import axios_instance from "../Axios";
@@ -15,8 +15,13 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 function Sidebar() {
   const { user } = useUser();
+  const [loading, setLoading] = useState(false);
 
   function logout() {
+    if (loading) return;
+
+    setLoading(true);
+
     axios_instance
       .post("auth/logout")
       .then(res => {
@@ -24,6 +29,7 @@ function Sidebar() {
         else throw new Error();
       })
       .catch(err => {
+        setLoading(false);
         if (err.handledByMiddleware) return;
 
         let msg = "Logout failed";
