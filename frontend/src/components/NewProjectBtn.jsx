@@ -165,7 +165,7 @@ export default function NewProjectBtn({ refetch }) {
               <div className="form-body">
                 <div className="form-row">
                   <div className="form-group project-name-group" id="create-project-name-group">
-                    <label htmlFor="name">Name: *</label>
+                    <label htmlFor="create-project-name">Name: *</label>
                     <input
                       type="text"
                       name="name"
@@ -179,7 +179,7 @@ export default function NewProjectBtn({ refetch }) {
                   </div>
 
                   <div className="form-group project-active-group" id="create-project-active-group">
-                    <label htmlFor="active">Active:</label>
+                    <label>Active:</label>
                     <ToggleButtonGroup
                       value={formData.active}
                       exclusive
@@ -200,7 +200,7 @@ export default function NewProjectBtn({ refetch }) {
                     className="form-group project-symbolic-group"
                     id="create-project-symbolic-group"
                   >
-                    <label htmlFor="symbolic">Symbolic:</label>
+                    <label>Symbolic:</label>
                     <ToggleButtonGroup
                       value={formData.symbolic}
                       exclusive

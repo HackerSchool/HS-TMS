@@ -315,7 +315,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                   <h2>Applied filters to transactions</h2>
                   <div className="form-row">
                     <div className="form-group" id="transactions-report-initial-month-group">
-                      <label htmlFor="date">Initial month:</label>
+                      <label htmlFor="transactions-report-initial-month">Initial month:</label>
                       <input
                         type="month"
                         name="initialMonth"
@@ -326,7 +326,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                     </div>
 
                     <div className="form-group" id="transactions-report-final-month-group">
-                      <label htmlFor="date">Final month:</label>
+                      <label htmlFor="transactions-report-final-month">Final month:</label>
                       <input
                         type="month"
                         name="finalMonth"
@@ -338,18 +338,21 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
 
                     <div className="form-group" id="transactions-report-initial-value-group">
                       <div className="transactions-filter-label-group">
-                        <label htmlFor="value" className="transactions-filter-value-label">
+                        <label
+                          htmlFor="transactions-report-initial-value"
+                          className="transactions-filter-value-label"
+                        >
                           Min value:
                         </label>
                         <span className="value-help">(?)</span>
                       </div>
                       <input
-                        className="transactions-filter-value"
                         type="number"
                         name="initialValue"
+                        className="transactions-filter-value"
+                        id="transactions-report-initial-value"
                         placeholder="0.00"
                         step={0.01}
-                        id="transactions-report-initial-value"
                         value={formData.initialValue}
                         onChange={handleChange}
                       />
@@ -357,18 +360,21 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
 
                     <div className="form-group" id="transactions-report-final-value-group">
                       <div className="transactions-filter-label-group">
-                        <label htmlFor="value" className="transactions-filter-value-label">
+                        <label
+                          htmlFor="transactions-report-final-value"
+                          className="transactions-filter-value-label"
+                        >
                           Max value:
                         </label>
                         <span className="value-help">(?)</span>
                       </div>
                       <input
-                        className="transactions-filter-value"
                         type="number"
                         name="finalValue"
+                        className="transactions-filter-value"
+                        id="transactions-report-final-value"
                         placeholder="0.00"
                         step={0.01}
-                        id="transactions-report-final-value"
                         value={formData.finalValue}
                         onChange={handleChange}
                       />
@@ -377,7 +383,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
 
                   <div className="form-row" id="generate-report-projects-row">
                     <div className="form-group" id="transactions-report-projects-group">
-                      <label htmlFor="projects">Projects:</label>
+                      <label>Projects:</label>
                       <SelectDropdown
                         options={projectsNames}
                         selectedOptions={formData.projects}
@@ -388,7 +394,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                     </div>
 
                     <div className="form-group" id="transactions-report-nif-group">
-                      <label htmlFor="nif">Has NIF:</label>
+                      <label>Has NIF:</label>
                       <ToggleButtonGroup
                         value={formData.hasNif}
                         exclusive
@@ -410,12 +416,12 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                     </div>
 
                     <div className="form-group" id="transactions-report-file-group">
-                      <label htmlFor="file">Has receipt:</label>
+                      <label>Has receipt:</label>
                       <ToggleButtonGroup
                         value={formData.hasFile}
                         exclusive
                         onChange={(e, value) => handleHasFileChange(value)}
-                        id="transactions-report-nif-buttons"
+                        id="transactions-report-file-buttons"
                       >
                         <ToggleButton className="toggle-button left" value={"false"}>
                           <CloseIcon />
@@ -437,7 +443,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                   <h2>Generation options</h2>
                   <div className="form-row" id="generate-report-options-row">
                     <div className="form-group" id="transactions-report-sort-group">
-                      <label htmlFor="sort">Sort transactions by:</label>
+                      <label>Sort transactions by:</label>
                       <SelectDropdown
                         options={sortOptionsNames}
                         selectedOptions={sortOptions[formData.selectedSortOptionIdx].name}
@@ -446,7 +452,7 @@ function TransactionsReportBtn({ params, projectsList, sortOptions }) {
                     </div>
 
                     <div className="form-group" id="transactions-report-include-receipts-group">
-                      <label htmlFor="include-receipts">Include receipts?</label>
+                      <label>Include receipts?</label>
                       <ToggleButtonGroup
                         value={formData.includeReceipts}
                         exclusive

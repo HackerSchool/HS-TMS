@@ -240,7 +240,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                     className="form-group transaction-date-group"
                     id="create-transaction-date-group"
                   >
-                    <label htmlFor="date">Date: *</label>
+                    <label htmlFor="create-transaction-date">Date: *</label>
                     <input
                       type="date"
                       name="date"
@@ -256,16 +256,16 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                     className="form-group transaction-value-group"
                     id="create-transaction-value-group"
                   >
-                    <label htmlFor="value">Value: *</label>
+                    <label htmlFor="create-transaction-value">Value: *</label>
                     <div className="value-cost-earning-container">
                       <input
                         type="number"
                         name="value"
+                        className="transaction-value"
+                        id="create-transaction-value"
                         placeholder="0.00"
                         min={0}
                         step={0.01}
-                        className="transaction-value"
-                        id="create-transaction-value"
                         required
                         value={formData.value}
                         onChange={handleChange}
@@ -293,7 +293,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                     className="form-group transaction-projects-group"
                     id="create-transaction-projects-group"
                   >
-                    <label htmlFor="projects">Projects:</label>
+                    <label>Projects:</label>
                     <SelectDropdown
                       options={projectsNames}
                       selectedOptions={formData.projects}
@@ -306,7 +306,7 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                     className="form-group transaction-nif-group"
                     id="create-transaction-nif-group"
                   >
-                    <label htmlFor="nif">NIF:</label>
+                    <label>NIF:</label>
                     <ToggleButtonGroup
                       value={formData.hasNif}
                       exclusive
@@ -329,10 +329,11 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                     className="form-group transaction-description-group"
                     id="create-transaction-description-group"
                   >
-                    <label htmlFor="description">Description: *</label>
+                    <label htmlFor="create-transaction-description">Description: *</label>
                     <input
                       type="text"
                       name="description"
+                      id="create-transaction-description"
                       placeholder="Description of the transaction"
                       value={formData.description}
                       onChange={handleChange}
@@ -343,8 +344,14 @@ export default function NewTransactionBtn({ refetch, projectsList }) {
                     className="form-group transaction-file-group"
                     id="create-transaction-file-group"
                   >
-                    <label htmlFor="file">Receipt:</label>
-                    <input type="file" name="receipt" accept=".pdf" ref={fileRef} />
+                    <label htmlFor="create-transaction-file">Receipt:</label>
+                    <input
+                      type="file"
+                      name="receipt"
+                      id="create-transaction-file"
+                      accept=".pdf"
+                      ref={fileRef}
+                    />
                   </div>
                 </div>
               </div>

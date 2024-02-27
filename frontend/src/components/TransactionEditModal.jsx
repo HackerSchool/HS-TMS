@@ -232,7 +232,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
             <div className="form-body">
               <div className="form-row">
                 <div className="form-group transaction-date-group" id="edit-transaction-date-group">
-                  <label htmlFor="date">Date: *</label>
+                  <label htmlFor="edit-transaction-date">Date: *</label>
                   <input
                     type="date"
                     name="date"
@@ -248,16 +248,16 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                   className="form-group transaction-value-group"
                   id="edit-transaction-value-group"
                 >
-                  <label htmlFor="value">Value: *</label>
+                  <label htmlFor="edit-transaction-value">Value: *</label>
                   <div className="value-cost-earning-container">
                     <input
                       type="number"
                       name="value"
+                      className="transaction-value"
+                      id="edit-transaction-value"
                       placeholder="0.00"
                       min={0}
                       step={0.01}
-                      className="transaction-value"
-                      id="edit-transaction-value"
                       required
                       value={formData.value}
                       onChange={handleChange}
@@ -285,7 +285,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                   className="form-group transaction-projects-group"
                   id="edit-transaction-projects-group"
                 >
-                  <label htmlFor="projects">Projects:</label>
+                  <label>Projects:</label>
                   <SelectDropdown
                     options={projectsNames}
                     selectedOptions={formData.projects}
@@ -295,7 +295,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                   />
                 </div>
                 <div className="form-group transaction-nif-group" id="edit-transaction-nif-group">
-                  <label htmlFor="nif">NIF:</label>
+                  <label>NIF:</label>
                   <ToggleButtonGroup
                     value={formData.hasNif}
                     exclusive
@@ -318,10 +318,11 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                   className="form-group transaction-description-group"
                   id="edit-transaction-description-group"
                 >
-                  <label htmlFor="description">Description: *</label>
+                  <label htmlFor="edit-transaction-description">Description: *</label>
                   <input
                     type="text"
                     name="description"
+                    id="edit-transaction-description"
                     placeholder="Description of the transaction"
                     value={formData.description}
                     onChange={handleChange}
@@ -329,7 +330,7 @@ function TransactionEditModal({ open, setOpen, transaction, refetch, projectsLis
                   />
                 </div>
                 <div className="form-group transaction-file-group" id="edit-transaction-file-group">
-                  <label htmlFor="file">Receipt:</label>
+                  <label>Receipt:</label>
                   <div
                     className={`toggle-button left right ${transaction.has_file ? "active" : ""}`}
                   >

@@ -140,17 +140,20 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
                 <div className="form-row">
                   <div className="form-group" id="projects-filter-initial-balance-group">
                     <div className="projects-filter-label-group">
-                      <label htmlFor="balance" className="projects-filter-balance-label">
+                      <label
+                        htmlFor="projects-filter-initial-balance"
+                        className="projects-filter-balance-label"
+                      >
                         Min balance:
                       </label>
                     </div>
                     <input
-                      className="projects-filter-balance"
                       type="number"
                       name="initialBalance"
+                      className="projects-filter-balance"
+                      id="projects-filter-initial-balance"
                       placeholder="0.00"
                       step={0.01}
-                      id="projects-filter-initial-balance"
                       value={formData.initialBalance}
                       onChange={handleChange}
                     />
@@ -158,17 +161,20 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
 
                   <div className="form-group" id="projects-filter-final-balance-group">
                     <div className="projects-filter-label-group">
-                      <label htmlFor="balance" className="projects-filter-balance-label">
+                      <label
+                        htmlFor="projects-filter-final-balance"
+                        className="projects-filter-balance-label"
+                      >
                         Max balance:
                       </label>
                     </div>
                     <input
-                      className="projects-filter-balance"
                       type="number"
                       name="finalBalance"
+                      className="projects-filter-balance"
+                      id="projects-filter-final-balance"
                       placeholder="0.00"
                       step={0.01}
-                      id="projects-filter-final-balance"
                       value={formData.finalBalance}
                       onChange={handleChange}
                     />
@@ -177,7 +183,7 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
 
                 <div className="form-row">
                   <div className="form-group" id="projects-filter-active-group">
-                    <label htmlFor="active">Active:</label>
+                    <label>Active:</label>
                     <ToggleButtonGroup
                       value={formData.active}
                       exclusive
@@ -199,7 +205,7 @@ function ProjectsFilterBtn({ params, setParams, refetch }) {
                   </div>
 
                   <div className="form-group" id="projects-filter-symbolic-group">
-                    <label htmlFor="symbolic">Symbolic:</label>
+                    <label>Symbolic:</label>
                     <ToggleButtonGroup
                       value={formData.symbolic}
                       exclusive

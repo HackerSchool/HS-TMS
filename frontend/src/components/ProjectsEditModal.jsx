@@ -144,10 +144,11 @@ function ProjectEditModal({ open, setOpen, project, refetch }) {
             <div className="form-body">
               <div className="form-row ">
                 <div className="form-group project-name-group" id="edit-project-name-group">
-                  <label htmlFor="name">Name: *</label>
+                  <label htmlFor="edit-project-name">Name: *</label>
                   <input
                     type="text"
                     name="name"
+                    id="edit-project-name"
                     placeholder="Name of the project"
                     value={formData.name}
                     onChange={handleChange}
@@ -155,7 +156,7 @@ function ProjectEditModal({ open, setOpen, project, refetch }) {
                 </div>
 
                 <div className="form-group project-active-group" id="edit-project-active-group">
-                  <label htmlFor="active">Active:</label>
+                  <label>Active:</label>
                   <ToggleButtonGroup
                     value={formData.active}
                     exclusive

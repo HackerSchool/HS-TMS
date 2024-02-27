@@ -201,7 +201,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
               <div className="form-body">
                 <div className="form-row">
                   <div className="form-group" id="transactions-filter-initial-month-group">
-                    <label htmlFor="date">Initial month:</label>
+                    <label htmlFor="transactions-filter-initial-month">Initial month:</label>
                     <input
                       type="month"
                       name="initialMonth"
@@ -212,7 +212,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                   </div>
 
                   <div className="form-group" id="transactions-filter-final-month-group">
-                    <label htmlFor="date">Final month:</label>
+                    <label htmlFor="transactions-filter-final-month">Final month:</label>
                     <input
                       type="month"
                       name="finalMonth"
@@ -226,18 +226,21 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                 <div className="form-row">
                   <div className="form-group" id="transactions-filter-initial-value-group">
                     <div className="transactions-filter-label-group">
-                      <label htmlFor="value" className="transactions-filter-value-label">
+                      <label
+                        htmlFor="transactions-filter-initial-value"
+                        className="transactions-filter-value-label"
+                      >
                         Min value:
                       </label>
                       <span className="value-help">(?)</span>
                     </div>
                     <input
-                      className="transactions-filter-value"
                       type="number"
                       name="initialValue"
+                      className="transactions-filter-value"
+                      id="transactions-filter-initial-value"
                       placeholder="0.00"
                       step={0.01}
-                      id="transactions-filter-initial-value"
                       value={formData.initialValue}
                       onChange={handleChange}
                     />
@@ -245,18 +248,21 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
 
                   <div className="form-group" id="transactions-filter-final-value-group">
                     <div className="transactions-filter-label-group">
-                      <label htmlFor="value" className="transactions-filter-value-label">
+                      <label
+                        htmlFor="transactions-filter-final-value"
+                        className="transactions-filter-value-label"
+                      >
                         Max value:
                       </label>
                       <span className="value-help">(?)</span>
                     </div>
                     <input
-                      className="transactions-filter-value"
                       type="number"
                       name="finalValue"
+                      className="transactions-filter-value"
+                      id="transactions-filter-final-value"
                       placeholder="0.00"
                       step={0.01}
-                      id="transactions-filter-final-value"
                       value={formData.finalValue}
                       onChange={handleChange}
                     />
@@ -265,7 +271,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
 
                 <div className="form-row">
                   <div className="form-group" id="transactions-filter-nif-group">
-                    <label htmlFor="nif">Has NIF:</label>
+                    <label>Has NIF:</label>
                     <ToggleButtonGroup
                       value={formData.hasNif}
                       exclusive
@@ -287,7 +293,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
                   </div>
 
                   <div className="form-group" id="transactions-filter-file-group">
-                    <label htmlFor="file">Has receipt:</label>
+                    <label>Has receipt:</label>
                     <ToggleButtonGroup
                       value={formData.hasFile}
                       exclusive
@@ -311,7 +317,7 @@ function TransactionsFilterBtn({ params, setParams, refetch, projectsList }) {
 
                 <div className="form-row">
                   <div className="form-group" id="transactions-filter-projects-group">
-                    <label htmlFor="projects">Projects:</label>
+                    <label>Projects:</label>
                     <SelectDropdown
                       options={projectsNames}
                       selectedOptions={formData.projects}

@@ -133,7 +133,7 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
             <div className="form-body">
               <div className="form-row reminder-date-title-row">
                 <div className="form-group reminder-date-group" id="edit-reminder-date-group">
-                  <label htmlFor="date">Date: *</label>
+                  <label htmlFor="edit-reminder-date">Date: *</label>
                   <input
                     type="date"
                     name="date"
@@ -146,7 +146,7 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
                 </div>
 
                 <div className="form-group reminder-title-group" id="edit-reminder-title-group">
-                  <label htmlFor="title">Title: *</label>
+                  <label htmlFor="edit-reminder-title">Title: *</label>
                   <input
                     type="text"
                     name="title"
@@ -165,10 +165,11 @@ function ReminderEditModal({ open, setOpen, reminder, refetch }) {
                   className="form-group reminder-description-group"
                   id="edit-reminder-description-group"
                 >
-                  <label htmlFor="description">Description:</label>
+                  <label htmlFor="edit-reminder-description">Description:</label>
                   <input
                     type="text"
                     name="description"
+                    id="edit-reminder-description"
                     placeholder="Description of the reminder"
                     value={formData.description}
                     onChange={handleChange}

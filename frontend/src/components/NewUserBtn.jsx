@@ -146,11 +146,12 @@ function NewUserBtn({ refetch }) {
               <div className="form-body">
                 <div className="form-row user-name-username-row">
                   <div className="form-group user-name-group" id="create-user-name-group">
-                    <label htmlFor="name">Name: *</label>
+                    <label htmlFor="create-user-name">Name: *</label>
                     <input
                       type="text"
                       name="name"
                       className="user-name"
+                      id="create-user-name"
                       placeholder="First and last name"
                       value={formData.name}
                       onChange={handleChange}
@@ -159,10 +160,11 @@ function NewUserBtn({ refetch }) {
                   </div>
 
                   <div className="form-group user-username-group" id="create-user-username-group">
-                    <label htmlFor="usernamae">Username: *</label>
+                    <label htmlFor="create-user-username">Username: *</label>
                     <input
                       type="text"
                       name="username"
+                      id="create-user-username"
                       placeholder="ist1xxxxx"
                       value={formData.username}
                       onChange={handleChange}

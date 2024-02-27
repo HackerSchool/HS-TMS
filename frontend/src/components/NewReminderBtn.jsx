@@ -141,7 +141,7 @@ function NewReminderBtn({ refetch }) {
               <div className="form-body">
                 <div className="form-row reminder-date-title-row">
                   <div className="form-group reminder-date-group" id="create-reminder-date-group">
-                    <label htmlFor="date">Date: *</label>
+                    <label htmlFor="create-reminder-date">Date: *</label>
                     <input
                       type="date"
                       name="date"
@@ -154,7 +154,7 @@ function NewReminderBtn({ refetch }) {
                   </div>
 
                   <div className="form-group reminder-title-group" id="create-reminder-title-group">
-                    <label htmlFor="title">Title: *</label>
+                    <label htmlFor="create-reminder-title">Title: *</label>
                     <input
                       type="text"
                       name="title"
@@ -173,10 +173,11 @@ function NewReminderBtn({ refetch }) {
                     className="form-group reminder-description-group"
                     id="create-reminder-description-group"
                   >
-                    <label htmlFor="description">Description:</label>
+                    <label htmlFor="create-reminder-description">Description:</label>
                     <input
                       type="text"
                       name="description"
+                      id="create-reminder-description"
                       placeholder="Description of the reminder"
                       value={formData.description}
                       onChange={handleChange}
