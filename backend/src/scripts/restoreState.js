@@ -77,7 +77,7 @@ execSync("sleep 30", { stdio: "inherit" });
 
 // Restore database
 execSync(
-  `docker exec backend sh -c 'PGPASSWORD=${process.env.DB_PASSWORD} psql -h ${process.env.DB_HOST} -U ${process.env.DB_USER} < ./storage/backup.sql'`,
+  `docker exec hs-tms_backend sh -c 'PGPASSWORD=${process.env.DB_PASSWORD} psql -h ${process.env.DB_HOST} -U ${process.env.DB_USER} < ./storage/backup.sql'`,
   { stdio: "inherit" },
 );
 console.log("Restored database from backup.");
