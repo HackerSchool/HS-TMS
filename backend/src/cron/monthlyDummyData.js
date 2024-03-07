@@ -7,7 +7,8 @@ new CronJob(
   "0 4 1 * *", // 4 am on the 1st day of every month
   async () => {
     try {
-      const bashCommand = `PGPASSWORD=${process.env.DB_PASSWORD} psql -h ${process.env.DB_DEMO_HOST} -U ${process.env.DB_USER} -d ${process.env.DB_NAME} -a -f ../../init-demo.sql`;
+      const scriptPath = __dirname + "/../../init-demo.sql";
+      const bashCommand = `PGPASSWORD=${process.env.DB_PASSWORD} psql -h ${process.env.DB_DEMO_HOST} -U ${process.env.DB_USER} -d ${process.env.DB_NAME} -a -f ${scriptPath}`;
       const options = {
         cwd: __dirname,
       };

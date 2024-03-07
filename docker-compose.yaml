@@ -24,7 +24,6 @@ services:
     restart: always
     volumes:
       - ./backend/init-demo.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./backend/init-demo.sql:/usr/src/app/backend/init-demo.sql
       - postgres-demo_data:/var/lib/postgresql/data
     environment:
       - TZ=Europe/Lisbon
@@ -56,6 +55,7 @@ services:
     volumes:
       - ./backend/src:/usr/src/app/backend/src
       - ./backend/storage:/usr/src/app/backend/storage
+      - ./backend/init-demo.sql:/usr/src/app/backend/init-demo.sql
       - backend_storage:/var/lib/hs-tms/storage
     environment:
       - TZ=Europe/Lisbon
