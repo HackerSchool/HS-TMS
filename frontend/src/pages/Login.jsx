@@ -74,7 +74,7 @@ export default function LoginPage() {
         </a>
 
         <footer>
-          <a href="https://hackerschool.io" target="_blank">
+          <a href="https://hackerschool.dev" target="_blank">
             <div className="footer-item" id="website">
               <i>
                 <LanguageIcon />

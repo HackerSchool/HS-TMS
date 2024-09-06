@@ -59,7 +59,7 @@ services:
       - TZ=Europe/Lisbon
     networks:
       - backend
-      - caddy-backend
+      - nginx-backend
 
   frontend:
     container_name: hs-tms_frontend
@@ -73,31 +73,28 @@ services:
     environment:
       - TZ=Europe/Lisbon
     networks:
-      - caddy-frontend
-  
-  caddy:
-    container_name: hs-tms_caddy
-    image: caddy:2.7
-    restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
+      - nginx-frontend
+
+  nginx:
+    container_name: hs-tms_nginx
+    image: nginx:latest
     ports:
-      - "80:80"
-      - "443:443"
+      - "127.0.0.1:80:80"
     volumes:
-      - ./Caddyfile.${ENVIRONMENT}:/etc/caddy/Caddyfile
-      - caddy_data:/data
       - ./frontend/dist:/var/www
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
     networks:
-      - caddy-backend
-      - caddy-frontend
+      - nginx-backend
+      - nginx-frontend
 
 networks:
   backend:
     driver: bridge
-  caddy-backend:
+  nginx-backend:
     driver: bridge
-  caddy-frontend:
+  nginx-frontend:
     driver: bridge
 
 volumes:
@@ -105,4 +102,3 @@ volumes:
   postgres-demo_data:
   redis_data:
   backend_storage:
-  caddy_data:
