@@ -21,7 +21,7 @@
   "homepage": "https://github.com/HackerSchool/HS-TMS#readme",
   "dependencies": {
     "adm-zip": "^0.5.10",
-    "axios": "^1.6.0",
+    "axios": "^1.7.4",
     "connect-redis": "^7.1.1",
     "cors": "^2.8.5",
     "cron": "^3.1.6",
