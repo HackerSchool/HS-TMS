@@ -57,9 +57,10 @@ services:
       - backend_storage:/var/lib/hs-tms/storage
     environment:
       - TZ=Europe/Lisbon
+    ports:
+      - "3000:3000"
     networks:
       - backend
-      - nginx-backend
 
   frontend:
     container_name: hs-tms_frontend
@@ -72,29 +73,11 @@ services:
       - ./frontend/dist:/usr/src/app/frontend/dist
     environment:
       - TZ=Europe/Lisbon
-    networks:
-      - nginx-frontend
-
-  nginx:
-    container_name: hs-tms_nginx
-    image: nginx:latest
     ports:
-      - "127.0.0.1:80:80"
-    volumes:
-      - ./frontend/dist:/var/www
-      - ./default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - backend
-    networks:
-      - nginx-backend
-      - nginx-frontend
+      - "80:5173"
 
 networks:
   backend:
-    driver: bridge
-  nginx-backend:
-    driver: bridge
-  nginx-frontend:
     driver: bridge
 
 volumes:
